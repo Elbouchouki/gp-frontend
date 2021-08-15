@@ -1,0 +1,41 @@
+[
+    {
+        "display_name": "Accueil",
+        "route": "/",
+        "icon": "bx bx-category-alt"
+    },
+    {
+        "display_name": "Tickets normals",
+        "route": "/tickets-normals",
+        "icon": "bx bxs-coupon"
+    },
+    {
+        "display_name": "Tickets illisibles",
+        "route": "/tickets-illisible",
+        "icon": "bx bxs-coupon"
+    },
+    {
+        "display_name": "Tickets perdus",
+        "route": "/tickets-perdus",
+        "icon": "bx bxs-coupon"
+    },
+    {
+        "display_name": "Entrées abonnés",
+        "route": "/entreés-abonnés",
+        "icon": "bx bxs-business"
+    },
+    {
+        "display_name": "Recharges abonnés",
+        "route": "/recharges-abonnés",
+        "icon": "bx bx-credit-card"
+    },
+    {
+        "display_name": "Mouvements",
+        "route": "/mouvements",
+        "icon": "bx bxs-traffic-barrier"
+    },{
+        "display_name": "Annulations",
+        "route": "/annulations",
+        "icon": "bx bx-window-close"
+    }
+]

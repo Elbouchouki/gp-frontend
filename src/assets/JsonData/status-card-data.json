@@ -1,0 +1,31 @@
+[
+    {
+        "icon": "bx bx-shopping-bag",
+        "count": "$995",
+        "title": "Tickets normals"
+    },
+    {
+        "icon": "bx bx-cart",
+        "count": "$214,251",
+        "title": "Tickets illisibles"
+    },
+    {
+        "icon": "bx bx-dollar-circle",
+        "count": "$13,632",
+        "title": "Tickets perdus"
+    },
+    {
+        "icon": "bx bx-receipt",
+        "count": "1,711",
+        "title": "Total normals"
+    }, {
+        "icon": "bx bx-shopping-bag",
+        "count": "1,995",
+        "title": "Total illisibles"
+    },
+    {
+        "icon": "bx bx-cart",
+        "count": "801",
+        "title": "Total perdus"
+    }
+]
