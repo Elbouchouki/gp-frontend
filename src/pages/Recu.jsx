@@ -2,8 +2,8 @@ import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
 import { addDays, subDays } from 'date-fns'
 import { DateRangePicker } from 'rsuite'
-import { Nav, Icon, FlexboxGrid, DatePicker ,Loader,SelectPicker ,Tag } from 'rsuite'
-
+import { Nav, Icon, FlexboxGrid, DatePicker ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
+import { listTarifs } from '../helper/helper'
 
 import ApiCall from '../api/Api'
 import FlexboxGridItem from 'rsuite/lib/FlexboxGrid/FlexboxGridItem'
@@ -31,12 +31,12 @@ const renderBody = (item, index) => (
     </tr>
 )
 const styles = {
-    marginBottom: 50
+    marginBottom: 10
 };
 const CustomNav = ({ active, onSelect, ...props }) => {
     return (
-        <Nav  {...props} activeKey={active} onSelect={onSelect} style={styles}>
-            <Nav.Item eventKey="day">Jour</Nav.Item>
+        <Nav  {...props} activeKey={active} onSelect={onSelect} style={{marginBottom:20}}>
+            <Nav.Item pullRight eventKey="day">Jour</Nav.Item>
             <Nav.Item eventKey="week">Semaine</Nav.Item>
             <Nav.Item eventKey="month">Mois</Nav.Item>
             <Nav.Item eventKey="year">Année</Nav.Item>
@@ -45,7 +45,9 @@ const CustomNav = ({ active, onSelect, ...props }) => {
     );
 };
 const DatePickerDate =({handleDateChange})=>{
-    return <DatePicker
+    return <DatePicker 
+    block
+    style={styles}
     onChange={(value) => { handleDateChange(value) }}       
     format="DD/MM/YYYY"
     locale={{
@@ -66,6 +68,8 @@ const DatePickerDate =({handleDateChange})=>{
 }
 const DatePickerWeekDate = ({ active, handleDateChange }) => {
     return (<DateRangePicker cleanable={false}
+        block
+        style={styles}
         onChange={(value) => { handleDateChange(value) }}
         oneTap
         hoverRange={active}
@@ -89,10 +93,14 @@ const DatePickerWeekDate = ({ active, handleDateChange }) => {
     />)
 }
 const VilleSelect = ({items,handleUpdate,handleChange}) =>{
+    
+    
     return <SelectPicker
+    block
     placeholder="Choisir une ville"
     data={items}
-    style={{ width: 224 }}
+    disabledItemValues={(items.filter(item => item.active === false)).map(item => item.value)}
+    style={styles}
     onOpen={handleUpdate}
     onChange={handleChange}
     onSearch={handleUpdate}
@@ -108,6 +116,21 @@ const VilleSelect = ({items,handleUpdate,handleChange}) =>{
     }}
   />
 }
+const TarifsSelect = ({items,handleChange}) =>{
+    return <CheckPicker
+    block
+    data={items}
+    searchable={false}
+    onChange={handleChange}
+    renderMenuItem={(label, item) => {
+      return   <Tag color={"red"}>
+                 <i className="rs-icon rs-icon-user" /> {label}
+                </Tag >;
+    }}
+    
+  />
+}
+
 const Customers = (props) => {
     const [active, setActive] = useState('day')
     const [fromDate, setFromDate] = useState(new Date())
@@ -117,6 +140,7 @@ const Customers = (props) => {
     const [listVilles,setListVilles]=useState([])
     const [filtredRecus,setfiltredRecus]=useState([])
     const [ville,setVille]=useState(null)
+    const [tarifs,setTarifs] = useState([])
     const handleIntervalDateChange = (value) => {
         setFromDate(value[0])
         setToDate(value[1])
@@ -125,49 +149,54 @@ const Customers = (props) => {
         setFromDate(value)
         setToDate(value)
     }
-    
+    const handleTarifChange = (value) =>{
+        console.log(value)
+        setTarifs(value)
+    }
     const handleSelect = (activeKey) => {
         setActive(activeKey);
     }
         const handleVilleUpdate=async()=> {
         if (listVilles.length === 0) {
-            setListVilles([{
-                "label": "Marrakech",
-                "value": 1234,
-   
-              },{
-                "label": "Casablanca",
-                "value": 4321,
-              },])
+            const villes  = await ApiCall.getVilles()
+            setListVilles(villes)
             return;
         }
-        console.log()
       }
     const handleVilleChange=(value)=>{
        setVille(value)
     }
    
     useEffect(() => {
-        async function filterRecus(){
+        function filterRecus(){
             setLoading(true)
-            if (ville===null){
+            if ((ville===null || ville===undefined)&&tarifs.length===0){
                 setfiltredRecus(listRecus)
                 setLoading(false)
                 return
             }
-            const filtred = await listRecus.filter(item => item.Ville.id === ville)
+            
+            var filtred = []
+            if(ville !== null || ville !== undefined ){
+                filtred.push(...listRecus.filter(item => item.Ville.id === ville))
+            }
+            if(tarifs.length !== 0 ){
+                filtred.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
+                console.log(filtred)
+                if(-1 in tarifs){
+                    filtred.push(...listRecus.filter(item => !tarifs.includes(item.valeur)))
+                }
+            } 
             setfiltredRecus(filtred)
             setLoading(false)
-            
-        
         }
         filterRecus()
         return () => {
-            setfiltredRecus([])
             setLoading(true)
+            setfiltredRecus([])
           };
         
-    }, [listRecus,ville])
+    }, [listRecus,ville,tarifs])
 
     useEffect(() => {
         
@@ -179,7 +208,6 @@ const Customers = (props) => {
         }
         fetchRecus()
         return () => {
-            setListRecus([])
             setLoading(true)
           };
         
@@ -194,24 +222,37 @@ const Customers = (props) => {
                 <div className="col-12">
                     <div className="card">
                         <div className="card__header"> 
-                            <FlexboxGrid justify="space-between">
-                                <FlexboxGrid.Item>                       
-                                        <FlexboxGrid >
-                                            <FlexboxGrid.Item>
+                            <div className="row">
+                                <div className="col-12" >
+                                    <div className="row" style={{justifyContent:"space-between"}} > 
+                                        <div className="col-6">
                                                 {active === 'week' || active === 'month' ?
                                                         <DatePickerWeekDate active={active} handleDateChange={handleIntervalDateChange} />
                                                         :
                                                         <DatePickerDate handleDateChange={handleDateChange} />}
-                                            </FlexboxGrid.Item>
-                                            <FlexboxGrid.Item style={{paddingLeft:'50px'}}>
-                                                <VilleSelect items={listVilles} handleChange={handleVilleChange} handleUpdate={handleVilleUpdate}/>
-                                            </FlexboxGrid.Item>
-                                        </FlexboxGrid>
-                                </FlexboxGrid.Item>
-                                <FlexboxGrid.Item>
-                                <CustomNav appearance="subtle" active={active} onSelect={handleSelect} />
-                                </FlexboxGrid.Item>
-                            </FlexboxGrid>
+                                        </div>
+                                        <div className="col-4">
+                                            <div className="row" style={{justifyContent:"flex-end"}} > 
+                                                    <CustomNav appearance="subtle" active={active} onSelect={handleSelect} />
+                                            </div>
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                                <div className="col-12">                       
+                                    <div className="row">
+                                       
+                                        <div className="col-3">
+                                            <VilleSelect items={listVilles} handleChange={handleVilleChange} handleUpdate={handleVilleUpdate}/>
+                                        </div>
+                                        <div className="col-3">
+                                            <TarifsSelect items={listTarifs} handleChange={handleTarifChange} />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                               
+                            </div>
                         </div>
                         <div className="card__body">
                             {loading
