@@ -32,3 +32,4 @@ export const listTarifs = [
     label: "Autres",
   },
 ];
+export const tarification = [0, 5, 7, 12, 15, 20, 25];

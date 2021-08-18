@@ -2,11 +2,10 @@ import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
 import { addDays, subDays } from 'date-fns'
 import { DateRangePicker } from 'rsuite'
-import { Nav, Icon, FlexboxGrid, DatePicker ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
-import { listTarifs } from '../helper/helper'
-
+import { Nav, Icon, DatePicker ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
+import { listTarifs,tarification } from '../helper/helper'
 import ApiCall from '../api/Api'
-import FlexboxGridItem from 'rsuite/lib/FlexboxGrid/FlexboxGridItem'
+
 const customerTableHead = [
     'Caisse',
     'Valeur',
@@ -22,7 +21,7 @@ const renderHead = (item, index) => <th key={index}>{item}</th>
 const renderBody = (item, index) => (
     <tr key={index}>
         <td>{item.caisse}</td>
-        <td><Tag color={item.valeur===0?"orange":"blue"} >{item.valeur} Dh</Tag></td>
+        <td><Tag color={tarification.includes(item.valeur) ?"blue":item.valeur ===0?"orange":"violet"} >{item.valeur} Dh</Tag></td>
         <td>{item.date_paiment}</td>
         <td>{item.date_e}</td>
         <td>{item.date_s}</td>
@@ -123,7 +122,7 @@ const TarifsSelect = ({items,handleChange}) =>{
     searchable={false}
     onChange={handleChange}
     renderMenuItem={(label, item) => {
-      return   <Tag color={"red"}>
+      return   <Tag color={item.value ===-1 ?"violet":item.value ===0?"orange":"blue"}>
                  <i className="rs-icon rs-icon-user" /> {label}
                 </Tag >;
     }}
@@ -150,7 +149,6 @@ const Customers = (props) => {
         setToDate(value)
     }
     const handleTarifChange = (value) =>{
-        console.log(value)
         setTarifs(value)
     }
     const handleSelect = (activeKey) => {
@@ -168,23 +166,21 @@ const Customers = (props) => {
     }
    
     useEffect(() => {
-        function filterRecus(){
-            setLoading(true)
+        async function filterRecus(){
+            await setTimeout(setLoading(true),500)
             if ((ville===null || ville===undefined)&&tarifs.length===0){
                 setfiltredRecus(listRecus)
                 setLoading(false)
                 return
             }
-            
             var filtred = []
             if(ville !== null || ville !== undefined ){
                 filtred.push(...listRecus.filter(item => item.Ville.id === ville))
             }
             if(tarifs.length !== 0 ){
                 filtred.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
-                console.log(filtred)
-                if(-1 in tarifs){
-                    filtred.push(...listRecus.filter(item => !tarifs.includes(item.valeur)))
+                if(tarifs.includes(-1)){
+                    filtred.push(...listRecus.filter(item => !tarification.includes(item.valeur) ))
                 }
             } 
             setfiltredRecus(filtred)
@@ -250,18 +246,21 @@ const Customers = (props) => {
                                         </div>
                                     </div>
                                 </div>
-                                
-                               
                             </div>
                         </div>
                         <div className="card__body">
-                            {loading
+                            {
+                                filtredRecus===undefined
+                                ? 
+                                <div style={{display:'flex',justifyContent:'center'}}>Problèmes de connections</div>
+                                :
+                                loading
                                 ?
                                 <div style={{display:'flex',justifyContent:'center',padding:'50px'}}>
                                     <Loader  content="Chargement en cours..." />
                                 </div>
                                 :
-                                filtredRecus===undefined? <div style={{display:'flex',justifyContent:'center'}}>Problèmes de connections</div>:filtredRecus.length===0
+                                filtredRecus.length===0
                                 ?
                                 <div style={{display:'flex',justifyContent:'center'}}>Pas de données</div>
                                 :
