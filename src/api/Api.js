@@ -1,6 +1,14 @@
 import axios from "axios";
 import moment from "moment";
 export default class ApiCall {
+  static async getVilles() {
+    try {
+      const villes = await axios.get(`${process.env.REACT_APP_API_URL}villes`);
+      return villes.data.villes;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   static async getRecus(ville_id, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
@@ -17,10 +25,12 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getVilles() {
+  static async getStatistiques(interval) {
     try {
-      const villes = await axios.get(`${process.env.REACT_APP_API_URL}villes`);
-      return villes.data.villes;
+      const recus = await axios.get(
+        `${process.env.REACT_APP_API_URL}statistic/${interval}`
+      );
+      return recus.data;
     } catch (error) {
       console.log(error);
     }

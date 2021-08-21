@@ -16,7 +16,7 @@ import Layout from "./components/layout/Layout";
 
 const store = createStore(rootReducer);
 
-document.title = "Elbouchouki";
+document.title = "GestPark";
 
 ReactDOM.render(
   <Provider store={store}>
