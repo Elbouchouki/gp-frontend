@@ -130,7 +130,7 @@ const TarifsSelect = ({items,handleChange}) =>{
   />
 }
 
-const Customers = (props) => {
+const Recu = (props) => {
     const [active, setActive] = useState('day')
     const [fromDate, setFromDate] = useState(new Date())
     const [toDate, setToDate] = useState(new Date())
@@ -174,15 +174,23 @@ const Customers = (props) => {
                 return
             }
             var filtred = []
-            if(ville !== null || ville !== undefined ){
+            if(ville !== null && ville !== undefined && tarifs.length === 0){
                 filtred.push(...listRecus.filter(item => item.Ville.id === ville))
             }
-            if(tarifs.length !== 0 ){
+            if(tarifs.length !== 0 &&(ville===null || ville===undefined)){
                 filtred.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
                 if(tarifs.includes(-1)){
                     filtred.push(...listRecus.filter(item => !tarification.includes(item.valeur) ))
                 }
-            } 
+            }
+            if(tarifs.length !== 0 && ville !== null && ville !== undefined){
+                var temp = []
+                temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
+                if(tarifs.includes(-1)){
+                    temp.push(...listRecus.filter(item => !tarification.includes(item.valeur) ))
+                }
+                filtred.push(...temp.filter(item => item.Ville.id === ville))
+            }
             setfiltredRecus(filtred)
             setLoading(false)
         }
@@ -280,4 +288,4 @@ const Customers = (props) => {
     )
 }
 
-export default Customers
+export default Recu
