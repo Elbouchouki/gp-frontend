@@ -112,6 +112,7 @@ const Topnav = () => {
                 <div className="topnav__right-item">
 
                     <Dropdown
+                        key={1}
                         customToggle={() => renderUserToggle(curr_user)}
                         contentData={user_menu}
                         renderItems={(item, index) => renderUserMenu(item, index)}
@@ -126,6 +127,7 @@ const Topnav = () => {
                 </div>                 
                 <div className="topnav__right-item">
                     <Dropdown
+                        key={2}
                         customToggle={() =>(
 
                                             <IconButton  icon={<Icon icon="export"/>} color="green" appearance="primary"  className="topnav__right-user__name">                                       
