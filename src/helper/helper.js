@@ -1,3 +1,20 @@
+export const listMouvs = [
+  {
+    value: 1,
+    label: "Entrée en bras cassé",
+    type: "Entrées",
+  },
+  {
+    value: 2,
+    label: "Entrée en manuel",
+    type: "Entrées",
+  },
+  {
+    value: 3,
+    label: "Sortie en ouv.maint",
+    type: "Sorties",
+  },
+];
 export const listTarifs = [
   {
     value: 0,

@@ -4,6 +4,7 @@ import { Route, Switch } from 'react-router-dom'
 
 import Dashboard from '../pages/Dashboard'
 import Recu from '../pages/Recu'
+import Mouvement from '../pages/Mouvement'
 
 const Routes = () => {
     return (
@@ -14,6 +15,7 @@ const Routes = () => {
             <Route path='/tickets-perdus' exact component={()=><Recu articleId="3" pageTitle="Tickets perdus"/>}/>
             <Route path='/entreés-abonnés' exact component={()=><Recu articleId="4" pageTitle="Tickets perdus"/>}/>
             <Route path='/recharges-abonnés' exact component={()=><Recu articleId="5" pageTitle="Tickets perdus"/>}/>
+            <Route path='/mouvements' exact component={()=><Mouvement pageTitle="Mouvements"/>}/>
 
         </Switch>
     )
