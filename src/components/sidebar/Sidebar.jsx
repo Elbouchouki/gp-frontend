@@ -3,8 +3,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import './sidebar.css'
+import smallLogo from '../../assets/images/favicon.png'
 
-import logo from '../../assets/images/logo.png'
+import logo from '../../assets/images/gestpark.svg'
 
 import sidebar_items from '../../assets/JsonData/sidebar_routes.json'
 
@@ -31,7 +32,7 @@ const Sidebar = props => {
     return (
         <div className='sidebar'>
             <div className="sidebar__logo">
-                <img src={logo} alt="company logo" />
+                <img src={smallLogo} alt="small" /> <img src={logo} alt="gestpark" />
             </div>
             {
                 sidebar_items.map((item, index) => (

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Chart from 'react-apexcharts'
 import { useSelector } from 'react-redux'
 import StatusCard from '../components/status-card/StatusCard'
-import { Nav , Loader} from 'rsuite'
+import { Nav , Loader, Icon} from 'rsuite'
 import ApiCall from '../api/Api'
 import { monthSwitch, seasonSwitch } from '../helper/helper'
 
@@ -126,7 +126,7 @@ const Dashboard = () => {
             var countArticle  = []
             var sumArticle = []
             const interval = await ApiCall.getStatistiques(active);
-            if(!daily){setDaily([interval.recus[0].count,interval.recus[0].sum])}
+            if(!daily){setDaily([interval.recus[0]?.count,interval.recus[0]?.sum])}
             interval.article.forEach(element => {
                 countArticle.push(element.count)
                 sumArticle.push(element.sum)
@@ -196,7 +196,7 @@ const Dashboard = () => {
                     <div className="card" >
                         <div className="row" style={{justifyContent:"space-between",alignItems:"center"}}>
                         <h5>Statistiques {seasonSwitch(active)}</h5>
-                        {loading ? <Loader content="Chargement en cours..." />:null}
+                        {loading ? <Loader content="Chargement en cours..." />:<Icon icon="bar-chart" size="2x" />}
                              </div>    
                         
                         {/* chart */}
@@ -223,7 +223,7 @@ const Dashboard = () => {
                     <div className="card" >
                         <div className="row" style={{justifyContent:"space-between",alignItems:"center"}}>
                         <h5 >Ces derniers mois</h5>
-                        {sevenChartLoading ? <Loader content="Chargement des données en cours..." />:null}
+                        {sevenChartLoading ? <Loader content="Chargement des données en cours..." />:<Icon icon="line-chart" size="2x" />}
                              </div>    
                         
                         {/* chart */}

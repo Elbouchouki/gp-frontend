@@ -3,19 +3,19 @@ import React, {useRef, useState, useEffect} from 'react'
 import './thememenu.css'
 
 import { useDispatch } from 'react-redux'
-
+import { Icon } from 'rsuite'
 import ThemeAction from '../../redux/actions/ThemeAction'
 
 const mode_settings = [
     {
         id: 'light',
-        name: 'Light',
+        name: 'Clair',
         background: 'light-background',
         class: 'theme-mode-light'
     },
     {
         id: 'dark',
-        name: 'Dark',
+        name: 'Sombre',
         background: 'dark-background',
         class: 'theme-mode-dark'
     }
@@ -24,25 +24,25 @@ const mode_settings = [
 const color_settings = [
     {
         id: 'blue',
-        name: 'Blue',
+        name: 'Bleu',
         background: 'blue-color',
         class: 'theme-color-blue'
     },
     {
         id: 'red',
-        name: 'Red',
+        name: 'Rouge',
         background: 'red-color',
         class: 'theme-color-red'
     },
     {
         id: 'cyan',
-        name: 'Cyan',
+        name: 'Bleu-ceil',
         background: 'cyan-color',
         class: 'theme-color-cyan'
     },
     {
         id: 'green',
-        name: 'Green',
+        name: 'Vert',
         background: 'green-color',
         class: 'theme-color-green'
     },
@@ -69,12 +69,6 @@ const clickOutsideRef = (content_ref, toggle_ref) => {
 }
 
 const ThemeMenu = () => {
-
-
-
-
-    
-
     const menu_ref = useRef(null)
     const menu_toggle_ref = useRef(null)
 
@@ -116,15 +110,15 @@ const ThemeMenu = () => {
     return (
         <div>
             <button ref={menu_toggle_ref} className="dropdown__toggle" onClick={() => setActiveMenu()}>
-                <i className='bx bx-palette'></i>
+                <Icon icon="cog" spin />
             </button>
             <div ref={menu_ref} className="theme-menu">
-                <h4>Theme settings</h4>
+                <h4>Parametrage</h4>
                 <button className="theme-menu__close" onClick={() => closeMenu()}>
                     <i className='bx bx-x'></i>
                 </button>
                 <div className="theme-menu__select">
-                    <span>Choose mode</span>
+                    <span>Themes</span>
                     <ul className="mode-list">
                         {
                             mode_settings.map((item, index) => (
@@ -139,7 +133,7 @@ const ThemeMenu = () => {
                     </ul>
                 </div>
                 <div className="theme-menu__select">
-                    <span>Choose color</span>
+                    <span>Colours</span>
                     <ul className="mode-list">
                         {
                             color_settings.map((item, index) => (

@@ -41,17 +41,21 @@
 .topnav__right-item ~ .topnav__right-item {
   margin-left: 30px;
 }
-.logout-item {
+.logout_item {
+  border: 0;
+  outline: 0;
+  background-color: transparent;
   display: flex;
   align-items: center;
   padding: 20px;
 }
 
-.logout-item:hover {
+.logout_item:hover {
+  color: var(--main-color);
   background-color: var(--second-bg);
 }
 
-.logout-item > i {
+.logout_item > i {
   font-size: 1.5rem;
   margin-right: 20px;
 }

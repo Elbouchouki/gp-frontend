@@ -1,0 +1,18 @@
+[
+    {
+        "icon": "bx bx-user",
+        "content": "Hebdomadaire",
+        "season":"week",
+        "route":"/profile"
+    },{
+        "icon": "bx bx-user",
+        "content": "Mensuel",
+        "season":"month",
+        "route":"/profile"
+    },{
+        "icon": "bx bx-user",
+        "content": "Annuel",
+        "season":"year",
+        "route":"/profile"
+    }
+]

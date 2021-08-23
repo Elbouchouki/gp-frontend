@@ -1,31 +1,25 @@
 import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
-import { Nav, Icon ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
-import { tarification } from '../helper/helper'
-import { DatePickerDate,DatePickerFreeDate,DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../components/datepickers/DatePickers'
+import { DateRangePicker } from 'rsuite'
+import { Nav, Icon, DatePicker ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
+import { listMouvs } from '../helper/helper'
 import ApiCall from '../api/Api'
-import moment from 'moment'
+
 const customerTableHead = [
-    'Caisse',
-    'Valeur',
-    "Date de paiement",
-    "Date d'entrer",
-    'Date de sortie',
-    'Ville',
-    'Etat',
+    'Mouvements',
+    'Type',
+    "Ville",
+    "Date du mouvements",
 ]
 
 const renderHead = (item, index) => <th key={index}>{item}</th>
 
 const renderBody = (item, index) => (
     <tr key={index}>
-        <td>{item.caisse}</td>
-        <td><Tag color={item.valeur ===0?"orange":tarification.includes(item.valeur) ?"blue":"violet"} >{item.valeur} Dh</Tag></td>
-        <td>{item.date_paiment}</td>
-        <td>{item.date_e}</td>
-        <td>{item.date_s}</td>
-        <td>{item.Ville.nom_ville}</td>
-        <td><Tag color={item.etats==="confirmé"?"green":"red"} >{item.etats} </Tag></td>
+        <td>{item.desc_m}</td>
+        <td><Tag color={"orange"}>{item.Mouv?.desc_mouv}</Tag></td>
+        <td>{item.Ville?.nom_ville}</td>
+        <td>{item.date_m}</td>
     </tr>
 )
 const styles = {
@@ -34,19 +28,67 @@ const styles = {
 const CustomNav = ({ active, onSelect, ...props }) => {
     return (
         <Nav  {...props} activeKey={active} onSelect={onSelect} style={{marginBottom:20}}>
-            <Nav.Item eventKey="day">Jour</Nav.Item>
             <Nav.Item eventKey="week">Semaine</Nav.Item>
             <Nav.Item eventKey="month">Mois</Nav.Item>
             <Nav.Item eventKey="year">Année</Nav.Item>
-            <Nav.Item eventKey="free">Libre</Nav.Item>
+            {/* <Nav.Item eventKey="free">Libre</Nav.Item> */}
         </Nav>
     );
 };
-
+const DatePickerDate =({handleDateChange})=>{
+    return <DatePicker 
+    block
+    style={styles}
+    onChange={(value) => { handleDateChange(value) }}       
+    format="DD/MM/YYYY"
+    locale={{
+        sunday: 'Dim',
+        monday: 'Lun',
+        tuesday: 'Mar',
+        wednesday: 'Mer',
+        thursday: 'Jeu',
+        friday: 'Ven',
+        saturday: 'Sam',
+        ok: 'OK',
+        today: "Aujourd'hui",
+        yesterday: 'Hier',
+        last7Days: 'Last 7 days'
+    }}
+    oneTap cleanable={false} defaultValue={new Date()} 
+    />
+}
+const DatePickerWeekDate = ({ active, handleDateChange }) => {
+    return (<DateRangePicker cleanable={false}
+        block
+        style={styles}
+        onChange={(value) => { handleDateChange(value) }}
+        oneTap
+        hoverRange={active}
+        showWeekNumbers={active === 'week' ? true : false}
+        placeholder="Choisir une date"
+        ranges={[]}
+        format="DD/MM/YYYY"
+        locale={{
+            sunday: 'Dim',
+            monday: 'Lun',
+            tuesday: 'Mar',
+            wednesday: 'Mer',
+            thursday: 'Jeu',
+            friday: 'Ven',
+            saturday: 'Sam',
+            ok: 'OK',
+            today: "Aujourd'hui",
+            yesterday: 'Hier',
+            last7Days: 'Last 7 days'
+        }}
+    />)
+}
 const VilleSelect = ({items,handleUpdate,handleChange}) =>{
+    
+    
     return <SelectPicker
     block
-    placeholder="Villes"
+    placeholder="Choisir une ville"
     data={items}
     disabledItemValues={(items.filter(item => item.active === false)).map(item => item.value)}
     style={styles}
@@ -65,140 +107,100 @@ const VilleSelect = ({items,handleUpdate,handleChange}) =>{
     }}
   />
 }
-const TarifsSelect = ({items,handleChange,handleUpdate}) =>{
+const MouvSelect = ({items,handleChange}) =>{
     return <CheckPicker
     block
-    placeholder="Tarifs"
     data={items}
     searchable={false}
-    onOpen={handleUpdate}
     onChange={handleChange}
-    renderMenu={menu => {
-        if (items.length === 0) {
-          return (
-            <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
-              <Icon icon="spinner" spin /> Chargement en cours...
-            </p>
-          );
-        }
-        return menu;
-    }}
-    renderMenuItem={(label, item) => {
-      return   <Tag color={item.value ===-1 ?"violet":item.value ===0?"orange":"blue"}>
+    groupBy="type"
+    renderMenuItem={(label,item) => {
+      return   <Tag color={item.type ==="Entrées" ?"blue":"orange"}>
                  <i className="rs-icon rs-icon-user" /> {label}
                 </Tag >;
     }}
+    renderMenuGroup={(label, item) => {
+    return (
+        <div>
+            <i className="bx bxs-spreadsheet" /> {label}
+        </div>
+    );
+    }}
+
     
   />
 }
 
-const Recu = (props) => {
+const Mouvement = (props) => {
     const [active, setActive] = useState('day')
     const [fromDate, setFromDate] = useState(new Date())
     const [toDate, setToDate] = useState(new Date())
     const [loading,setLoading] = useState(true)
-    const [listRecus,setListRecus]=useState([])
+    const [listMouvements,setListMouvements]=useState([])
     const [listVilles,setListVilles]=useState([])
-    const [filtredRecus,setfiltredRecus]=useState([])
+    const [filtredMouvements,setfiltredMouvements]=useState([])
     const [ville,setVille]=useState(null)
     const [tarifs,setTarifs] = useState([])
-    const [listTarifs,setListTarifs]=useState([])
     const handleIntervalDateChange = (value) => {
-        console.log(moment(value[0]).format("YYYY-MM-DD 00:00:00"))
-        console.log(moment(value[1]).format("YYYY-MM-DD 23:59:59"))
         setFromDate(value[0])
         setToDate(value[1])
     }
     const handleDateChange = (value) => {    
-        console.log(moment(value).format("YYYY-MM-DD 00:00:00"))
-        console.log(moment(value).format("YYYY-MM-DD 23:59:59"))
         setFromDate(value)
         setToDate(value)
-    }
-    const handleYearChange = (year) =>{
-        console.log(moment(new Date(year,0,1)).format("YYYY-MM-DD 00:00:00"))
-        console.log(moment(new Date(year,11,31)).format("YYYY-MM-DD 23:59:59"))
-        setFromDate(new Date(year,0,1))
-        setToDate(new Date(year,11,31))
     }
     const handleTarifChange = (value) =>{
         setTarifs(value)
     }
     const handleSelect = (activeKey) => {
-        if(active=== activeKey){
-            return
-        }
         setActive(activeKey);
     }
-    const handleVilleUpdate=async()=> {
+        const handleVilleUpdate=async()=> {
         if (listVilles.length === 0) {
             const villes  = await ApiCall.getVilles()
             setListVilles(villes)
             return;
         }
-    }
-    const handleTarifUpdate=async()=> {
-        if (listTarifs.length === 0) {
-            const tarifs  = await ApiCall.getTarifs()
-            setListTarifs(tarifs)
-            return;
-        }
-    }
+      }
     const handleVilleChange=(value)=>{
        setVille(value)
     }
    
     useEffect(() => {
-        async function filterRecus(){
+        async function filterMouvements(){
             await setTimeout(setLoading(true),500)
-            if ((ville===null || ville===undefined)&&tarifs.length===0){
-                setfiltredRecus(listRecus)
+            if ((ville===null || ville===undefined)){
+                setfiltredMouvements(listMouvements)
                 setLoading(false)
                 return
             }
             var filtred = []
             if(ville !== null && ville !== undefined && tarifs.length === 0){
-                filtred.push(...listRecus.filter(item => item.Ville.id === ville))
+                filtred.push(...listMouvements.filter(item => item.Ville.id === ville))
             }
-            if(tarifs.length !== 0 &&(ville===null || ville===undefined)){
-                filtred.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
-                if(tarifs.includes(-1)){
-                    filtred.push(...listRecus.filter(item => !tarification.includes(item.valeur) ))
-                }
-            }
-            if(tarifs.length !== 0 && ville !== null && ville !== undefined){
-                var temp = []
-                temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
-                if(tarifs.includes(-1)){
-                    temp.push(...listRecus.filter(item => !tarification.includes(item.valeur) ))
-                }
-                filtred.push(...temp.filter(item => item.Ville.id === ville))
-            }
-            setfiltredRecus(filtred)
+            setfiltredMouvements(filtred)
             setLoading(false)
         }
-        filterRecus()
+        filterMouvements()
         return () => {
             setLoading(true)
-            setfiltredRecus([])
+            setfiltredMouvements([])
           };
         
-    }, [listRecus,ville,tarifs])
+    }, [listMouvements,ville,tarifs])
 
     useEffect(() => {
-        
-        async function fetchRecus(){
+        async function fetchMouvements(){
             setLoading(true)
-            const recus = await ApiCall.getRecus(props.articleId,fromDate,toDate)
-            setListRecus(recus)
+            const mouvements = await ApiCall.getMouvements(fromDate,toDate)
+            setListMouvements(mouvements)
             setLoading(false)
         }
-        fetchRecus()
+        fetchMouvements()
         return () => {
             setLoading(true)
           };
-        
-    },[fromDate,toDate,props.articleId])
+    },[fromDate,toDate])
     return (
 
         <div>
@@ -213,15 +215,10 @@ const Recu = (props) => {
                                 <div className="col-12" >
                                     <div className="row" style={{justifyContent:"space-between"}} > 
                                         <div className="col-6">
-                                                {active === 'week'?
+                                                {active === 'week' || active === 'month' ?
                                                         <DatePickerWeekDate active={active} handleDateChange={handleIntervalDateChange} />
-                                                        :active ==="month"?
-                                                        <DatePickerMonthDate active={active} handleDateChange={handleIntervalDateChange} />
-                                                        :active ==="day"?
-                                                        <DatePickerDate handleDateChange={handleDateChange}/>
-                                                        :active === "year" ?<YearSelect handleChange={handleYearChange} />
-                                                        :<DatePickerFreeDate handleDateChange={handleIntervalDateChange} />
-                                                    }
+                                                        :
+                                                        <DatePickerDate handleDateChange={handleDateChange} />}
                                         </div>
                                         <div className="col-4">
                                             <div className="row" style={{justifyContent:"flex-end"}} > 
@@ -238,7 +235,7 @@ const Recu = (props) => {
                                             <VilleSelect items={listVilles} handleChange={handleVilleChange} handleUpdate={handleVilleUpdate}/>
                                         </div>
                                         <div className="col-3">
-                                            <TarifsSelect items={listTarifs} handleChange={handleTarifChange} handleUpdate={handleTarifUpdate}/>
+                                            <MouvSelect items={listMouvs} handleChange={handleTarifChange} />
                                         </div>
                                     </div>
                                 </div>
@@ -246,7 +243,7 @@ const Recu = (props) => {
                         </div>
                         <div className="card__body">
                             {
-                                filtredRecus===undefined
+                                filtredMouvements===undefined
                                 ? 
                                 <div style={{display:'flex',justifyContent:'center'}}>Problèmes de connections</div>
                                 :
@@ -256,7 +253,7 @@ const Recu = (props) => {
                                     <Loader  content="Chargement en cours..." />
                                 </div>
                                 :
-                                filtredRecus.length===0
+                                filtredMouvements.length===0
                                 ?
                                 <div style={{display:'flex',justifyContent:'center'}}>Pas de données</div>
                                 :
@@ -264,7 +261,7 @@ const Recu = (props) => {
                                 limit='10'
                                 headData={customerTableHead}
                                 renderHead={(item, index) => renderHead(item, index)}
-                                bodyData={filtredRecus}
+                                bodyData={filtredMouvements}
                                 renderBody={(item, index) => renderBody(item, index)}
                                 />
                             }
@@ -276,4 +273,4 @@ const Recu = (props) => {
     )
 }
 
-export default Recu
+export default Mouvement
