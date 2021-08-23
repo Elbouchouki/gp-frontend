@@ -55,7 +55,8 @@ const Table = props => {
                     }
                 </table>
             </div>
-
+            <div className="row" style={{justifyContent:"space-between",alignItems:"center"  ,marginTop: "20px",marginLeft:"10px",marginRight:"10px"}}>
+                {props.bodyData.length !== 0 ?<div style={{marginBottom: "10px",}}>Total: {props.bodyData.length}</div>:<></>}
             {
                 pages > 1 ? (
                     <div className="table__pagination">
@@ -67,13 +68,16 @@ const Table = props => {
                             ellipsis={true}
                             boundaryLinks={true}
                             pages={range.length}
-                            maxButtons={5}
+                            maxButtons={3}
                             activePage={currPage + 1}
                             onSelect={(key) => selectPage(key - 1)}
                         />
                     </div>
                 ) : null
             }
+
+            </div>
+            
         </div>
     )
 }
