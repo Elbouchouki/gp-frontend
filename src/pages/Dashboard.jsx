@@ -41,7 +41,7 @@ const statusCards= [
 const CustomNav = ({ active, onSelect, ...props }) => {
     return (
         <Nav  {...props} activeKey={active} onSelect={onSelect} >
-            <Nav.Item pullRight eventKey="day">Jour</Nav.Item>
+            <Nav.Item eventKey="day">Jour</Nav.Item>
             <Nav.Item eventKey="week">Semaine</Nav.Item>
             <Nav.Item eventKey="month">Mois</Nav.Item>
             <Nav.Item eventKey="year">Année</Nav.Item>
@@ -138,7 +138,7 @@ const Dashboard = () => {
         return () => {
             setLoading(true)
         }
-    }, [active])
+    }, [active,daily])
     useEffect(() => {
         async function fetchData(){
             setSevenChartLoading(true)
