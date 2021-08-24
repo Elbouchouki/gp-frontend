@@ -1,47 +1,19 @@
-import React,{useState} from 'react'
+import React,{useState,createRef} from 'react'
 import './topnav.css'
-import { Link,useHistory } from 'react-router-dom'
+import {useHistory } from 'react-router-dom'
 import ThemeMenu from '../thememenu/ThemeMenu'
 import Dropdownn from "../dropdown/Dropdown"
 import user_image from '../../assets/images/user.jpg'
 import { Modal,Button,Icon,Alert,IconButton,Dropdown} from 'rsuite'
-import user_menu from '../../assets/JsonData/user_menus.json'
-import export_menu from '../../assets/JsonData/export.json'
 import { DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../datepickers/DatePickers'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
+import ApiCall from '../../api/Api'
 
 const curr_user = {
     display_name: 'Elbouchouki',
     role:"admin",
     image: user_image
 }
-
-const renderUserToggle = (user) => (
-    <div className="topnav__right-user">
-         <Icon icon="profile" size="2x" style={{paddingRight:"10px"}} />
-        {/* <div className="topnav__right-user__image">
-            <img src={user.image} alt="" />
-        </div> */}
-        
-        <div className="topnav__right-user__name">
-            {user.display_name}
-        </div>
-    </div>
-)
-
-const renderUserMenu = (item, index) => (
-    <Link to={item.route} key={index}>
-        <div className="notification-item">
-            <i className={item.icon}></i>
-            <span>{item.content}</span>
-        </div>
-    </Link>
-)
-const renderExportMenu = (item, index,exportModalopen,changeSeason) => (
-    <button key={index} className="logout_item" onClick={()=>exportModalopen(item.season)}>
-        {item.content}
-    </button>
-)
 
 const ExportModal = ({isSelected,show,close,confirme,dateChange,yearChange,season}) =>(
     <Modal size="xs" backdrop="static"  show={show} onHide={close}>
@@ -76,19 +48,28 @@ const ExportModal = ({isSelected,show,close,confirme,dateChange,yearChange,seaso
 
 const Topnav = () => {
     const history = useHistory()
+    const _exporter = React.createRef();
     const [showModal,setShowModal]=useState(false)
     const [season,setSeason]=useState(null)
+    const [listVilles,setListVilles]=useState([1,2])
     const [fromDate, setFromDate] = useState(null)
     const [toDate, setToDate] = useState(null)
     const [isSelected,setIsSelected]=useState(false)
+    const excelExport = () => {
+        if (_exporter.current) {
+          _exporter.current.save();
+        }
+      };
     const exportModalClose=()=> {
         setIsSelected(false)
         setShowModal(false);
     }
-    const confirmExportModal = () =>{
+    const confirmExportModal = async () =>{
         setIsSelected(false);
         setShowModal(false);
         Alert.warning('Exportation encours...', 20000)
+        const excelData = await ApiCall.getExcelData(listVilles,fromDate,toDate)
+        console.log(excelData)
     }
     const handleIntervalDateChange = (value) => {
         setIsSelected(true)

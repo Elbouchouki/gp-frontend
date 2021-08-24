@@ -1,6 +1,23 @@
 import axios from "axios";
 import moment from "moment";
 export default class ApiCall {
+  static async getExcelData(list_ville, from_date, to_date) {
+    try {
+      const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
+      const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      const excelData = await axios.post(
+        `${process.env.REACT_APP_API_URL}excel`,
+        {
+          list_ville: list_ville,
+          date_from: date_from,
+          date_to: date_to,
+        }
+      );
+      return excelData.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   static async getVilles() {
     try {
       const villes = await axios.get(`${process.env.REACT_APP_API_URL}villes`);
