@@ -1,13 +1,14 @@
 import React,{useState} from 'react'
 import './topnav.css'
-import { Link } from 'react-router-dom'
-import Dropdown from '../dropdown/Dropdown'
+import { Link,useHistory } from 'react-router-dom'
 import ThemeMenu from '../thememenu/ThemeMenu'
+import Dropdownn from "../dropdown/Dropdown"
 import user_image from '../../assets/images/user.jpg'
-import { Modal,Button,Icon,IconButton,Alert} from 'rsuite'
+import { Modal,Button,Icon,Alert,IconButton,Dropdown} from 'rsuite'
 import user_menu from '../../assets/JsonData/user_menus.json'
 import export_menu from '../../assets/JsonData/export.json'
 import { DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../datepickers/DatePickers'
+import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
 
 const curr_user = {
     display_name: 'Elbouchouki',
@@ -74,6 +75,7 @@ const ExportModal = ({isSelected,show,close,confirme,dateChange,yearChange,seaso
 
 
 const Topnav = () => {
+    const history = useHistory()
     const [showModal,setShowModal]=useState(false)
     const [season,setSeason]=useState(null)
     const [fromDate, setFromDate] = useState(null)
@@ -88,10 +90,6 @@ const Topnav = () => {
         setShowModal(false);
         Alert.warning('Exportation encours...', 20000)
     }
-    const exportModalopen=(season)=> {
-        setSeason(season)
-        setShowModal(true);
-    }
     const handleIntervalDateChange = (value) => {
         setIsSelected(true)
         setFromDate(value[0])
@@ -102,6 +100,18 @@ const Topnav = () => {
         setFromDate(new Date(year,0,1))
         setToDate(new Date(year,11,31))
     }
+    const handleDropDown=(event)=>{
+        switch(event){
+            case "logout":
+                break
+            default:
+                history.push(event)
+        }
+    }
+    const exportModalopen=(event)=>{
+        setSeason(event)
+        setShowModal(true);
+    }
     return (
         <div className='topnav'>
             <div className="topnav__search">
@@ -110,34 +120,36 @@ const Topnav = () => {
             </div>
             <div className="topnav__right">
                 <div className="topnav__right-item">
-
-                    <Dropdown
-                        key={1}
-                        customToggle={() => renderUserToggle(curr_user)}
-                        contentData={user_menu}
-                        renderItems={(item, index) => renderUserMenu(item, index)}
-                        renderFooter={() => 
-                            <button className="logout_item">
-                                <i className="bx bx-log-out-circle bx-rotate-180"></i>
-                                Se Deconnecter
-                            </button>
-                        }
-                    />
-                    
-                </div>                 
+                    <Dropdown onSelect={handleDropDown} title="Mon Compte" placement="bottomEnd">
+                            <Dropdown.Item panel style={{ padding: 10, width: 200 }} >
+                                <p>Connecté en tant que</p>
+                                <strong>{curr_user.display_name}</strong>
+                            </Dropdown.Item>
+                            <Dropdown.Item divider />
+                            <Dropdown.Item eventKey="Profile" icon={<Icon icon="user" />}>Profile</Dropdown.Item>
+                            <Dropdown.Item eventKey="Support" icon={<Icon icon="support" />}>Support</Dropdown.Item>
+                            <Dropdown.Item divider />
+                            <Dropdown.Item eventKey="logout" icon={<Icon icon="sign-out" />}>Se Deconnecter</Dropdown.Item>
+                    </Dropdown>
+                </div> 
                 <div className="topnav__right-item">
                     <Dropdown
-                        key={2}
-                        customToggle={() =>(
+                        onSelect={exportModalopen}
+                        renderTitle={()=>{
 
-                                            <IconButton  icon={<Icon icon="export"/>} color="green" appearance="primary"  className="topnav__right-user__name">                                       
-                                                Export
-                                            </IconButton>) 
-                                            }
-                        contentData={export_menu}
-                        renderItems={(item, index) => renderExportMenu(item, index,exportModalopen)}
-                    />
-                    </div>
+                            return(
+                                <IconButton  icon={<Icon icon="export"/>}  placement="left" color="green" appearance="primary"  className="topnav__right-user__name">
+                                    Export
+                                </IconButton>
+                            )
+                        }}
+                        placement="bottomEnd"
+                        >
+                            <Dropdown.Item eventKey="week">Hebdomadaire</Dropdown.Item>
+                            <Dropdown.Item eventKey="month">Mensuel</Dropdown.Item>
+                            <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>          
+                    </Dropdown>
+                </div>  
                 <div className="topnav__right-item">
                     <ThemeMenu />
                 </div>
@@ -148,3 +160,4 @@ const Topnav = () => {
 }
 
 export default Topnav
+
