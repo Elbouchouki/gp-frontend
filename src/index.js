@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import reportWebVitals from "./reportWebVitals";
 
-import { createStore } from "redux";
-
+import { createStore, applyMiddleware, compose } from "redux";
+import thunk from "redux-thunk";
 import { Provider } from "react-redux";
 
 import rootReducer from "./redux/reducers";
@@ -14,7 +14,13 @@ import "./assets/css/index.css";
 
 import Layout from "./components/layout/Layout";
 
-const store = createStore(rootReducer);
+const store = createStore(
+  rootReducer,
+  compose(
+    applyMiddleware(thunk),
+    window.devToolsExtension ? window.devToolsExtension() : (f) => f
+  )
+);
 
 document.title = "GestPark";
 

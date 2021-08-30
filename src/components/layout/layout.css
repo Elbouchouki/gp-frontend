@@ -1,13 +1,36 @@
 .layout {
-    color: var(--txt-color);
+  color: var(--txt-color);
 }
 
 .layout__content {
-    padding-left: var(--sidebar-width);
-    background-color: var(--second-bg);
-    min-height: 100vh;
+  padding-left: var(--sidebar-width);
+  background-color: var(--second-bg);
+  min-height: 100vh;
 }
+.layout__login {
+  background-color: var(--main-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.layout__login > * {
+  background-color: var(--second-bg);
+}
+/* .layout__login__footer {
+  background-color: red;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 50px;
+  width: 100%;
+} */
+/* .layout__login__content {
+  display: flex;
+  flex-direction: row;
+  background-color: blue;
+} */
 
 .layout__content-main {
-    padding: 30px;
+  padding: 30px;
 }
