@@ -4,7 +4,6 @@ import {useHistory } from 'react-router-dom'
 import ThemeMenu from '../thememenu/ThemeMenu'
 import Dropdownn from "../dropdown/Dropdown"
 import user_image from '../../assets/images/user.jpg'
-import { process } from "@progress/kendo-data-query";
 import { Modal,Button,Icon,Alert,IconButton,Dropdown,AutoComplete, InputGroup} from 'rsuite'
 import { DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../datepickers/DatePickers'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
