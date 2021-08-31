@@ -39,11 +39,9 @@ const Login = () => {
     const [loading,setLoading]=useState(false)
     const handleValueChange=(formValue)=>{
         setFormValue(formValue)
-        console.log(formValue)
     }
     const handleErrorChange=(formError)=>{
         setFormError(formError)
-        console.log(formError)
     }
     const handleSubmit= async()=> {
         if (!formRef.current.check()) {
@@ -56,7 +54,7 @@ const Login = () => {
             Alert.error("Nom d'utilisateur ou mot de passe est incorrect", 5000)
             return;
         }
-        localStorage.setItem('user',auth.user)
+        localStorage.setItem('user',JSON.stringify(auth.user))
         localStorage.setItem('token',auth.token)
         dispatch(AuthAction.setToken(auth.token))
         dispatch(AuthAction.setUser(auth.user))

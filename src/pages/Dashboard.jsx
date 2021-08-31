@@ -156,7 +156,6 @@ const Dashboard = () => {
                 monthSeven.push(monthSwitch(element.month))
             });
             setSevenData([countSeven,sumSeven,monthSeven,sum,count])
-            console.log(sevenData);
             setSevenChartLoading(false)
         }
         fetchData()

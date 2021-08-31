@@ -104,20 +104,17 @@ const Recu = (props) => {
     const [tarifs,setTarifs] = useState([])
     const [listTarifs,setListTarifs]=useState([])
     const handleIntervalDateChange = (value) => {
-        console.log(moment(value[0]).format("YYYY-MM-DD 00:00:00"))
-        console.log(moment(value[1]).format("YYYY-MM-DD 23:59:59"))
+
         setFromDate(value[0])
         setToDate(value[1])
     }
     const handleDateChange = (value) => {    
-        console.log(moment(value).format("YYYY-MM-DD 00:00:00"))
-        console.log(moment(value).format("YYYY-MM-DD 23:59:59"))
+
         setFromDate(value)
         setToDate(value)
     }
     const handleYearChange = (year) =>{
-        console.log(moment(new Date(year,0,1)).format("YYYY-MM-DD 00:00:00"))
-        console.log(moment(new Date(year,11,31)).format("YYYY-MM-DD 23:59:59"))
+
         setFromDate(new Date(year,0,1))
         setToDate(new Date(year,11,31))
     }

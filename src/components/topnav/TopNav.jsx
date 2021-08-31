@@ -9,7 +9,7 @@ import { Modal,Button,Icon,Alert,IconButton,Dropdown,AutoComplete, InputGroup} f
 import { DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../datepickers/DatePickers'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
 import ApiCall from '../../api/Api'
-import {useDispatch } from 'react-redux'
+import {useSelector,useDispatch } from 'react-redux'
 import AuthAction from "../../redux/actions/AuthAction"
 
 
@@ -105,6 +105,8 @@ const searchTypes = [
 const Topnav = () => {
     const history = useHistory()
     const dispatch = useDispatch()
+    const authReducer = useSelector(state=>state.AuthReducer)
+    const user = authReducer.user
     const [exporter,setExporter] =useState(null)
     const search = React.createRef();
     const [showExportModal,setShowExportModal]=useState(false)
@@ -135,7 +137,6 @@ const Topnav = () => {
         Alert.warning('Exportation encours...', 20000)
         const exData = await ApiCall.getExcelData(listVilles,fromDate,toDate)
         setExcelData(exData)
-        console.log(exData)
         // exporter.save();
 
         // if(exporter){
@@ -201,7 +202,7 @@ const Topnav = () => {
                     <Dropdown onSelect={handleDropDown} title="Mon Compte" placement="bottomEnd">
                             <Dropdown.Item panel style={{ padding: 10, width: 200 }} >
                                 <p>Connecté en tant que</p>
-                                <strong>{curr_user.display_name}</strong>
+                                <strong>{user.username}</strong>
                             </Dropdown.Item>
                             <Dropdown.Item divider />
                             <Dropdown.Item eventKey="Profile" icon={<Icon icon="user" />}>Profile</Dropdown.Item>
@@ -210,6 +211,8 @@ const Topnav = () => {
                             <Dropdown.Item eventKey="logout" icon={<Icon icon="sign-out" />}>Se Deconnecter</Dropdown.Item>
                     </Dropdown>
                 </div> 
+                {user.permissions.some((element) => element.name === "export_excel")
+                ?
                 <div className="topnav__right-item">
                     <Dropdown
                         onSelect={exportModalopen}
@@ -226,7 +229,7 @@ const Topnav = () => {
                             <Dropdown.Item eventKey="month">Mensuel</Dropdown.Item>
                             <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>          
                     </Dropdown>
-                </div>  
+                </div>:null}  
                 <div className="topnav__right-item">
                     <ThemeMenu />
                 </div>

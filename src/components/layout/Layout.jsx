@@ -24,7 +24,7 @@ const Layout = () => {
     useEffect(() => {
         const themeClass = localStorage.getItem('themeMode', 'theme-mode-light')
         const colorClass = localStorage.getItem('colorMode', 'theme-mode-light')
-        const stored_user =localStorage.getItem('user')
+        const stored_user =JSON.parse(localStorage.getItem('user'))
         const stored_token = localStorage.getItem('token')
         dispatch(AuthAction.setToken(stored_token))
         dispatch(AuthAction.setUser(stored_user))
