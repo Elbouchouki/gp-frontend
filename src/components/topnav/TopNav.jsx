@@ -106,6 +106,7 @@ const Topnav = () => {
     const dispatch = useDispatch()
     const authReducer = useSelector(state=>state.AuthReducer)
     const user = authReducer.user
+    const token = authReducer.token
     const [exporter,setExporter] =useState(null)
     const search = React.createRef();
     const [showExportModal,setShowExportModal]=useState(false)
@@ -134,7 +135,7 @@ const Topnav = () => {
         setIsSelected(false);
         setShowExportModal(false);
         Alert.warning('Exportation encours...', 20000)
-        const exData = await ApiCall.getExcelData(listVilles,fromDate,toDate)
+        const exData = await ApiCall.getExcelData(token,listVilles,fromDate,toDate)
         setExcelData(exData)
         // exporter.save();
 

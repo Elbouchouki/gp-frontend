@@ -2,8 +2,7 @@
     {
         "display_name": "Accueil",
         "route": "/",
-        "icon": "bx bx-category-alt",
-        "role":"show_acceuil"
+        "icon": "bx bx-category-alt"
     },
     {
         "display_name": "Tickets normals",
@@ -45,5 +44,16 @@
         "route": "/annulations",
         "icon": "bx bx-window-close",
         "role":"show_annulation"
+    },{
+        "display_name": "Utilisateurs",
+        "route": "/utilisateurs",
+        "icon": "bx bxs-user-detail",
+        "role":"manage_users"
+    },{
+        "display_name": "Roles et permissions",
+        "route": "/roles",
+        "icon": "bx bx-aperture",
+        "role":"manage_roles"
     }
+    
 ]

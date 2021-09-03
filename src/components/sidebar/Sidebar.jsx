@@ -32,7 +32,8 @@ const Sidebar = props => {
             </div>
             {
                 sidebar_items.map((item, index) => {
-                    if (permissions.some((element) => element.name === item.role)){
+                    if (permissions.some((element) => element.name === item.role ||  item.role === undefined)){
+                        
                         return <Link to={item.route} key={index}>
                                     <SidebarItem
                                         title={item.display_name}
@@ -41,6 +42,7 @@ const Sidebar = props => {
                                     />
                                 </Link>
                     }
+                    console.log(item)
                     return null  
                 })
             }

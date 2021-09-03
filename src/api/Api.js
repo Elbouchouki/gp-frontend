@@ -1,7 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 export default class ApiCall {
-  static async getExcelData(list_ville, from_date, to_date) {
+  static async getExcelData(token, list_ville, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD");
       const date_to = moment(to_date).format("YYYY-MM-DD");
@@ -11,6 +11,9 @@ export default class ApiCall {
           list_ville: list_ville,
           date_from: date_from,
           date_to: date_to,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       return excelData.data;
@@ -18,23 +21,27 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getVilles() {
+  static async getVilles(token) {
     try {
-      const villes = await axios.get(`${process.env.REACT_APP_API_URL}villes`);
+      const villes = await axios.get(`${process.env.REACT_APP_API_URL}villes`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return villes.data.villes;
     } catch (error) {
       console.log(error);
     }
   }
-  static async getTarifs() {
+  static async getTarifs(token) {
     try {
-      const tarifs = await axios.get(`${process.env.REACT_APP_API_URL}tarifs`);
+      const tarifs = await axios.get(`${process.env.REACT_APP_API_URL}tarifs`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return tarifs.data.result;
     } catch (error) {
       console.log(error);
     }
   }
-  static async getRecus(ville_id, from_date, to_date) {
+  static async getRecus(token, ville_id, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
       const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
@@ -43,6 +50,9 @@ export default class ApiCall {
         {
           date_from: date_from,
           date_to: date_to,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       return recus.data.result;
@@ -50,7 +60,7 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getMouvements(from_date, to_date) {
+  static async getMouvements(token, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
       const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
@@ -59,6 +69,9 @@ export default class ApiCall {
         {
           date_from: date_from,
           date_to: date_to,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       return mouvements.data.result;
@@ -66,11 +79,24 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getStatistiques(interval) {
+  static async getStatistiques(token, interval) {
     try {
       const recus = await axios.get(
-        `${process.env.REACT_APP_API_URL}statistic/${interval}`
+        `${process.env.REACT_APP_API_URL}statistic/${interval}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
+      return recus.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async getUsers(token) {
+    try {
+      const recus = await axios.get(`${process.env.REACT_APP_API_URL}users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return recus.data;
     } catch (error) {
       console.log(error);

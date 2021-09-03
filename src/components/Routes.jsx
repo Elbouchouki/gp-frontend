@@ -6,6 +6,7 @@ import Recu from '../pages/Recu'
 import Mouvement from '../pages/Mouvement'
 import NotFound from '../pages/NotFound'
 import Forbidden from '../pages/Forbidden'
+import Users from '../pages/Users'
 
 const ProtectedRoute =({component:Component,perm,...restProps})=>{
     const authReducer = useSelector(state=>state.AuthReducer)
@@ -24,6 +25,9 @@ const Routes = () => {
             <ProtectedRoute perm="show_recu_entree_abonne" path='/entreés-abonnés' exact component={()=><Recu articleId="4" pageTitle="Entrées Abonnés"/>}/>
             <ProtectedRoute perm="show_recu_recharge_abonne" path='/recharges-abonnés' exact component={()=><Recu articleId="5" pageTitle="Recharges Abonnés"/>}/>
             <ProtectedRoute perm="show_mouvement" path='/mouvements' exact component={()=><Mouvement pageTitle="Mouvements"/>}/>
+            {/* <ProtectedRoute perm="show_annulation" path='/annulations' exact component={()=><Annulation pageTitle="Mouvements"/>}/> */}
+            <ProtectedRoute perm="manage_users" path='/utilisateurs' exact component={()=><Users pageTitle="Mouvements"/>}/>
+            {/* <ProtectedRoute perm="manage_users" path='/utilisateurs' exact component={()=><Users pageTitle="Mouvements"/>}/> */}
             <Route path='/unauthorized' exact component={()=><Forbidden/>}/>
             <Route component={()=><NotFound/>}/>
         </Switch>

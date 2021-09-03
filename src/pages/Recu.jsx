@@ -5,6 +5,8 @@ import { tarification } from '../helper/helper'
 import { DatePickerDate,DatePickerFreeDate,DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../components/datepickers/DatePickers'
 import ApiCall from '../api/Api'
 import moment from 'moment'
+import { useSelector } from 'react-redux'
+
 const customerTableHead = [
     'Caisse',
     'Valeur',
@@ -93,6 +95,9 @@ const TarifsSelect = ({items,handleChange,handleUpdate}) =>{
 }
 
 const Recu = (props) => {
+    const authReducer = useSelector(state=>state.AuthReducer)
+    const user = authReducer.user
+    const token = authReducer.token
     const [active, setActive] = useState('day')
     const [fromDate, setFromDate] = useState(new Date())
     const [toDate, setToDate] = useState(new Date())
@@ -129,14 +134,14 @@ const Recu = (props) => {
     }
     const handleVilleUpdate=async()=> {
         if (listVilles.length === 0) {
-            const villes  = await ApiCall.getVilles()
+            const villes  = await ApiCall.getVilles(token)
             setListVilles(villes)
             return;
         }
     }
     const handleTarifUpdate=async()=> {
         if (listTarifs.length === 0) {
-            const tarifs  = await ApiCall.getTarifs()
+            const tarifs  = await ApiCall.getTarifs(token)
             setListTarifs(tarifs)
             return;
         }
@@ -186,7 +191,7 @@ const Recu = (props) => {
         
         async function fetchRecus(){
             setLoading(true)
-            const recus = await ApiCall.getRecus(props.articleId,fromDate,toDate)
+            const recus = await ApiCall.getRecus(token,props.articleId,fromDate,toDate)
             setListRecus(recus)
             setLoading(false)
         }
@@ -195,7 +200,7 @@ const Recu = (props) => {
             setLoading(true)
           };
         
-    },[fromDate,toDate,props.articleId])
+    },[fromDate,toDate,props.articleId,token])
     return (
 
         <div>

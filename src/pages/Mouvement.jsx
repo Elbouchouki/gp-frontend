@@ -4,6 +4,7 @@ import { DateRangePicker } from 'rsuite'
 import { Nav, Icon, DatePicker ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
 import { listMouvs } from '../helper/helper'
 import ApiCall from '../api/Api'
+import { useSelector } from 'react-redux'
 
 const customerTableHead = [
     'Mouvements',
@@ -132,6 +133,9 @@ const MouvSelect = ({items,handleChange}) =>{
 }
 
 const Mouvement = (props) => {
+    const authReducer = useSelector(state=>state.AuthReducer)
+    const user = authReducer.user
+    const token = authReducer.token
     const [active, setActive] = useState('day')
     const [fromDate, setFromDate] = useState(new Date())
     const [toDate, setToDate] = useState(new Date())
@@ -157,7 +161,7 @@ const Mouvement = (props) => {
     }
         const handleVilleUpdate=async()=> {
         if (listVilles.length === 0) {
-            const villes  = await ApiCall.getVilles()
+            const villes  = await ApiCall.getVilles(token)
             setListVilles(villes)
             return;
         }
@@ -192,7 +196,7 @@ const Mouvement = (props) => {
     useEffect(() => {
         async function fetchMouvements(){
             setLoading(true)
-            const mouvements = await ApiCall.getMouvements(fromDate,toDate)
+            const mouvements = await ApiCall.getMouvements(token,fromDate,toDate)
             setListMouvements(mouvements)
             setLoading(false)
         }
@@ -200,7 +204,7 @@ const Mouvement = (props) => {
         return () => {
             setLoading(true)
           };
-    },[fromDate,toDate])
+    },[fromDate,toDate,token])
     return (
 
         <div>

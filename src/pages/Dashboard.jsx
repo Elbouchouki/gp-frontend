@@ -50,6 +50,9 @@ const CustomNav = ({ active, onSelect, ...props }) => {
 };
 const Dashboard = () => {
     const themeReducer = useSelector(state => state.ThemeReducer.mode)
+    const authReducer = useSelector(state=>state.AuthReducer)
+    const user = authReducer.user
+    const token = authReducer.token
     const [sevenData,setSevenData] = useState([])
     const [normalData,setNormalData] = useState([])
     // ->>>>>>>>>>> chart
@@ -125,7 +128,7 @@ const Dashboard = () => {
             setLoading(true)
             var countArticle  = []
             var sumArticle = []
-            const interval = await ApiCall.getStatistiques(active);
+            const interval = await ApiCall.getStatistiques(token,active);
             if(!daily){setDaily([interval.recus[0]?.count,interval.recus[0]?.sum])}
             interval.article.forEach(element => {
                 countArticle.push(element.count)
@@ -138,7 +141,7 @@ const Dashboard = () => {
         return () => {
             setLoading(true)
         }
-    }, [active,daily])
+    }, [active,daily,token])
     useEffect(() => {
         async function fetchData(){
             setSevenChartLoading(true)
@@ -147,7 +150,7 @@ const Dashboard = () => {
             var monthSeven = []
             var sum = 0
             var count = 0
-            const seven = await ApiCall.getStatistiques("seven");
+            const seven = await ApiCall.getStatistiques(token,"seven");
             seven.seven.forEach(element => {
                 count +=element.count
                 sum +=element.sum
@@ -162,7 +165,7 @@ const Dashboard = () => {
         return () => {
             setSevenChartLoading(true)
         }
-    }, [])
+    }, [token])
     return (
         <div>
                 <div className="row" style={{justifyContent:"space-between",margin:10,alignItems:"center"}} > 
@@ -247,14 +250,14 @@ const Dashboard = () => {
                         <div className="col-12">
                                     <StatusCard
                                         icon="bx bx-receipt"
-                                        count={sevenData[4]}
+                                        count={sevenChartLoading ? <Loader />:sevenData[4]}
                                         title="Nombre de Tickets"
                                         />
                         </div>
                         <div className="col-12">
                                     <StatusCard
                                         icon="bx bx-money"
-                                        count={sevenData[3]+" Dh"}
+                                        count={sevenChartLoading ? <Loader />:sevenData[3]+" Dh"}
                                         title="Revenue"
                                         />
                         </div>
