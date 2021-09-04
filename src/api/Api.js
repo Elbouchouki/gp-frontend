@@ -102,4 +102,36 @@ export default class ApiCall {
       console.log(error);
     }
   }
+  static async deleteUsers(token, username) {
+    try {
+      const recus = await axios.delete(
+        `${process.env.REACT_APP_API_URL}users`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            username: username,
+          },
+        }
+      );
+      return recus.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async updateUsers(token, userInfo) {
+    try {
+      const recus = await axios.put(
+        `${process.env.REACT_APP_API_URL}users`,
+        userInfo,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return recus.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
