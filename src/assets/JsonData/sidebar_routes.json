@@ -50,8 +50,8 @@
         "icon": "bx bxs-user-detail",
         "role":"manage_users"
     },{
-        "display_name": "Roles et permissions",
-        "route": "/roles",
+        "display_name": "Autorisations",
+        "route": "/autorizations",
         "icon": "bx bx-aperture",
         "role":"manage_roles"
     }

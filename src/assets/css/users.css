@@ -37,3 +37,8 @@
   position: relative;
   margin-bottom: 30px;
 }
+.users_shadow {
+  background-color: var(--main-bg);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+}

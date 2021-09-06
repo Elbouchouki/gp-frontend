@@ -27,7 +27,7 @@ const Routes = () => {
             <ProtectedRoute perm="show_mouvement" path='/mouvements' exact component={()=><Mouvement pageTitle="Mouvements"/>}/>
             {/* <ProtectedRoute perm="show_annulation" path='/annulations' exact component={()=><Annulation pageTitle="Mouvements"/>}/> */}
             <ProtectedRoute perm="manage_users" path='/utilisateurs' exact component={()=><Users pageTitle="Mouvements"/>}/>
-            {/* <ProtectedRoute perm="manage_users" path='/utilisateurs' exact component={()=><Users pageTitle="Mouvements"/>}/> */}
+            {/* <ProtectedRoute perm="manage_roles" path='/autorizations' exact component={()=><Users pageTitle="Mouvements"/>}/> */}
             <Route path='/unauthorized' exact component={()=><Forbidden/>}/>
             <Route component={()=><NotFound/>}/>
         </Switch>
