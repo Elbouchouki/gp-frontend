@@ -23,8 +23,8 @@
         "role":"show_recu_perdu"
     },
     {
-        "display_name": "Entrées abonnés",
-        "route": "/entreés-abonnés",
+        "display_name": "Sorties abonnés",
+        "route": "/sortie-abonnés",
         "icon": "bx bxs-business",
         "role":"show_recu_entree_abonne"
     },

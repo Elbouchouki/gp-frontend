@@ -55,6 +55,7 @@ export default class ApiCall {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log(recus.data);
       return recus.data.result;
     } catch (error) {
       console.log(error);
