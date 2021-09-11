@@ -5,7 +5,7 @@ import StatusCard from '../components/status-card/StatusCard'
 import { Nav , Loader, Icon} from 'rsuite'
 import ApiCall from '../api/Api'
 import { monthSwitch, seasonSwitch } from '../helper/helper'
-
+import {DatePickerFreeDate} from '../components/datepickers/DatePickers'
 
 const statusCards= [
     {
@@ -45,6 +45,8 @@ const CustomNav = ({ active, onSelect, ...props }) => {
             <Nav.Item eventKey="week">Semaine</Nav.Item>
             <Nav.Item eventKey="month">Mois</Nav.Item>
             <Nav.Item eventKey="year">Année</Nav.Item>
+            <Nav.Item eventKey="free">Libre</Nav.Item>
+
         </Nav>
     );
 };
@@ -53,6 +55,8 @@ const Dashboard = () => {
     const authReducer = useSelector(state=>state.AuthReducer)
     const user = authReducer.user
     const token = authReducer.token
+    const [toDate, setToDate] = useState(null)
+    const [fromDate, setFromDate] = useState(null)
     const [sevenData,setSevenData] = useState([])
     const [normalData,setNormalData] = useState([])
     // ->>>>>>>>>>> chart
@@ -122,14 +126,19 @@ const Dashboard = () => {
     const handleSelect = (activeKey) => {
         setActive(activeKey);
     }
+    const handleIntervalDateChange = (value) => {
+        setFromDate(value[0])
+        setToDate(value[1])
+    }
     const [daily,setDaily]=useState(null)
     useEffect(() => {
         async function fetchData(){
             setLoading(true)
+            const daything = await ApiCall.getStatistiques(token,"day");
+            setDaily([daything.recus[0]?.count,daything.recus[0]?.sum])
             var countArticle  = []
             var sumArticle = []
             const interval = await ApiCall.getStatistiques(token,active);
-            if(!daily){setDaily([interval.recus[0]?.count,interval.recus[0]?.sum])}
             interval.article.forEach(element => {
                 countArticle.push(element.count)
                 sumArticle.push(element.sum)
@@ -141,7 +150,7 @@ const Dashboard = () => {
         return () => {
             setLoading(true)
         }
-    }, [active,daily,token])
+    }, [active,token])
     useEffect(() => {
         async function fetchData(){
             setSevenChartLoading(true)
@@ -170,7 +179,10 @@ const Dashboard = () => {
         <div>
                 <div className="row" style={{justifyContent:"space-between",margin:10,alignItems:"center"}} > 
                     <h2 className="page-header">Accueil</h2>
-                    <CustomNav appearance="subtle" active={active} onSelect={handleSelect} />
+                    <div className="row">
+                        <CustomNav appearance="subtle" active={active} onSelect={handleSelect} />
+                        {/* <DatePickerFreeDate handleDateChange={handleIntervalDateChange} /> */}
+                    </div>
                 </div>
             <div className="row">
                 <div className="col-4">
@@ -224,7 +236,7 @@ const Dashboard = () => {
             <div className="col-8">
                     <div className="card" >
                         <div className="row" style={{justifyContent:"space-between",alignItems:"center"}}>
-                        <h5 >Ces derniers mois</h5>
+                        <h5 >Les mois précédents</h5>
                         {sevenChartLoading ? <Loader content="Chargement des données en cours..." />:<Icon icon="line-chart" size="2x" />}
                              </div>    
                         

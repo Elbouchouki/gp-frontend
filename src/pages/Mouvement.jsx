@@ -29,8 +29,7 @@ const styles = {
 const CustomNav = ({ active, onSelect, ...props }) => {
     return (
         <Nav  {...props} activeKey={active} onSelect={onSelect} style={{marginBottom:20}}>
-                        <Nav.Item eventKey="day">jour</Nav.Item>
-
+            <Nav.Item eventKey="day">jour</Nav.Item>
             <Nav.Item eventKey="week">Semaine</Nav.Item>
             <Nav.Item eventKey="month">Mois</Nav.Item>
             <Nav.Item eventKey="year">Année</Nav.Item>

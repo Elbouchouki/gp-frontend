@@ -4,19 +4,40 @@ import {useHistory } from 'react-router-dom'
 import ThemeMenu from '../thememenu/ThemeMenu'
 import Dropdownn from "../dropdown/Dropdown"
 import user_image from '../../assets/images/user.jpg'
-import { Modal,Button,Icon,Alert,IconButton,Dropdown,AutoComplete, InputGroup} from 'rsuite'
-import { DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../datepickers/DatePickers'
+import { Modal,Button,Icon,Alert,IconButton,Dropdown,AutoComplete, InputGroup,SelectPicker} from 'rsuite'
+import { DatePickerWeekDate,DatePickerMonthDate,YearSelect ,DatePickerFreeDate} from '../datepickers/DatePickers'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
+import { process ,aggregateBy } from "@progress/kendo-data-query";
 import ApiCall from '../../api/Api'
 import {useSelector,useDispatch } from 'react-redux'
 import AuthAction from "../../redux/actions/AuthAction"
+import moment from "moment";
+import {getVille,monthFullSwitch} from "../../helper/helper"
 
-
-const curr_user = {
-    display_name: 'Elbouchouki',
-    role:"admin",
-    image: user_image
+const VilleSelect = ({items,handleUpdate,handleChange}) =>{
+    return <SelectPicker
+    block
+    placeholder="Villes"
+    data={items.filter(item => item.active === true)}
+    style={{
+        marginBottom: 10
+    }}
+    onOpen={handleUpdate}
+    onChange={handleChange}
+    searchable={false}
+    renderMenu={menu => {
+      if (items.length === 0) {
+        return (
+          <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
+            <Icon icon="spinner" spin /> Chargement en cours...
+          </p>
+        );
+      }
+      return menu;
+    }}
+  />
 }
+
 const LogoutModal = ({handleLogout,show,close})=>(
         <Modal backdrop="static" show={show} onHide={close} size="xs">
             <Modal.Body>
@@ -40,7 +61,8 @@ const LogoutModal = ({handleLogout,show,close})=>(
             </Modal.Footer>
         </Modal>
     )
-const ExportModal = ({isSelected,show,close,confirme,dateChange,yearChange,season}) =>(
+const ExportModal = ({isSelected,show,close,confirme,dateChange,yearChange,season,listVilles,handleVilleChange,handleVilleUpdate}) =>(
+    
     <Modal size="xs" backdrop="static"  show={show} onHide={close}>
         <Modal.Header>
             <Modal.Title>
@@ -48,14 +70,17 @@ const ExportModal = ({isSelected,show,close,confirme,dateChange,yearChange,seaso
             </Modal.Title>
         </Modal.Header>
             <Modal.Body>
+                <VilleSelect items={listVilles} handleChange={handleVilleChange} handleUpdate={handleVilleUpdate}/>
                 <div>
                     {
                     season === 'week'?
                     <DatePickerWeekDate active={season} handleDateChange={dateChange} />
                     :season ==="month"?
                     <DatePickerMonthDate active={season} handleDateChange={dateChange} />
-                    :
+                    :season ==="year"?
                     <YearSelect handleChange={yearChange} />
+                    :
+                    <DatePickerFreeDate handleDateChange={dateChange} />
                     }
                 </div>
             </Modal.Body>
@@ -112,11 +137,22 @@ const Topnav = () => {
     const [showExportModal,setShowExportModal]=useState(false)
     const [showLogoutModal,setShowLogoutModal]=useState(false)
     const [season,setSeason]=useState(null)
-    const [listVilles,setListVilles]=useState([1,2])
+    const [ville,setVille]=useState(3)
+    const [listVilles,setListVilles]=useState([])
     const [fromDate, setFromDate] = useState(null)
     const [toDate, setToDate] = useState(null)
     const [isSelected,setIsSelected]=useState(false)
     const [excelData,setExcelData]=useState(null)
+    const handleVilleUpdate=async()=> {
+        if (listVilles.length === 0) {
+            const villes  = await ApiCall.getVilles(token)
+            setListVilles(villes)
+            return;
+        }
+    }
+    const handleVilleChange=(value)=>{
+        setVille(value)
+     }
     const exportModalClose=()=> {
         setIsSelected(false)
         setShowExportModal(false);
@@ -135,20 +171,50 @@ const Topnav = () => {
         setIsSelected(false);
         setShowExportModal(false);
         Alert.warning('Exportation encours...', 20000)
-        const exData = await ApiCall.getExcelData(token,listVilles,fromDate,toDate)
-        setExcelData(exData)
-        // exporter.save();
+        if(!ville){
+            const exData = await ApiCall.getExcelDataAll(token,ville,fromDate,toDate)
+        }else{
+            const exData = await ApiCall.getExcelData(token,ville,fromDate,toDate)
+        }
+        const exData = await ApiCall.getExcelData(token,ville,fromDate,toDate)
+        var excelFiltred = await exData.result.map((ligne)=>({
+                date:ligne.date_j,
+                cm:(ligne.ticket_normal+ligne.ticket_illisible+ligne.ticket_perdu),
+                abonne:ligne.recharge_abonne,
+                taj:(ligne.ticket_normal_an+ligne.ticket_illisible_an+ligne.ticket_perdu_an+ligne.recharge_abonne_an),
+                total:ligne.total
+            })
+        )
+        setExcelData(excelFiltred)
 
-        // if(exporter){
-        //     Alert.close()
-        //     Alert.success('Telechargement ...', 5000)
-        //     exporter.save();
-        //     return
-        // }
-        // Alert.close()
-        // Alert.error('Exportation echoué', 5000)
-        
+        if(exporter){
+            Alert.close()
+            Alert.success('Telechargement ...', 5000)
+            const options = exporter.workbookOptions();
+            const rows = options.sheets[0].rows;
+            options.sheets[0].frozenRows = 2;
+            const interval = season==="month"?"MOIS "+monthFullSwitch(moment(fromDate).month())+" "+moment(fromDate).year():`DU ${moment(fromDate).format("DD/MM/YYYY")} AU ${moment(toDate).format("DD/MM/YYYY")}`
+            const headerRow = {
+                height: 70,
+                cells: [
+                  {
+                    value: `REPORTING DES CA JOURNALIERES DU PARKING DE ${getVille(ville)} EN DH/HT ${interval}`,
+                    fontSize: 16,
+                    colSpan: 5,
+                    wrap:true,
+                    textAlign:"center",
+                    verticalAlign:"center"
+                  },
+                ],
+              };
+              rows.unshift(headerRow);
+            exporter.save(options);
+            return
+        }
+        Alert.close()
+        Alert.error('Exportation echoué', 5000)
     }
+    
     const handleIntervalDateChange = (value) => {
         setIsSelected(true)
         setFromDate(value[0])
@@ -180,6 +246,7 @@ const Topnav = () => {
         dispatch(AuthAction.setToken(null))
         dispatch(AuthAction.setUser(null))
     }
+   
     return (
         <div className='topnav'>
                 <InputGroup inside style={{width: 250,marginBottom: 10}}>
@@ -227,7 +294,8 @@ const Topnav = () => {
                         >
                             <Dropdown.Item eventKey="week">Hebdomadaire</Dropdown.Item>
                             <Dropdown.Item eventKey="month">Mensuel</Dropdown.Item>
-                            <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>          
+                            <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>     
+                            <Dropdown.Item eventKey="custom">Libre</Dropdown.Item>        
                     </Dropdown>
                 </div>:null}  
                 <div className="topnav__right-item">
@@ -238,16 +306,58 @@ const Topnav = () => {
 
             <ExcelExport
                 data={excelData}
-                fileName="excel.xlsx"
+                fileName={`Reporting-${!ville?"Tous":getVille(ville)}-${moment(fromDate).format("DD/MM/YYYY")}-${moment(toDate).format("DD/MM/YYYY")}.xlsx`}
                 ref={setExporter}
-            >
-                <ExcelExportColumn field="t_n.count" title="Tickets Normaux" width={350}/>
-                <ExcelExportColumn field="t_i.count" title="Tickets Illisible" width={350}/>
-                {/* <ExcelExportColumn field="Category.CategoryName" width={350}/> */}
+                filterable={true}
+                creator="Elbouchouki"
+
+            >   
+                <ExcelExportColumn field="date" title="Date" width={120} 
+                footer={()=>"Totals"}/>
+                <ExcelExportColumn field="cm" title="CM (P)" width={120} 
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "cm",
+                          aggregate: "sum",
+                        },
+                      ]);
+                    return `${tol.cm.sum}`;
+                }}/>
+                <ExcelExportColumn field="abonne" title="AB" width={120} 
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "abonne",
+                          aggregate: "sum",
+                        },
+                      ]);
+                    return `${tol.abonne.sum}`;
+                }}/>
+                <ExcelExportColumn field="taj" title="T A JUSTIFER" width={120}
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "taj",
+                          aggregate: "sum",
+                        },
+                      ]);
+                    return `${tol.taj.sum}`;
+                }}/>
+                <ExcelExportColumn field="total" title="Total" width={120} 
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "total",
+                          aggregate: "sum",
+                        },
+                      ]);
+                    return `${tol.total.sum}`;
+                }}/>
             </ExcelExport>
 
            
-            <ExportModal confirme={confirmExportModal} isSelected={isSelected} season={season} yearChange={handleYearChange} dateChange={handleIntervalDateChange} show={showExportModal} close={exportModalClose} />
+            <ExportModal confirme={confirmExportModal} isSelected={isSelected} season={season} yearChange={handleYearChange} dateChange={handleIntervalDateChange} show={showExportModal} close={exportModalClose} listVilles={listVilles} handleVilleChange={handleVilleChange} handleVilleUpdate={handleVilleUpdate}/>
             <LogoutModal handleLogout={handleLogout} show={showLogoutModal} close={logoutModalClose}/>
         </div>
     )

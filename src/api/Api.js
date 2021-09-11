@@ -1,14 +1,33 @@
 import axios from "axios";
 import moment from "moment";
 export default class ApiCall {
-  static async getExcelData(token, list_ville, from_date, to_date) {
+  static async getExcelData(token, ville_id, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD");
       const date_to = moment(to_date).format("YYYY-MM-DD");
       const excelData = await axios.post(
         `${process.env.REACT_APP_API_URL}excel`,
         {
-          list_ville: list_ville,
+          ville_id: ville_id,
+          date_from: date_from,
+          date_to: date_to,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return excelData.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async getExcelDataAll(token, from_date, to_date) {
+    try {
+      const date_from = moment(from_date).format("YYYY-MM-DD");
+      const date_to = moment(to_date).format("YYYY-MM-DD");
+      const excelData = await axios.post(
+        `${process.env.REACT_APP_API_URL}excel`,
+        {
           date_from: date_from,
           date_to: date_to,
         },

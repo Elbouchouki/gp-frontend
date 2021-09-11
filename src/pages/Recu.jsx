@@ -139,6 +139,8 @@ const Recu = (props) => {
             return;
         }
     }
+
+    
     const handleTarifUpdate=async()=> {
         if (listTarifs.length === 0) {
             const tarifs  = await ApiCall.getTarifs(token)
