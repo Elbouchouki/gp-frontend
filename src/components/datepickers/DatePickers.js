@@ -24,7 +24,7 @@ export const DatePickerDate = ({ handleDateChange }) => {
         ok: "OK",
         today: "Aujourd'hui",
         yesterday: "Hier",
-        last7Days: "Last 7 days",
+        last7Days: "Derniers 7 jours",
       }}
       oneTap
       cleanable={false}

@@ -110,7 +110,7 @@ const ThemeMenu = () => {
     return (
         <div>
             <button ref={menu_toggle_ref} className="dropdown__toggle" onClick={() => setActiveMenu()}>
-                <Icon icon="cog" spin />
+                <Icon icon="cog" />
             </button>
             <div ref={menu_ref} className="theme-menu">
                 <h4>Parametrage</h4>

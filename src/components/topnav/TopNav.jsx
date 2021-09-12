@@ -167,17 +167,27 @@ const Topnav = () => {
     const logoutModalopen=()=>{
         setShowLogoutModal(true);
     }
+    const getExcelData=async()=>{
+        if(ville){
+            return await ApiCall.getExcelData(token,ville,fromDate,toDate)
+        }else{
+            return await ApiCall.getExcelDataAll(token,fromDate,toDate)
+        }
+    }
     const confirmExportModal = async () =>{
         setIsSelected(false);
         setShowExportModal(false);
         Alert.warning('Exportation encours...', 20000)
-        if(!ville){
-            const exData = await ApiCall.getExcelDataAll(token,ville,fromDate,toDate)
+        var exData=null;
+        if(ville){
+            exData = await ApiCall.getExcelData(token,ville,fromDate,toDate)
         }else{
-            const exData = await ApiCall.getExcelData(token,ville,fromDate,toDate)
+            exData = await ApiCall.getExcelDataAll(token,fromDate,toDate)
         }
-        const exData = await ApiCall.getExcelData(token,ville,fromDate,toDate)
-        var excelFiltred = await exData.result.map((ligne)=>({
+        console.log(fromDate)
+        console.log(toDate)
+        console.log(exData)
+        var excelFiltred = await exData?.result.map((ligne)=>({
                 date:ligne.date_j,
                 cm:(ligne.ticket_normal+ligne.ticket_illisible+ligne.ticket_perdu),
                 abonne:ligne.recharge_abonne,
@@ -198,7 +208,7 @@ const Topnav = () => {
                 height: 70,
                 cells: [
                   {
-                    value: `REPORTING DES CA JOURNALIERES DU PARKING DE ${getVille(ville)} EN DH/HT ${interval}`,
+                    value: `REPORTING DES CA JOURNALIERES ${!ville?"DE TOUS LES PARKING":"DU PARKING DE "+getVille(ville)} EN DH/HT ${interval}`,
                     fontSize: 16,
                     colSpan: 5,
                     wrap:true,

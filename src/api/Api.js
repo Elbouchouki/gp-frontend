@@ -26,7 +26,7 @@ export default class ApiCall {
       const date_from = moment(from_date).format("YYYY-MM-DD");
       const date_to = moment(to_date).format("YYYY-MM-DD");
       const excelData = await axios.post(
-        `${process.env.REACT_APP_API_URL}excel`,
+        `${process.env.REACT_APP_API_URL}excel/all`,
         {
           date_from: date_from,
           date_to: date_to,
@@ -103,6 +103,25 @@ export default class ApiCall {
     try {
       const statistics = await axios.get(
         `${process.env.REACT_APP_API_URL}statistic/${interval}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return statistics.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async getStatistiquesCustom(token, from_date, to_date) {
+    try {
+      const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
+      const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      const statistics = await axios.post(
+        `${process.env.REACT_APP_API_URL}statistic`,
+        {
+          date_from: date_from,
+          date_to: date_to,
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
