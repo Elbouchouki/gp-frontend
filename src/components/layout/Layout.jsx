@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react'
-import { isMobile } from "react-device-detect";
+import { isIOS } from "react-device-detect";
 import './layout.css'
 import Sidebar from '../sidebar/Sidebar'
 import TopNav from '../topnav/TopNav'
@@ -30,7 +30,7 @@ const Layout = () => {
         dispatch(ThemeAction.setColor(colorClass))
         setLoading(false)
     }, [dispatch])
-    if (isMobile) {
+    if (isIOS) {
         return <div> This content is unavailable on mobile</div>
     }
     return (
