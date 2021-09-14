@@ -3,6 +3,7 @@ import { isMobile } from "react-device-detect";
 import './layout.css'
 import Sidebar from '../sidebar/Sidebar'
 import TopNav from '../topnav/TopNav'
+import TopNavMobile from '../topnav/TopNavMobile'
 import Routes from '../Routes'
 import Login from "../../pages/Login"
 import { BrowserRouter, Route } from 'react-router-dom'
@@ -11,6 +12,7 @@ import { Loader } from 'rsuite'
 import ThemeAction from '../../redux/actions/ThemeAction'
 import AuthAction from "../../redux/actions/AuthAction"
 import mobile from "../../assets/images/mobile.gif"
+import Dashboard from "../../pages/mobile/Dashboard"
 
 const Layout = () => {
 
@@ -31,32 +33,47 @@ const Layout = () => {
         dispatch(ThemeAction.setColor(colorClass))
         setLoading(false)
     }, [dispatch])
-    if (isMobile) {
-        return  <div   
-                    style={{
-                        backgroundColor:"#4b52db",
-                        height: "100vh",
-                        width:"100wh",
-                        display: "flex",
-                        flexDirection:"column",
-                        
-                        }}>
-                        <div style={{
-                            flex: "1 0 auto",
-                            display: "flex",
-                            flexDirection:"column",
-                            justifyContent: "center",
-                            alignItems: "center",}}>
-                            <img style={{width:"100%",height:"auto"}} src={mobile} alt="mobile" />
-                            <div style={{color:"white",fontWeight:"bold",textAlign: "center"}}>La version mobile est en cours de construction.</div>
-                            <div style={{color:"white",fontWeight:"300",padding:20,textAlign: "center"}}>Veuillez accéder l'application à l'aide d'un ordinateur ou d'un pc portable.</div>
-
+    // if (isMobile) {
+        if (isMobile) {
+        return (loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
+        authReducer?.user?
+        <BrowserRouter>
+            <Route render={(props) => (
+                <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
+                    <TopNavMobile/>
+                        <div className="layout__content-mobile">
+                            <Dashboard/>
                         </div>
-                        <div style={{color:"white",flexShrink:0,justifyContent: "center",display: "flex",flexDirection:"row"}}>
-                            Gestpark © 2021
-                        </div>
-                    
                 </div>
+            )}/>
+        </BrowserRouter>:<Login/>)
+        
+        
+                // <div   
+                //     style={{
+                //         backgroundColor:"#4b52db",
+                //         height: "100vh",
+                //         width:"100wh",
+                //         display: "flex",
+                //         flexDirection:"column",
+                        
+                //         }}>
+                //         <div style={{
+                //             flex: "1 0 auto",
+                //             display: "flex",
+                //             flexDirection:"column",
+                //             justifyContent: "center",
+                //             alignItems: "center",}}>
+                //             <img style={{width:"100%",height:"auto"}} src={mobile} alt="mobile" />
+                //             <div style={{color:"white",fontWeight:"bold",textAlign: "center"}}>La version mobile est en cours de construction.</div>
+                //             <div style={{color:"white",fontWeight:"300",padding:20,textAlign: "center"}}>Veuillez accéder l'application à l'aide d'un ordinateur ou d'un pc portable.</div>
+
+                //         </div>
+                //         <div style={{color:"white",flexShrink:0,justifyContent: "center",display: "flex",flexDirection:"row"}}>
+                //             Gestpark © 2021
+                //         </div>
+                    
+                // </div>
     }
     return (
         

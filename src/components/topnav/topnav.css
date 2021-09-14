@@ -6,6 +6,15 @@
   height: var(--topnav-height);
 }
 
+.topnav-mobile {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
 .topnav__search {
   position: relative;
   height: 50px;

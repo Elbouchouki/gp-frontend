@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { FlexboxGrid , List,Icon, Button } from 'rsuite'
+import { isMobile } from "react-device-detect";
 
 const CustomList = ({dataList},...props) => {
   const styleCenter = {
@@ -20,11 +21,12 @@ const CustomList = ({dataList},...props) => {
     textTransform: "capitalize",
     paddingBottom: 5,
     whiteSpace: 'nowrap',
+    fontSize: isMobile?'0.8em':'1.2em',
     fontWeight: 'bold'
   };
   
   const dataStyle = {
-    fontSize: '1.1em',
+    fontSize: isMobile?'1em':'1.1em',
     fontWeight: 500
   };
     return (
@@ -34,7 +36,7 @@ const CustomList = ({dataList},...props) => {
           <List.Item key={item.id} index={index}>
             <FlexboxGrid>
               {/*icon*/}
-              <FlexboxGrid.Item colspan={2} style={styleCenter}>
+              {isMobile?null:<FlexboxGrid.Item colspan={2} style={styleCenter}>
                 <Icon
                   icon="car"
                   style={{
@@ -42,10 +44,10 @@ const CustomList = ({dataList},...props) => {
                     fontSize: '1.5em'
                   }}
                 />
-              </FlexboxGrid.Item>
+              </FlexboxGrid.Item>}
               {/*base info*/}
               <FlexboxGrid.Item
-                colspan={4}
+                colspan={isMobile?5:4}
                 style={{
                   ...styleCenter,
                   flexDirection: 'column',
@@ -54,12 +56,12 @@ const CustomList = ({dataList},...props) => {
                 }}
               >
                 <div style={titleStyle}>{item.ville}</div>
-                <div style={slimText}>
+                {/* <div style={slimText}>
                   <div>{item.ville}</div>
-                </div>
+                </div> */}
               </FlexboxGrid.Item>
               {/*peak data*/}
-              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+              <FlexboxGrid.Item colspan={isMobile?5:4} style={styleCenter}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={slimText}>CM (P)</div>
                   <div style={dataStyle}>
@@ -74,7 +76,7 @@ const CustomList = ({dataList},...props) => {
                 </div>
                 
               </FlexboxGrid.Item>
-              <FlexboxGrid.Item colspan={3} style={styleCenter}>
+              <FlexboxGrid.Item colspan={isMobile?4:3} style={styleCenter}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={slimText}>Abonnées</div>
                   <div style={dataStyle}>
@@ -90,7 +92,7 @@ const CustomList = ({dataList},...props) => {
                 
               </FlexboxGrid.Item>
               {/*uv data*/}
-              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+              <FlexboxGrid.Item colspan={isMobile?5:4} style={styleCenter}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={slimText}>Tàj</div>
                     <div style={dataStyle}>
@@ -104,7 +106,7 @@ const CustomList = ({dataList},...props) => {
                 </div>
                 
               </FlexboxGrid.Item>
-              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+              <FlexboxGrid.Item colspan={isMobile?5:4} style={styleCenter}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={slimText}>Total</div> 
                     <div style={dataStyle}>
@@ -120,7 +122,8 @@ const CustomList = ({dataList},...props) => {
                   ...styleCenter
                 }}
               >
-                <Button appearance="ghost" disabled>Détails</Button>
+                {isMobile?null:<Button appearance="ghost" disabled>Détails</Button>}
+                
               </FlexboxGrid.Item>
             </FlexboxGrid>
           </List.Item>

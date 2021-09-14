@@ -34,3 +34,7 @@
 .layout__content-main {
   padding: 30px;
 }
+
+.layout__content-mobile {
+  padding: 10px;
+}

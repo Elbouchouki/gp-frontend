@@ -1,5 +1,6 @@
 import React from "react";
 import moment from "moment";
+import { isMobile } from "react-device-detect";
 import { DatePicker, DateRangePicker, SelectPicker, Icon } from "rsuite";
 const styles = {
   marginBottom: 10,
@@ -7,6 +8,7 @@ const styles = {
 export const DatePickerDate = ({ handleDateChange }) => {
   return (
     <DatePicker
+      showOneCalendar={isMobile}
       block
       style={styles}
       onChange={(value) => {
@@ -35,6 +37,7 @@ export const DatePickerDate = ({ handleDateChange }) => {
 export const DatePickerWeekDate = ({ active, handleDateChange }) => {
   return (
     <DateRangePicker
+      showOneCalendar={isMobile}
       cleanable={false}
       block
       style={styles}
@@ -67,6 +70,7 @@ export const DatePickerWeekDate = ({ active, handleDateChange }) => {
 export const DatePickerFreeDate = ({ handleDateChange }) => {
   return (
     <DateRangePicker
+      showOneCalendar={isMobile}
       cleanable={false}
       block
       style={styles}
@@ -117,6 +121,7 @@ export const DatePickerFreeDate = ({ handleDateChange }) => {
 export const DatePickerMonthDate = ({ active, handleDateChange }) => {
   return (
     <DateRangePicker
+      showOneCalendar={isMobile}
       cleanable={false}
       block
       style={styles}
