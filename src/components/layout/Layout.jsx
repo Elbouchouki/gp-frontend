@@ -1,15 +1,11 @@
 import React, {useEffect,useState} from 'react'
-
+import { isMobile } from "react-device-detect";
 import './layout.css'
-
 import Sidebar from '../sidebar/Sidebar'
 import TopNav from '../topnav/TopNav'
 import Routes from '../Routes'
 import Login from "../../pages/Login"
-
-
 import { BrowserRouter, Route } from 'react-router-dom'
-
 import { useSelector, useDispatch } from 'react-redux'
 import { Loader } from 'rsuite'
 import ThemeAction from '../../redux/actions/ThemeAction'
@@ -34,8 +30,11 @@ const Layout = () => {
         dispatch(ThemeAction.setColor(colorClass))
         setLoading(false)
     }, [dispatch])
-
+    if (isMobile) {
+        return <div> This content is unavailable on mobile</div>
+    }
     return (
+        
         loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
         authReducer?.user?
         <BrowserRouter>

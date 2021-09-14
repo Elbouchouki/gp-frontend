@@ -25,7 +25,7 @@ export default class ApiCall {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD");
       const date_to = moment(to_date).format("YYYY-MM-DD");
-      const excelData = await axios.post(
+      const excelDataAll = await axios.post(
         `${process.env.REACT_APP_API_URL}excel/all`,
         {
           date_from: date_from,
@@ -35,7 +35,26 @@ export default class ApiCall {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      return excelData.data;
+      return excelDataAll.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async getVilleStatistiques(token, from_date, to_date) {
+    try {
+      const date_from = moment(from_date).format("YYYY-MM-DD");
+      const date_to = moment(to_date).format("YYYY-MM-DD");
+      const villeStatistiques = await axios.post(
+        `${process.env.REACT_APP_API_URL}excel/ville`,
+        {
+          date_from: date_from,
+          date_to: date_to,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return villeStatistiques.data.result;
     } catch (error) {
       console.log(error);
     }

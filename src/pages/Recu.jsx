@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux'
 const customerTableHead = [
     'Caisse',
     'Valeur',
-    "Date de paiement",
+    // "Date de paiement",
     "Date d'entrer",
     'Date de sortie',
     'Ville',
@@ -23,7 +23,7 @@ const renderBody = (item, index) => (
     <tr key={index}>
         <td>{item.caisse}</td>
         <td><Tag color={item.valeur ===0?"orange":tarification.includes(item.valeur) ?"blue":"violet"} >{item.valeur} Dh</Tag></td>
-        <td>{item.date_paiment}</td>
+        {/* <td>{item.date_paiment}</td> */}
         <td>{item.date_e}</td>
         <td>{item.date_s}</td>
         <td>{item.Ville.nom_ville}</td>

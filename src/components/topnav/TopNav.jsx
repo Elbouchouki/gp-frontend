@@ -1,13 +1,12 @@
-import React,{useState,createRef} from 'react'
+import React,{useState} from 'react'
 import './topnav.css'
 import {useHistory } from 'react-router-dom'
-import ThemeMenu from '../thememenu/ThemeMenu'
 import Dropdownn from "../dropdown/Dropdown"
-import user_image from '../../assets/images/user.jpg'
+import ThemeMenu from '../thememenu/ThemeMenu'
 import { Modal,Button,Icon,Alert,IconButton,Dropdown,AutoComplete, InputGroup,SelectPicker} from 'rsuite'
 import { DatePickerWeekDate,DatePickerMonthDate,YearSelect ,DatePickerFreeDate} from '../datepickers/DatePickers'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
-import { process ,aggregateBy } from "@progress/kendo-data-query";
+import {aggregateBy } from "@progress/kendo-data-query";
 import ApiCall from '../../api/Api'
 import {useSelector,useDispatch } from 'react-redux'
 import AuthAction from "../../redux/actions/AuthAction"
@@ -167,13 +166,6 @@ const Topnav = () => {
     const logoutModalopen=()=>{
         setShowLogoutModal(true);
     }
-    const getExcelData=async()=>{
-        if(ville){
-            return await ApiCall.getExcelData(token,ville,fromDate,toDate)
-        }else{
-            return await ApiCall.getExcelDataAll(token,fromDate,toDate)
-        }
-    }
     const confirmExportModal = async () =>{
         setIsSelected(false);
         setShowExportModal(false);
@@ -184,9 +176,6 @@ const Topnav = () => {
         }else{
             exData = await ApiCall.getExcelDataAll(token,fromDate,toDate)
         }
-        console.log(fromDate)
-        console.log(toDate)
-        console.log(exData)
         var excelFiltred = await exData?.result.map((ligne)=>({
                 date:ligne.date_j,
                 cm:(ligne.ticket_normal+ligne.ticket_illisible+ligne.ticket_perdu),

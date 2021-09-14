@@ -60,7 +60,7 @@ export const seasonSwitch = (season) => {
     case "year":
       return "Annuelles";
     default:
-      return "Season";
+      return "Personnalisé";
   }
 };
 export const getVille = (villeId) => {

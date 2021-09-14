@@ -2,42 +2,12 @@ import React, { useEffect, useState } from 'react'
 import Chart from 'react-apexcharts'
 import { useSelector } from 'react-redux'
 import StatusCard from '../components/status-card/StatusCard'
-import { Nav , Loader, Icon} from 'rsuite'
+import CustomList from'../components/customList/CustomList'
+import { Nav , Loader, Icon,DateRangePicker} from 'rsuite'
 import ApiCall from '../api/Api'
 import { monthSwitch, seasonSwitch } from '../helper/helper'
-import {DatePickerFreeDate} from '../components/datepickers/DatePickers'
+import moment from 'moment'
 
-const statusCards= [
-    {
-        icon: "bx bx-shopping-bag",
-        count: "$995",
-        title: "Tickets normals"
-    },
-    {
-        icon: "bx bx-cart",
-        count: "$214,251",
-        title: "Tickets illisibles"
-    },
-    {
-        icon: "bx bx-dollar-circle",
-        count: "$13,632",
-        title: "Tickets perdus"
-    },
-    {
-        icon: "bx bx-receipt",
-        count: "1,711",
-        title: "Total normals"
-    }, {
-        icon: "bx bx-shopping-bag",
-        count: "1,995",
-        title: "Total illisibles"
-    },
-    {
-        icon: "bx bx-cart",
-        count: "801",
-        title: "Total perdus"
-    }
-]
 const CustomNav = ({ active, onSelect, ...props }) => {
     return (
         <Nav  {...props} activeKey={active} onSelect={onSelect} >
@@ -45,21 +15,95 @@ const CustomNav = ({ active, onSelect, ...props }) => {
             <Nav.Item eventKey="week">Semaine</Nav.Item>
             <Nav.Item eventKey="month">Mois</Nav.Item>
             <Nav.Item eventKey="year">Année</Nav.Item>
-            <Nav.Item eventKey="free">Libre</Nav.Item>
+            <Nav.Item eventKey="custom">Libre</Nav.Item>
 
         </Nav>
     );
 };
+const StCustomNav = ({ active, onSelect, ...props }) => {
+    return (
+        <Nav  {...props} activeKey={active} onSelect={onSelect} >
+            <Nav.Item eventKey="day">Aujourd'hui</Nav.Item>
+            <Nav.Item eventKey="yesterday">Hier</Nav.Item>
+            <Nav.Item eventKey="custom">Libre</Nav.Item>
+        </Nav>
+    );
+};
+const DatePickerFreeDate = ({ handleDateChange }) => {
+    return (
+      <DateRangePicker
+        cleanable={false}
+        style={{marginTop: 10}}
+        showOneCalendar
+        onChange={(value) => {
+          handleDateChange(value);
+        }}
+        defaultValue={[new Date(),new Date()]}
+        placeholder="Date Libre"
+        format="DD/MM/YYYY"
+        locale={{
+          sunday: "Dim",
+          monday: "Lun",
+          tuesday: "Mar",
+          wednesday: "Mer",
+          thursday: "Jeu",
+          friday: "Ven",
+          saturday: "Sam",
+          ok: "OK",
+          today: "Aujourd'hui",
+          yesterday: "Hier",
+          last7Days: "Derniers 7 jours",
+        }}
+      />
+    );
+  };
+  const StDatePickerFreeDate = ({ handleDateChange }) => {
+    return (
+      <DateRangePicker
+        cleanable={false}
+        style={{marginTop: 10}}
+        showOneCalendar
+        onChange={(value) => {
+          handleDateChange(value);
+        }}
+        defaultValue={[moment().subtract(1, 'days').toDate(),moment().subtract(1, 'days').toDate()]}
+        placeholder="Date Libre"
+        format="DD/MM/YYYY"
+        locale={{
+          sunday: "Dim",
+          monday: "Lun",
+          tuesday: "Mar",
+          wednesday: "Mer",
+          thursday: "Jeu",
+          friday: "Ven",
+          saturday: "Sam",
+          ok: "OK",
+          today: "Aujourd'hui",
+          yesterday: "Hier",
+          last7Days: "Derniers 7 jours",
+        }}
+      />
+    );
+  };
+  
 const Dashboard = () => {
     const themeReducer = useSelector(state => state.ThemeReducer.mode)
     const authReducer = useSelector(state=>state.AuthReducer)
     const user = authReducer.user
     const token = authReducer.token
-    const [toDate, setToDate] = useState(null)
-    const [fromDate, setFromDate] = useState(null)
+    const [toDate, setToDate] = useState(new Date())
+    const [fromDate, setFromDate] = useState(new Date())
     const [sevenData,setSevenData] = useState([])
     const [normalData,setNormalData] = useState([])
-    // ->>>>>>>>>>> chart
+    const [stData,setStData] = useState([])
+    const [loading,setLoading] = useState(true)
+    const [stLoading,setStLoading] = useState(true)
+    const [sevenChartLoading,setSevenChartLoading] = useState(true)
+    const [active, setActive] = useState("day")
+    // statistic for ville part
+    const [stActive,setStActive] = useState("yesterday")
+    const [stToDate, setStToDate] = useState(moment().subtract(1, 'days').toDate())
+    const [stFromDate, setStFromDate] = useState(moment().subtract(1, 'days').toDate())
     const sevenChart = [{
         name: 'Nombre de tickets',
         type:"line",
@@ -81,8 +125,15 @@ const Dashboard = () => {
     const options2= {
         color: ['#6ab04c', '#2980b9'],
         chart: {
-            background: 'transparent'
+            background: 'transparent',
+            toolbar: {
+                show: false,
+              },
+            zoom: {
+                enabled: false,
+            },
         },
+        
         dataLabels: {
             enabled: false
         },
@@ -120,15 +171,19 @@ const Dashboard = () => {
             show: false
         }
     }
-    const [loading,setLoading] = useState(true)
-    const [sevenChartLoading,setSevenChartLoading] = useState(true)
-    const [active, setActive] = useState("day")
     const handleSelect = (activeKey) => {
         setActive(activeKey);
+    }
+    const handleStSelect = (activeKey) => {
+        setStActive(activeKey);
     }
     const handleIntervalDateChange = (value) => {
         setFromDate(value[0])
         setToDate(value[1])
+    }
+    const handleStIntervalDateChange = (value) => {
+        setStFromDate(value[0])
+        setStToDate(value[1])
     }
     const [daily,setDaily]=useState(null)
     useEffect(() => {
@@ -138,19 +193,38 @@ const Dashboard = () => {
             setDaily([daything.recus[0]?.count,daything.recus[0]?.sum])
             var countArticle  = []
             var sumArticle = []
-            const interval = await ApiCall.getStatistiques(token,active);
-            interval.article.forEach(element => {
+            var interval = null;
+            if(active==="custom"){
+                interval = await ApiCall.getStatistiquesCustom(token,fromDate,toDate);
+            }else{
+                interval = await ApiCall.getStatistiques(token,active);
+            }
+            interval?.article.forEach(element => {
                 countArticle.push(element.count)
                 sumArticle.push(element.sum)
             });
-            setNormalData([countArticle,sumArticle,interval.recus[0].count,interval.recus[0].sum])
+            setNormalData([countArticle,sumArticle,interval?.recus[0].count,interval?.recus[0].sum])
             setLoading(false)
         }
         fetchData()
         return () => {
-            setLoading(true)
+            setDaily([])
+            setNormalData([])
         }
-    }, [active,token])
+    }, [active,token,fromDate,toDate])
+    useEffect(() => {
+        async function fetchData(){
+            setStLoading(true)
+            const villeStatistiques = await ApiCall.getVilleStatistiques(token,stFromDate,stToDate)
+            setStData(villeStatistiques)
+            setStLoading(false)
+        }
+        fetchData()
+        return () => {
+            setStData([])
+        }
+    }, [stActive,token,stFromDate,stToDate])
+    
     useEffect(() => {
         async function fetchData(){
             setSevenChartLoading(true)
@@ -175,13 +249,27 @@ const Dashboard = () => {
             setSevenChartLoading(true)
         }
     }, [token])
+
+    useEffect(() => {
+        if(stActive==="custom"||stActive==="yesterday"){
+            setStFromDate(moment().subtract(1, 'days').toDate())
+            setStToDate(moment().subtract(1, 'days').toDate())
+        }
+        else{
+            setStFromDate(new Date())
+            setStToDate(new Date())
+        }
+    }, [stActive])
+
     return (
         <div>
                 <div className="row" style={{justifyContent:"space-between",margin:10,alignItems:"center"}} > 
                     <h2 className="page-header">Accueil</h2>
-                    <div className="row">
+                    <div style={{diplay:"flex",flexDirection:"column",justifyItems:"flex-end"}}>
                         <CustomNav appearance="subtle" active={active} onSelect={handleSelect} />
-                        {/* <DatePickerFreeDate handleDateChange={handleIntervalDateChange} /> */}
+                        {active==="custom"?<div className="row" style={{marginRight:0,justifyContent:"end"}}>
+                            <DatePickerFreeDate  handleDateChange={handleIntervalDateChange} />
+                        </div>:null}
                     </div>
                 </div>
             <div className="row">
@@ -192,7 +280,7 @@ const Dashboard = () => {
                                         icon="bx bx-receipt"
                                         count={loading ? <Loader />:normalData[2]}
                                         title="Nombre de Tickets"
-                                        daily={active==="day"?null:daily?daily[0]:null}
+                                        daily={active==="day"||active==="custom"?null:daily?daily[0]:null}
                                         />
                         </div>
                         <div className="col-12">
@@ -200,7 +288,7 @@ const Dashboard = () => {
                                         icon="bx bx-money"
                                         count={loading ? <Loader />:normalData[3]+" Dh"}
                                         title="Revenue"
-                                        daily={active==="day"?null:daily?daily[1]+" dh":null}
+                                        daily={active==="day"||active==="custom"?null:daily?daily[1]+" dh":null}
                                         />
                         </div>
                          
@@ -209,11 +297,9 @@ const Dashboard = () => {
                 <div className="col-8">
                     <div className="card" >
                         <div className="row" style={{justifyContent:"space-between",alignItems:"center"}}>
-                        <h5>Statistiques {seasonSwitch(active)}</h5>
-                        {loading ? <Loader content="Chargement en cours..." />:<Icon icon="bar-chart" size="2x" />}
-                             </div>    
-                        
-                        {/* chart */}
+                            <h5>Statistiques {seasonSwitch(active)}</h5>
+                            {loading ? <Loader content="Chargement en cours..." />:<Icon icon="bar-chart" size="2x" />}
+                        </div>    
                         <Chart
                             options={themeReducer === 'theme-mode-dark' ? {
                                 ...options2,
@@ -226,12 +312,32 @@ const Dashboard = () => {
                             type='line'
                             height='100%'
                         />
-                        
                     </div>
-                    
                 </div>
-                
             </div>
+
+            <div className="col-12">
+                <div className="card" >
+                    <div className="row" style={{justifyContent:"space-between",margin:10,alignItems:"center"}} >
+                        <h5>Reporting par ville</h5>
+                        <div style={{diplay:"flex",flexDirection:"column",justifyItems:"flex-end"}}>
+                            <StCustomNav appearance="subtle" active={stActive} onSelect={handleStSelect} />
+                            {stActive==="custom"?<div className="row" style={{marginRight:0,justifyContent:"end"}}>
+                                <StDatePickerFreeDate  handleDateChange={handleStIntervalDateChange} />
+                                </div>:null}
+                        </div>
+                    </div>
+                    {stLoading?
+                                <div style={{display:'flex',justifyContent:'center',padding:'50px'}}>
+                                    <Loader  content="Chargement en cours..." />
+                                </div>
+                                :<CustomList dataList={stData}/>}
+
+                </div>
+            </div>
+                    
+
+
             <div className="row">
             <div className="col-8">
                     <div className="card" >
