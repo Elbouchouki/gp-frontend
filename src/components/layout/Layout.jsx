@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react'
-import { isIOS } from "react-device-detect";
+import { isMobile } from "react-device-detect";
 import './layout.css'
 import Sidebar from '../sidebar/Sidebar'
 import TopNav from '../topnav/TopNav'
@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Loader } from 'rsuite'
 import ThemeAction from '../../redux/actions/ThemeAction'
 import AuthAction from "../../redux/actions/AuthAction"
+import mobile from "../../assets/images/mobile.gif"
 
 const Layout = () => {
 
@@ -30,8 +31,20 @@ const Layout = () => {
         dispatch(ThemeAction.setColor(colorClass))
         setLoading(false)
     }, [dispatch])
-    if (isIOS) {
-        return <div> This content is unavailable on mobile</div>
+    if (isMobile) {
+        return  <div   
+                    style={{
+                        backgroundColor:"#4b52db",
+                        height: "100vh",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        }}>
+                    <img style={{width:"100",height:"auto"}} src={mobile} alt="mobile" />
+                    <div>
+                        This content is unavailable on mobile
+                    </div>
+                </div>
     }
     return (
         
