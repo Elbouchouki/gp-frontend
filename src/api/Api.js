@@ -40,10 +40,18 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getVilleStatistiques(token, from_date, to_date) {
+  static async getVilleStatistiques(token, active, from_date, to_date) {
     try {
-      const date_from = moment(from_date).format("YYYY-MM-DD");
-      const date_to = moment(to_date).format("YYYY-MM-DD");
+      var date_from = moment(from_date).format("YYYY-MM-DD");
+      var date_to = moment(to_date).format("YYYY-MM-DD");
+      if (active === "yesterday") {
+        date_from = moment().subtract(1, "days").format("YYYY-MM-DD");
+        date_to = moment().subtract(1, "days").format("YYYY-MM-DD");
+      }
+      if (active === "day") {
+        date_from = moment().format("YYYY-MM-DD");
+        date_to = moment().format("YYYY-MM-DD");
+      }
       const villeStatistiques = await axios.post(
         `${process.env.REACT_APP_API_URL}excel/ville`,
         {
@@ -69,23 +77,27 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getTarifs(token) {
+  static async getTarifs(token, type) {
     try {
-      const tarifs = await axios.get(`${process.env.REACT_APP_API_URL}tarifs`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const tarifs = await axios.get(
+        `${process.env.REACT_APP_API_URL}tarifs/${type}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return tarifs.data.result;
     } catch (error) {
       console.log(error);
     }
   }
-  static async getRecus(token, ville_id, from_date, to_date) {
+  static async getRecus(token, article, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
       const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
       const recus = await axios.post(
-        `${process.env.REACT_APP_API_URL}recus/${ville_id}`,
+        `${process.env.REACT_APP_API_URL}recus`,
         {
+          article_id: article,
           date_from: date_from,
           date_to: date_to,
         },

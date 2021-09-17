@@ -5,32 +5,14 @@
         "icon": "bx bx-category-alt"
     },
     {
-        "display_name": "Tickets normals",
-        "route": "/tickets-normals",
+        "display_name": "Tickets Horaire",
+        "route": "/tickets",
         "icon": "bx bxs-coupon",
         "role":"show_recu_normal"
     },
     {
-        "display_name": "Tickets illisibles",
-        "route": "/tickets-illisible",
-        "icon": "bx bxs-coupon",
-        "role":"show_recu_illisible"
-    },
-    {
-        "display_name": "Tickets perdus",
-        "route": "/tickets-perdus",
-        "icon": "bx bxs-coupon",
-        "role":"show_recu_perdu"
-    },
-    {
-        "display_name": "Sorties abonnés",
-        "route": "/sortie-abonnés",
-        "icon": "bx bxs-business",
-        "role":"show_recu_entree_abonne"
-    },
-    {
-        "display_name": "Recharges abonnés",
-        "route": "/recharges-abonnés",
+        "display_name": "Abonnés",
+        "route": "/abonnés",
         "icon": "bx bx-credit-card",
         "role":"show_recu_recharge_abonne"
     },
@@ -49,11 +31,5 @@
         "route": "/utilisateurs",
         "icon": "bx bxs-user-detail",
         "role":"manage_users"
-    },{
-        "display_name": "Autorisations",
-        "route": "/autorizations",
-        "icon": "bx bx-aperture",
-        "role":"manage_roles"
     }
-    
 ]

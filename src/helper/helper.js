@@ -140,3 +140,4 @@ export const monthSwitch = (month) => {
   }
 };
 export const tarification = [0, 5, 7, 12, 15, 20, 25];
+export const tarificationAbonne = [100, 120, 220];

@@ -85,7 +85,7 @@ const DatePickerFreeDate = ({ handleDateChange }) => {
       />
     );
   };
-  
+
 const Dashboard = () => {
     const themeReducer = useSelector(state => state.ThemeReducer.mode)
     const authReducer = useSelector(state=>state.AuthReducer)
@@ -141,6 +141,7 @@ const Dashboard = () => {
             curve: 'smooth'
         },
         xaxis: {
+            type: 'category',
             categories: ["Ticket Normal","Ticket Illisible","Ticket Perdu","Entrée Abonné","Recharge Abonné"],
         },
         legend: {
@@ -162,7 +163,9 @@ const Dashboard = () => {
             curve: 'smooth'
         },
         xaxis: {
-            categories: sevenData[2]
+            type: 'category',
+            categories: sevenData[2],
+            tickAmount: 10 
         },
         legend: {
             position: 'bottom'
@@ -212,10 +215,11 @@ const Dashboard = () => {
             setNormalData([])
         }
     }, [active,token,fromDate,toDate])
+
     useEffect(() => {
         async function fetchData(){
             setStLoading(true)
-            const villeStatistiques = await ApiCall.getVilleStatistiques(token,stFromDate,stToDate)
+            const villeStatistiques = await ApiCall.getVilleStatistiques(token,stActive,stFromDate,stToDate)
             setStData(villeStatistiques)
             setStLoading(false)
         }
@@ -249,17 +253,6 @@ const Dashboard = () => {
             setSevenChartLoading(true)
         }
     }, [token])
-
-    useEffect(() => {
-        if(stActive==="custom"||stActive==="yesterday"){
-            setStFromDate(moment().subtract(1, 'days').toDate())
-            setStToDate(moment().subtract(1, 'days').toDate())
-        }
-        else{
-            setStFromDate(new Date())
-            setStToDate(new Date())
-        }
-    }, [stActive])
 
     return (
         <div>
@@ -331,7 +324,9 @@ const Dashboard = () => {
                                 <div style={{display:'flex',justifyContent:'center',padding:'50px'}}>
                                     <Loader  content="Chargement en cours..." />
                                 </div>
-                                :<CustomList dataList={stData}/>}
+                                :
+                                <CustomList dates={[stFromDate,stToDate]} dataList={stData}/>
+                                }
 
                 </div>
             </div>

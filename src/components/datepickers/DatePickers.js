@@ -8,7 +8,6 @@ const styles = {
 export const DatePickerDate = ({ handleDateChange }) => {
   return (
     <DatePicker
-      showOneCalendar={isMobile}
       block
       style={styles}
       onChange={(value) => {

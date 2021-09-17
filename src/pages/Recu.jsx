@@ -1,16 +1,15 @@
 import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
 import { Nav, Icon ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
-import { tarification } from '../helper/helper'
+import { tarification,tarificationAbonne } from '../helper/helper'
 import { DatePickerDate,DatePickerFreeDate,DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../components/datepickers/DatePickers'
 import ApiCall from '../api/Api'
-import moment from 'moment'
 import { useSelector } from 'react-redux'
 
 const customerTableHead = [
     'Caisse',
+    'Type',
     'Valeur',
-    // "Date de paiement",
     "Date d'entrer",
     'Date de sortie',
     'Ville',
@@ -19,17 +18,6 @@ const customerTableHead = [
 
 const renderHead = (item, index) => <th key={index}>{item}</th>
 
-const renderBody = (item, index) => (
-    <tr key={index}>
-        <td>{item.caisse}</td>
-        <td><Tag color={item.valeur ===0?"orange":tarification.includes(item.valeur) ?"blue":"violet"} >{item.valeur} Dh</Tag></td>
-        {/* <td>{item.date_paiment}</td> */}
-        <td>{item.date_e}</td>
-        <td>{item.date_s}</td>
-        <td>{item.Ville.nom_ville}</td>
-        <td><Tag color={item.etats==="confirmé"?"green":"red"} >{item.etats} </Tag></td>
-    </tr>
-)
 const styles = {
     marginBottom: 10
 };
@@ -96,7 +84,7 @@ const TarifsSelect = ({items,handleChange,handleUpdate}) =>{
 
 const Recu = (props) => {
     const authReducer = useSelector(state=>state.AuthReducer)
-    const user = authReducer.user
+    // const user = authReducer.user
     const token = authReducer.token
     const [active, setActive] = useState('day')
     const [fromDate, setFromDate] = useState(new Date())
@@ -143,7 +131,7 @@ const Recu = (props) => {
     
     const handleTarifUpdate=async()=> {
         if (listTarifs.length === 0) {
-            const tarifs  = await ApiCall.getTarifs(token)
+            const tarifs  = await ApiCall.getTarifs(token,props.type)
             setListTarifs(tarifs)
             return;
         }
@@ -151,6 +139,19 @@ const Recu = (props) => {
     const handleVilleChange=(value)=>{
        setVille(value)
     }
+    const renderBody = (item, index) => (
+        <tr key={index}>
+            <td>{item.caisse}</td>
+            <td>{item.Article.desc_art}</td>
+            {props.type==="normal"?<td><Tag color={item.valeur ===0?"orange":tarification.includes(item.valeur)?"blue":"violet"}>{item.valeur} Dh</Tag></td>:
+                        <td><Tag color={item.valeur ===0?"orange":tarificationAbonne.includes(item.valeur)?"blue":"violet"}>{item.valeur} Dh</Tag></td>
+                    }
+            <td>{item.date_e}</td>
+            <td>{item.date_s}</td>
+            <td>{item.Ville.nom_ville}</td>
+            <td><Tag color={item.etats==="confirmé"?"green":"red"} >{item.etats} </Tag></td>
+        </tr>
+    )
    
     useEffect(() => {
         async function filterRecus(){
@@ -161,20 +162,21 @@ const Recu = (props) => {
                 return
             }
             var filtred = []
+            var baseFilter = props.type==="normal"?tarification:tarificationAbonne
             if(ville !== null && ville !== undefined && tarifs.length === 0){
                 filtred.push(...listRecus.filter(item => item.Ville.id === ville))
             }
             if(tarifs.length !== 0 &&(ville===null || ville===undefined)){
                 filtred.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
                 if(tarifs.includes(-1)){
-                    filtred.push(...listRecus.filter(item => !tarification.includes(item.valeur) ))
+                    filtred.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
                 }
             }
             if(tarifs.length !== 0 && ville !== null && ville !== undefined){
                 var temp = []
                 temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
                 if(tarifs.includes(-1)){
-                    temp.push(...listRecus.filter(item => !tarification.includes(item.valeur) ))
+                    temp.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
                 }
                 filtred.push(...temp.filter(item => item.Ville.id === ville))
             }
@@ -187,7 +189,7 @@ const Recu = (props) => {
             setfiltredRecus([])
           };
         
-    }, [listRecus,ville,tarifs])
+    }, [listRecus,ville,tarifs,props.type])
 
     useEffect(() => {
         

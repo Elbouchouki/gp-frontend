@@ -192,7 +192,7 @@ const Topnav = () => {
             const options = exporter.workbookOptions();
             const rows = options.sheets[0].rows;
             options.sheets[0].frozenRows = 2;
-            const interval = season==="month"?"MOIS "+monthFullSwitch(moment(fromDate).month())+" "+moment(fromDate).year():`DU ${moment(fromDate).format("DD/MM/YYYY")} AU ${moment(toDate).format("DD/MM/YYYY")}`
+            const interval = season==="month"?"MOIS "+monthFullSwitch(moment(toDate).month()+1)+" "+moment(fromDate).year():`DU ${moment(fromDate).format("DD/MM/YYYY")} AU ${moment(toDate).format("DD/MM/YYYY")}`
             const headerRow = {
                 height: 70,
                 cells: [
