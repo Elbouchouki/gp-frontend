@@ -55,10 +55,10 @@ const VilleSelect = ({items,handleUpdate,handleChange}) =>{
     }}
   />
 }
-const TarifsSelect = ({items,handleChange,handleUpdate}) =>{
+const TarifsSelect = ({items,handleChange,handleUpdate,type}) =>{
     return <CheckPicker
     block
-    placeholder="Tarifs"
+    placeholder={type === "normal"?"Tarifs":"Type"}
     data={items}
     searchable={false}
     onOpen={handleUpdate}
@@ -81,6 +81,55 @@ const TarifsSelect = ({items,handleChange,handleUpdate}) =>{
     
   />
 }
+const ArticleSelect = ({items,handleChange,handleUpdate}) =>{
+    return <CheckPicker
+    block
+    placeholder="Types"
+    data={items}
+    searchable={false}
+    onOpen={handleUpdate}
+    onChange={handleChange}
+    valueKey="id"
+    labelKey="desc_art"
+    renderMenu={menu => {
+        if (items.length === 0) {
+          return (
+            <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
+              <Icon icon="spinner" spin /> Chargement en cours...
+            </p>
+          );
+        }
+        return menu;
+    }}
+    // renderMenuItem={(label, item) => {
+    //   return   <Tag color={item.value ===-1 ?"violet":item.value ===0?"orange":"blue"}>
+    //              <i className="rs-icon rs-icon-user" /> {label}
+    //             </Tag >;
+    // }}
+    
+  />
+}
+const EtatsSelect = ({handleChange}) =>{
+    return <SelectPicker
+    block
+    placeholder="Etats"
+    data={[{
+        value:"confirmé",
+        label:"confirmé"
+    },{
+        value:"annulé",
+        label:"annulé"
+    }]}
+    searchable={false}
+    onChange={handleChange}
+    renderMenuItem={(label, item) => {
+      return   <Tag color={item.value ==="confirmé" ?"green":"red"}>
+                 <i className="rs-icon rs-icon-user" /> {label}
+                </Tag >;
+    }}
+    
+  />
+}
 
 const Recu = (props) => {
     const authReducer = useSelector(state=>state.AuthReducer)
@@ -94,8 +143,11 @@ const Recu = (props) => {
     const [listVilles,setListVilles]=useState([])
     const [filtredRecus,setfiltredRecus]=useState([])
     const [ville,setVille]=useState(null)
+    const [etats,setEtats]=useState(null)
     const [tarifs,setTarifs] = useState([])
+    const [articles,setArticles] = useState([])
     const [listTarifs,setListTarifs]=useState([])
+    const [listArticles,setListArticles]=useState([])
     const handleIntervalDateChange = (value) => {
 
         setFromDate(value[0])
@@ -113,6 +165,12 @@ const Recu = (props) => {
     }
     const handleTarifChange = (value) =>{
         setTarifs(value)
+    }
+    const handleArticleChange = (value) =>{
+        setArticles(value)
+    } 
+    const handleEtatsChange = (value) =>{
+        setEtats(value)
     }
     const handleSelect = (activeKey) => {
         if(active=== activeKey){
@@ -136,6 +194,13 @@ const Recu = (props) => {
             return;
         }
     }
+    const handleArticleUpdate=async()=> {
+        if (listArticles.length === 0 && props.type ==="normal") {
+            const articles  = await ApiCall.getArticles(token,props.type)
+            setListArticles(articles)
+            return;
+        }
+    }
     const handleVilleChange=(value)=>{
        setVille(value)
     }
@@ -156,30 +221,110 @@ const Recu = (props) => {
     useEffect(() => {
         async function filterRecus(){
             await setTimeout(setLoading(true),500)
-            if ((ville===null || ville===undefined)&&tarifs.length===0){
+            if ((ville===null || ville===undefined) && tarifs.length===0 && articles.length === 0 && (etats===null || etats===undefined)){
                 setfiltredRecus(listRecus)
                 setLoading(false)
                 return
             }
             var filtred = []
             var baseFilter = props.type==="normal"?tarification:tarificationAbonne
-            if(ville !== null && ville !== undefined && tarifs.length === 0){
-                filtred.push(...listRecus.filter(item => item.Ville.id === ville))
-            }
-            if(tarifs.length !== 0 &&(ville===null || ville===undefined)){
-                filtred.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
-                if(tarifs.includes(-1)){
-                    filtred.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
-                }
-            }
-            if(tarifs.length !== 0 && ville !== null && ville !== undefined){
+            // if(ville !== null && ville !== undefined && tarifs.length === 0){
+            //     filtred.push(...listRecus.filter(item => {
+            //         return (
+            //             item.Ville.id === ville &&
+            //             (articles.length === 0 ?true:articles.includes(item.Article.id)) &&
+            //             ((etats===null || etats===undefined) ?true:item.etats === etats)
+            //         )
+            //     }))
+            // }
+            // if(tarifs.length !== 0 &&(ville===null || ville===undefined)){
+            //     filtred.push(...listRecus.filter(item => {
+            //         return (
+            //             tarifs.includes(item.valeur) &&
+            //             (articles.length === 0 ?true:articles.includes(item.Article.id)) &&
+            //             ((etats===null || etats===undefined) ?true:item.etats === etats)
+            //         )
+            //     }))
+            //     if(tarifs.includes(-1)){
+            //         filtred.push(...listRecus.filter(item =>{
+            //             return (
+            //                 !baseFilter.includes(item.valeur) && 
+            //                 (articles.length === 0 ?true:articles.includes(item.Article.id))&&
+            //                 ((etats===null || etats===undefined) ?true:item.etats === etats)
+            //             )
+            //         } ))
+            //     }
+            // }
+            if(tarifs.length !== 0){
                 var temp = []
                 temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
                 if(tarifs.includes(-1)){
                     temp.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
                 }
-                filtred.push(...temp.filter(item => item.Ville.id === ville))
+                filtred.push(...temp.filter(item => {
+                    return (
+                        ((ville===null || ville===undefined) ?true:item.Ville.id === ville) &&
+                        (articles.length === 0 ?true:articles.includes(item.Article.id))&&
+                        ((etats===null || etats===undefined) ?true:item.etats === etats)
+                    )
+                }))
+            }else{
+                filtred.push(...listRecus.filter(item => {
+                    return (
+                        ((ville===null || ville===undefined) ?true:item.Ville.id === ville) &&
+                        (articles.length === 0 ?true:articles.includes(item.Article.id))&&
+                        ((etats===null || etats===undefined) ?true:item.etats === etats)
+                    )
+                }))
+                
             }
+            // // ville
+            // if(ville !== null && ville !== undefined && tarifs.length === 0 && articles.length === 0){
+            //     filtred.push(...listRecus.filter(item => item.Ville.id === ville))
+            // }
+            // // tarif
+            // if(tarifs.length !== 0  && articles.length === 0 &&(ville===null || ville===undefined)){
+            //     filtred.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
+            //     if(tarifs.includes(-1)){
+            //         filtred.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
+            //     }
+            // }
+            // // article
+            // if(articles.length !== 0  && tarifs.length === 0 &&(ville===null || ville===undefined)){
+            //     filtred.push(...listRecus.filter(item => articles.includes(item.Article.id)))
+            // }
+            // // article & ville
+            // if(tarifs.length === 0 && articles.length !== 0 && ville !== null && ville !== undefined){
+            //     filtred.push(...listRecus.filter(item => articles.includes(item.Article.id) && item.Ville.id === ville))
+            // }
+            // var temp = []
+            // // tarif & ville
+            // if(tarifs.length !== 0 && articles.length === 0 && ville !== null && ville !== undefined){
+                
+            //     temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
+            //     if(tarifs.includes(-1)){
+            //         temp.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
+            //     }
+            //     filtred.push(...temp.filter(item => item => item.Ville.id === ville))
+            // }
+            // // tarif & article
+            // if(tarifs.length !== 0 && articles.length !== 0 &&(ville===null || ville===undefined)){
+                
+            //     temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
+            //     if(tarifs.includes(-1)){
+            //         temp.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
+            //     }
+            //     filtred.push(...temp.filter(item => articles.includes(item.Article.id)))
+            // }
+            // // all
+            // if(tarifs.length !== 0 && articles.length !== 0 && ville !== null && ville !== undefined){
+            
+            //     temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
+            //     if(tarifs.includes(-1)){
+            //         temp.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
+            //     }
+            //     filtred.push(...temp.filter(item => item.Ville.id === ville && articles.includes(item.Article.id)))
+            // }
             setfiltredRecus(filtred)
             setLoading(false)
         }
@@ -189,10 +334,9 @@ const Recu = (props) => {
             setfiltredRecus([])
           };
         
-    }, [listRecus,ville,tarifs,props.type])
+    }, [listRecus,ville,tarifs,props.type,articles,etats])
 
     useEffect(() => {
-        
         async function fetchRecus(){
             setLoading(true)
             const recus = await ApiCall.getRecus(token,props.articleId,fromDate,toDate)
@@ -227,7 +371,7 @@ const Recu = (props) => {
                                                         <DatePickerDate handleDateChange={handleDateChange}/>
                                                         :active === "year" ?<YearSelect handleChange={handleYearChange} />
                                                         :<DatePickerFreeDate handleDateChange={handleIntervalDateChange} />
-                                                    }
+                                                }
                                         </div>
                                         <div className="col-4">
                                             <div className="row" style={{justifyContent:"flex-end"}} > 
@@ -244,9 +388,25 @@ const Recu = (props) => {
                                             <VilleSelect items={listVilles} handleChange={handleVilleChange} handleUpdate={handleVilleUpdate}/>
                                         </div>
                                         <div className="col-3">
-                                            <TarifsSelect items={listTarifs} handleChange={handleTarifChange} handleUpdate={handleTarifUpdate}/>
+                                            <TarifsSelect type={props.type} items={listTarifs} handleChange={handleTarifChange} handleUpdate={handleTarifUpdate}/>
                                         </div>
+                                            
                                     </div>
+                                    {props.type ==="normal"?
+                                    <div className="row">
+                                        <div className="col-3">
+                                            <ArticleSelect items={listArticles} handleChange={handleArticleChange} handleUpdate={handleArticleUpdate}/>
+                                        </div>
+                                        <div className="col-3">
+                                            <EtatsSelect items={listArticles} handleChange={handleEtatsChange}/>
+                                        </div>                                        
+                                    </div>:
+                                    <div className="row">
+                                        <div className="col-6">
+                                            <EtatsSelect items={listArticles} handleChange={handleEtatsChange}/>
+                                        </div>                                        
+                                     </div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -262,7 +422,7 @@ const Recu = (props) => {
                                     <Loader  content="Chargement en cours..." />
                                 </div>
                                 :
-                                filtredRecus.length===0
+                                filtredRecus.length === 0
                                 ?
                                 <div style={{display:'flex',justifyContent:'center'}}>Pas de données</div>
                                 :

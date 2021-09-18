@@ -6,6 +6,8 @@
   top: 0;
   background-color: var(--main-bg);
   box-shadow: var(--box-shadow);
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar__logo {
@@ -52,4 +54,25 @@
     var(--second-color)
   );
   color: var(--txt-white);
+}
+.sideContent {
+  flex: 1 0 auto;
+}
+
+.stickyFooter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  flex-shrink: 0;
+}
+.copieRight {
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.copieRight:hover {
+  text-decoration: none;
 }

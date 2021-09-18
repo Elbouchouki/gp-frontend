@@ -96,23 +96,23 @@ const ExportModal = ({isSelected,show,close,confirme,dateChange,yearChange,seaso
 const searchTypes = [
     {
         label:"Tickets Normaux",
-        value:"tickets-normals",
+        value:"tickets",
         icon: "ticket"
     },{
         label:"Tickets Illisibles",
-        value:"tickets-illisible",
+        value:"tickets",
         icon: "ticket"
     },{
         label:"Tickets Perdus",
-        value:"tickets-perdus",
+        value:"tickets",
         icon: "ticket"
     },{
         label:"Recharges Abonnée(s)",
-        value:"recharges-abonnés",
+        value:"abonnés",
         icon: "credit-card"
     },{
-        label:"Entrée(s) Abonnée(s)",
-        value:"entreés-abonnés",
+        label:"Nouveaux Abonnée(s)",
+        value:"abonnés",
         icon: "car"
     },{
         label:"Mouvements",

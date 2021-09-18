@@ -90,6 +90,19 @@ export default class ApiCall {
       console.log(error);
     }
   }
+  static async getArticles(token, type) {
+    try {
+      const articles = await axios.get(
+        `${process.env.REACT_APP_API_URL}articles/${type}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return articles.data.result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   static async getRecus(token, article, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
@@ -105,7 +118,6 @@ export default class ApiCall {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      console.log(recus.data);
       return recus.data.result;
     } catch (error) {
       console.log(error);
@@ -147,7 +159,7 @@ export default class ApiCall {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
       const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
-      const statistics = await axios.post(
+      const statisticCustom = await axios.post(
         `${process.env.REACT_APP_API_URL}statistic`,
         {
           date_from: date_from,
@@ -157,7 +169,7 @@ export default class ApiCall {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      return statistics.data;
+      return statisticCustom.data;
     } catch (error) {
       console.log(error);
     }
