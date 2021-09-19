@@ -3,6 +3,7 @@ import Table from '../components/table/Table'
 import { Nav, Icon ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
 import { tarification,tarificationAbonne } from '../helper/helper'
 import { DatePickerDate,DatePickerFreeDate,DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../components/datepickers/DatePickers'
+import RecuTotalList from '../components/customList/RecuTotalList'
 import ApiCall from '../api/Api'
 import { useSelector } from 'react-redux'
 
@@ -148,8 +149,8 @@ const Recu = (props) => {
     const [articles,setArticles] = useState([])
     const [listTarifs,setListTarifs]=useState([])
     const [listArticles,setListArticles]=useState([])
+    const [totals,setTotals]=useState(null)
     const handleIntervalDateChange = (value) => {
-
         setFromDate(value[0])
         setToDate(value[1])
     }
@@ -208,23 +209,49 @@ const Recu = (props) => {
         <tr key={index}>
             <td>{item.caisse}</td>
             <td>{item.Article.desc_art}</td>
+            {
+                props.type==="abonné"?<td>{item.societe.trim()}</td>:null
+            }
+            {
+                props.type==="abonné"?<td>{item.participant.trim()}</td>:null
+            }
             {props.type==="normal"?<td><Tag color={item.valeur ===0?"orange":tarification.includes(item.valeur)?"blue":"violet"}>{item.valeur} Dh</Tag></td>:
                         <td><Tag color={item.valeur ===0?"orange":tarificationAbonne.includes(item.valeur)?"blue":"violet"}>{item.valeur} Dh</Tag></td>
                     }
+            
             <td>{item.date_e}</td>
-            <td>{item.date_s}</td>
+            {
+                props.type==="normal"?<td>{item.date_s}</td>:null
+            }
             <td>{item.Ville.nom_ville}</td>
             <td><Tag color={item.etats==="confirmé"?"green":"red"} >{item.etats} </Tag></td>
         </tr>
     )
-   
+    const customerTableHead = props.type === "normal"?[
+        'Caisse',
+        'Type',
+        'Valeur',
+        "Date d'entrer",
+        'Date de sortie',
+        'Ville',
+        'Etat',
+    ]:[
+        'Caisse',
+        'Type',
+        'Société',
+        'Participant',
+        'Valeur',
+        "Date",
+        'Ville',
+        'Etat',
+    ]
     useEffect(() => {
         async function filterRecus(){
             await setTimeout(setLoading(true),500)
             if ((ville===null || ville===undefined) && tarifs.length===0 && articles.length === 0 && (etats===null || etats===undefined)){
                 setfiltredRecus(listRecus)
                 setLoading(false)
-                return
+                // return
             }
             var filtred = []
             var baseFilter = props.type==="normal"?tarification:tarificationAbonne
@@ -278,54 +305,108 @@ const Recu = (props) => {
                 }))
                 
             }
-            // // ville
-            // if(ville !== null && ville !== undefined && tarifs.length === 0 && articles.length === 0){
-            //     filtred.push(...listRecus.filter(item => item.Ville.id === ville))
-            // }
-            // // tarif
-            // if(tarifs.length !== 0  && articles.length === 0 &&(ville===null || ville===undefined)){
-            //     filtred.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
-            //     if(tarifs.includes(-1)){
-            //         filtred.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
-            //     }
-            // }
-            // // article
-            // if(articles.length !== 0  && tarifs.length === 0 &&(ville===null || ville===undefined)){
-            //     filtred.push(...listRecus.filter(item => articles.includes(item.Article.id)))
-            // }
-            // // article & ville
-            // if(tarifs.length === 0 && articles.length !== 0 && ville !== null && ville !== undefined){
-            //     filtred.push(...listRecus.filter(item => articles.includes(item.Article.id) && item.Ville.id === ville))
-            // }
-            // var temp = []
-            // // tarif & ville
-            // if(tarifs.length !== 0 && articles.length === 0 && ville !== null && ville !== undefined){
-                
-            //     temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
-            //     if(tarifs.includes(-1)){
-            //         temp.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
-            //     }
-            //     filtred.push(...temp.filter(item => item => item.Ville.id === ville))
-            // }
-            // // tarif & article
-            // if(tarifs.length !== 0 && articles.length !== 0 &&(ville===null || ville===undefined)){
-                
-            //     temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
-            //     if(tarifs.includes(-1)){
-            //         temp.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
-            //     }
-            //     filtred.push(...temp.filter(item => articles.includes(item.Article.id)))
-            // }
-            // // all
-            // if(tarifs.length !== 0 && articles.length !== 0 && ville !== null && ville !== undefined){
             
-            //     temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
-            //     if(tarifs.includes(-1)){
-            //         temp.push(...listRecus.filter(item => !baseFilter.includes(item.valeur) ))
-            //     }
-            //     filtred.push(...temp.filter(item => item.Ville.id === ville && articles.includes(item.Article.id)))
-            // }
             setfiltredRecus(filtred)
+            if(filtred.length !== 0){
+                var all = props.type ==="normal" ? {
+                    '1':{
+                        'name':"Tickets Horaires",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
+                    '2':{
+                        'name':"Tickets Illisibles",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
+                    '3':{
+                        'name':"Tickets Perdus",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
+                    'total':{
+                        'name':"Total",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
+                } : {
+                    '6':{
+                        'name':"Nouveaux Abonnés",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
+                    '7':{
+                        'name':"Recharges Abonnés Normaux",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
+                    '8':{
+                        'name':"Recharges Abonnés ONCF",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
+                    'total':{
+                        'name':"Total",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
+                }
+                filtred.forEach(element=>{
+                    all[`${element.Article.id}`][`${element.etats}`].cpt += 1
+                    all[`${element.Article.id}`][`${element.etats}`].total += element.valeur
+                    all[`total`][`${element.etats}`].cpt += 1
+                    all[`total`][`${element.etats}`].total += element.valeur
+                })
+                setTotals(all)
+            }
             setLoading(false)
         }
         filterRecus()
@@ -426,13 +507,18 @@ const Recu = (props) => {
                                 ?
                                 <div style={{display:'flex',justifyContent:'center'}}>Pas de données</div>
                                 :
-                                <Table
-                                limit='10'
-                                headData={customerTableHead}
-                                renderHead={(item, index) => renderHead(item, index)}
-                                bodyData={filtredRecus}
-                                renderBody={(item, index) => renderBody(item, index)}
-                                />
+                                <div>
+                                    <div style={{margin:20}}><RecuTotalList articles={props.articleId} dates={[fromDate,toDate]} data={totals}/></div>
+                                    <Table
+                                    limit='10'
+                                    headData={customerTableHead}
+                                    renderHead={(item, index) => renderHead(item, index)}
+                                    bodyData={filtredRecus}
+                                    renderBody={(item, index) => renderBody(item, index)}
+                                    />
+
+                                </div>
+                                
                             }
                         </div>
                     </div>

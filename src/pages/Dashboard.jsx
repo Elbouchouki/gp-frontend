@@ -280,9 +280,9 @@ const Dashboard = () => {
                         <div className="col-12">
                                     <StatusCard
                                         icon="bx bx-money"
-                                        count={loading ? <Loader />:normalData[3]+" Dh"}
+                                        count={loading ? <Loader />:normalData[3] === null ? "0 Dh":normalData[3]?.toLocaleString()+" Dh"}
                                         title="Revenue"
-                                        daily={active==="day"||active==="custom"?null:daily?daily[1]+" dh":null}
+                                        daily={active==="day"||active==="custom"?null:daily?daily[1].toLocaleString() +" dh":null}
                                         />
                         </div>
                          
@@ -369,7 +369,7 @@ const Dashboard = () => {
                         <div className="col-12">
                                     <StatusCard
                                         icon="bx bx-money"
-                                        count={sevenChartLoading ? <Loader />:sevenData[3]+" Dh"}
+                                        count={sevenChartLoading ? <Loader />:sevenData[3]?.toLocaleString()+" Dh"}
                                         title="Revenue"
                                         />
                         </div>

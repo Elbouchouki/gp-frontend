@@ -22,11 +22,6 @@
         "icon": "bx bxs-traffic-barrier",
         "role":"show_mouvement"
     },{
-        "display_name": "Annulations",
-        "route": "/annulations",
-        "icon": "bx bx-window-close",
-        "role":"show_annulation"
-    },{
         "display_name": "Utilisateurs",
         "route": "/utilisateurs",
         "icon": "bx bxs-user-detail",

@@ -49,7 +49,7 @@ const ListItem = ({title,nbr,somme,nbrAn,sommeAn}) => {
                               (somme) 
                                           :
                               <span style={{color:"green"}}>
-                                {"+"+(somme)}
+                                {"+"+(somme).toLocaleString()}
                               </span>
                             }
                         </div>
@@ -77,7 +77,7 @@ const ListItem = ({title,nbr,somme,nbrAn,sommeAn}) => {
                               (sommeAn) 
                                           :
                               <span style={{color:"red"}}>
-                                {"-"+(sommeAn)}
+                                {"-"+(sommeAn).toLocaleString()}
                               </span>
                             }
                           </div>

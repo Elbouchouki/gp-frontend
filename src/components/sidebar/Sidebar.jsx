@@ -41,7 +41,6 @@ const Sidebar = props => {
                                         />
                                     </Link>
                         }
-                        console.log(item)
                         return null  
                     })
                 }

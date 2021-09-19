@@ -89,7 +89,7 @@ const CustomList = ({dataList,dates},...props) => {
                   {((item.ticket_normal+item.ticket_illisible+item.ticket_perdu))===0?
                         0
                         :<span style={{color:"green"}}>
-                        {"+"+(item.ticket_normal+item.ticket_illisible+item.ticket_perdu).toLocaleString()}
+                        {"+"+(item.ticket_normal+item.ticket_illisible+item.ticket_perdu)?.toLocaleString()}
                       </span>
                       }
                     
@@ -105,7 +105,7 @@ const CustomList = ({dataList,dates},...props) => {
                   {(item.nouveau_abonne+item.recharge_abonne+item.recharge_abonne_oncf)===0?
                         0
                         :<span style={{color:"green"}}>
-                          {"+"+(item.nouveau_abonne+item.recharge_abonne+item.recharge_abonne_oncf).toLocaleString()}
+                          {"+"+(item.nouveau_abonne+item.recharge_abonne+item.recharge_abonne_oncf)?.toLocaleString()}
                         </span>
                       }
                     </div>
@@ -120,7 +120,7 @@ const CustomList = ({dataList,dates},...props) => {
                       {(item.ticket_normal_an+item.ticket_illisible_an+item.ticket_perdu_an+item.nouveau_abonne_an+item.recharge_abonne_an+item.recharge_abonne_oncf_an)===0?
                         0
                         :<span style={{color:"red"}}>
-                          {"-"+(item.ticket_normal_an+item.ticket_illisible_an+item.ticket_perdu_an+item.nouveau_abonne_an+item.recharge_abonne_an+item.recharge_abonne_oncf_an).toLocaleString()}
+                          {"-"+(item.ticket_normal_an+item.ticket_illisible_an+item.ticket_perdu_an+item.nouveau_abonne_an+item.recharge_abonne_an+item.recharge_abonne_oncf_an)?.toLocaleString()}
                          </span>
                       }
                       </div>
@@ -131,7 +131,7 @@ const CustomList = ({dataList,dates},...props) => {
                 <div style={{ textAlign: 'right' }}>
                   <div style={slimText}>Total</div> 
                     <div style={dataStyle}>
-                      {(item.ticket_normal+item.ticket_illisible+item.ticket_perdu+item.nouveau_abonne+item.recharge_abonne+item.recharge_abonne_oncf).toLocaleString()}  
+                      {(item.ticket_normal+item.ticket_illisible+item.ticket_perdu+item.nouveau_abonne+item.recharge_abonne+item.recharge_abonne_oncf)?.toLocaleString()}  
                     </div>              
                 </div>
                 
@@ -242,7 +242,7 @@ const CustomList = ({dataList,dates},...props) => {
                           {((currentItem?.ticket_normal+currentItem?.ticket_illisible+currentItem?.ticket_perdu))===0?
                                 0
                                 :<span style={{color:"green"}}>
-                                {"+"+(currentItem?.ticket_normal+currentItem?.ticket_illisible+currentItem?.ticket_perdu)}
+                                {"+"+(currentItem?.ticket_normal+currentItem?.ticket_illisible+currentItem?.ticket_perdu)?.toLocaleString()}
                               </span>
                               }
                           </div>
@@ -252,10 +252,10 @@ const CustomList = ({dataList,dates},...props) => {
                         <div style={{ textAlign: 'right' }}>
                           <div style={slimText}>Abonnées</div>
                           <div style={dataStyle}>
-                          {(currentItem?.recharge_abonne_an)===0?
+                          {(currentItem?.nouveau_abonne+currentItem?.recharge_abonne+currentItem?.recharge_abonne_oncf)===0?
                                 0
                                 :<span style={{color:"green"}}>
-                                  {"+"+(currentItem?.recharge_abonne)}
+                                  {"+"+(currentItem?.nouveau_abonne+currentItem?.recharge_abonne+currentItem?.recharge_abonne_oncf)?.toLocaleString()}
                                 </span>
                               }
                             </div>
@@ -268,7 +268,7 @@ const CustomList = ({dataList,dates},...props) => {
                               {(currentItem?.ticket_normal_an+currentItem?.ticket_illisible_an+currentItem?.ticket_perdu_an+currentItem?.recharge_abonne_an)===0?
                                 0
                                 :<span style={{color:"red"}}>
-                                  {"-"+(currentItem?.ticket_normal_an+currentItem?.ticket_illisible_an+currentItem?.ticket_perdu_an+currentItem?.recharge_abonne_an)}
+                                  {"-"+(currentItem?.ticket_normal_an+currentItem?.ticket_illisible_an+currentItem?.ticket_perdu_an+currentItem?.nouveau_abonne_an+currentItem?.recharge_abonne_an+currentItem?.recharge_abonne_oncf_an)?.toLocaleString()}
                                 </span>
                               }
                               </div>
@@ -278,10 +278,10 @@ const CustomList = ({dataList,dates},...props) => {
                         <div style={{ textAlign: 'right' }}>
                           <div style={slimText}>Total</div> 
                             <div style={dataStyle}>
-                              {(currentItem?.ticket_normal+currentItem?.ticket_illisible+currentItem?.ticket_perdu+currentItem?.recharge_abonne)}  
+                              {(currentItem?.ticket_normal+currentItem?.ticket_illisible+currentItem?.ticket_perdu+currentItem?.nouveau_abonne+currentItem?.recharge_abonne+currentItem?.recharge_abonne_oncf)?.toLocaleString()}  
                             </div>              
                         </div>
-                      </FlexboxGrid.Item>
+                      </FlexboxGrid.Item> 
                   </FlexboxGrid>
                 </List.Item>
               </List>
