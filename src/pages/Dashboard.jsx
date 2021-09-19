@@ -89,7 +89,7 @@ const DatePickerFreeDate = ({ handleDateChange }) => {
 const Dashboard = () => {
     const themeReducer = useSelector(state => state.ThemeReducer.mode)
     const authReducer = useSelector(state=>state.AuthReducer)
-    const user = authReducer.user
+    // const user = authReducer.user
     const token = authReducer.token
     const [toDate, setToDate] = useState(new Date())
     const [fromDate, setFromDate] = useState(new Date())
@@ -142,7 +142,7 @@ const Dashboard = () => {
         },
         xaxis: {
             type: 'category',
-            categories: ["Ticket Normal","Ticket Illisible","Ticket Perdu","Entrée Abonné","Recharge Abonné"],
+            categories: ["Ticket Normal","Ticket Illisible","Ticket Perdu","Nouveaux Abonnés","Recharges Abonnés","Recharges Abonnés ONCF"],
         },
         legend: {
             position: 'bottom'
@@ -274,7 +274,7 @@ const Dashboard = () => {
                                         icon="bx bx-receipt"
                                         count={loading ? <Loader />:normalData[2]}
                                         title="Nombre de Tickets"
-                                        daily={active==="day"||active==="custom"?null:daily?daily[0]:null}
+                                        daily={loading ? null:active==="day"||active==="custom"?null:daily?daily[1] === null ? "0":daily[0]:null}
                                         />
                         </div>
                         <div className="col-12">
@@ -282,7 +282,7 @@ const Dashboard = () => {
                                         icon="bx bx-money"
                                         count={loading ? <Loader />:normalData[3] === null ? "0 Dh":normalData[3]?.toLocaleString()+" Dh"}
                                         title="Revenue"
-                                        daily={active==="day"||active==="custom"?null:daily?daily[1].toLocaleString() +" dh":null}
+                                        daily={loading ? null:active==="day"||active==="custom"?null:daily?daily[1] === null ? "0 Dh":daily[1]?.toLocaleString() +" dh":null}
                                         />
                         </div>
                          
