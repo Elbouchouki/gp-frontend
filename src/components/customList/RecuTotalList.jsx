@@ -45,7 +45,6 @@ const RecuTotalList = ({data,dates,articles}) => {
     return (
         data === null ? null : <List>
         <List.Item>
-        {console.log(articles)}
             <FlexboxGrid>
             <FlexboxGrid.Item colspan={5} style={styleCenter}>
                 <div style={{ textAlign: 'right' }}>

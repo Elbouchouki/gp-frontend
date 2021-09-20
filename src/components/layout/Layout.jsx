@@ -67,7 +67,7 @@ const Layout = () => {
                             alignItems: "center",}}>
                             <img style={{width:"100%",height:"auto"}} src={mobile} alt="mobile" />
                             <div style={{color:"white",fontWeight:"bold",textAlign: "center"}}>La version mobile est en cours de construction.</div>
-                            <div style={{color:"white",fontWeight:"300",padding:20,textAlign: "center"}}>Veuillez accéder l'application à l'aide d'un ordinateur ou d'un pc portable.</div>
+                            <div style={{color:"white",fontWeight:"300",padding:20,textAlign: "center"}}>Veuillez accéder à l'application à l'aide d'un ordinateur ou d'un pc portable.</div>
 
                         </div>
                         <div style={{color:"white",flexShrink:0,justifyContent: "center",display: "flex",flexDirection:"row"}}>

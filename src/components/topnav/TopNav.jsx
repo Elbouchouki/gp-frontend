@@ -179,8 +179,9 @@ const Topnav = () => {
         var excelFiltred = await exData?.result.map((ligne)=>({
                 date:ligne.date_j,
                 cm:(ligne.ticket_normal+ligne.ticket_illisible+ligne.ticket_perdu),
-                abonne:ligne.recharge_abonne,
-                taj:(ligne.ticket_normal_an+ligne.ticket_illisible_an+ligne.ticket_perdu_an+ligne.recharge_abonne_an),
+                abonne:ligne.recharge_abonne+ligne.nouveau_abonne+ligne.recharge_abonne_oncf,
+                // taj:(ligne.ticket_normal_an+ligne.ticket_illisible_an+ligne.ticket_perdu_an+ligne.recharge_abonne_an+ligne.nouveau_abonne_an+ligne.recharge_abonne_oncf_an),
+                taj:ligne.total_an,
                 total:ligne.total
             })
         )
