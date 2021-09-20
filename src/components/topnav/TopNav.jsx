@@ -136,7 +136,7 @@ const Topnav = () => {
     const [showExportModal,setShowExportModal]=useState(false)
     const [showLogoutModal,setShowLogoutModal]=useState(false)
     const [season,setSeason]=useState(null)
-    const [ville,setVille]=useState(3)
+    const [ville,setVille]=useState(null)
     const [listVilles,setListVilles]=useState([])
     const [fromDate, setFromDate] = useState(null)
     const [toDate, setToDate] = useState(null)
@@ -186,8 +186,9 @@ const Topnav = () => {
             })
         )
         setExcelData(excelFiltred)
+        setVille(null)
 
-        if(exporter){
+        if(excelData && exporter){
             Alert.close()
             Alert.success('Telechargement ...', 5000)
             const options = exporter.workbookOptions();
