@@ -169,11 +169,11 @@ const Topnav = () => {
     const confirmExportModal = async () =>{
         setIsSelected(false);
         setShowExportModal(false);
-        Alert.warning('Exportation encours...\n(ça prend un peu de temps)', 30000)
+        Alert.info('Exportation encours...', 30000)
+        Alert.warning("L'exportation prend du temps", 30000)
         const datesReq = await ApiCall.getDates(token,fromDate,toDate)
         const dateList = await datesReq?.result.map(element => element.date)
         var exData = [];
-        
         if(ville){
             for(const element in dateList){
                 var data = await  ApiCall.getExcelData(token,ville,dateList[element])
@@ -197,7 +197,6 @@ const Topnav = () => {
         )
         await setExcelData(excelFiltred)
         setVille(null)
-
         if(exporter){
             Alert.close()
             Alert.success('Telechargement ...', 5000)
