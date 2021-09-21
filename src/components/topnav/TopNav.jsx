@@ -198,7 +198,7 @@ const Topnav = () => {
         await setExcelData(excelFiltred)
         setVille(null)
 
-        if(excelData && exporter){
+        if(exporter){
             Alert.close()
             Alert.success('Telechargement ...', 5000)
             const options = exporter.workbookOptions();
@@ -219,7 +219,12 @@ const Topnav = () => {
                 ],
               };
               rows.unshift(headerRow);
-            exporter.save(options);
+            try {
+                exporter.save(options);
+            } catch (error) {
+                Alert.close()
+                Alert.error('Erreur', 5000)
+            }
             setExcelData(null)
             return
         }
