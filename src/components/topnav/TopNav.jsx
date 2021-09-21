@@ -169,7 +169,7 @@ const Topnav = () => {
     const confirmExportModal = async () =>{
         setIsSelected(false);
         setShowExportModal(false);
-        Alert.info('Exportation encours...', 30000)
+        Alert.info('Exportation encours...')
         Alert.warning("L'exportation prend du temps", 30000)
         const datesReq = await ApiCall.getDates(token,fromDate,toDate)
         const dateList = await datesReq?.result.map(element => element.date)
