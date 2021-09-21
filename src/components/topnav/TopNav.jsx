@@ -169,14 +169,25 @@ const Topnav = () => {
     const confirmExportModal = async () =>{
         setIsSelected(false);
         setShowExportModal(false);
-        Alert.warning('Exportation encours...', 30000)
-        var exData=null;
+        Alert.warning('Exportation encours...\n(ça prend un peu de temps)', 30000)
+        const datesReq = await ApiCall.getDates(token,fromDate,toDate)
+        const dateList = await datesReq?.result.map(element => element.date)
+        var exData = [];
+        
         if(ville){
-            exData = await ApiCall.getExcelData(token,ville,fromDate,toDate)
+            for(const element in dateList){
+                var data = await  ApiCall.getExcelData(token,ville,dateList[element])
+                exData.push(data?.result[0])
+                let result = await element;
+            }
         }else{
-            exData = await ApiCall.getExcelDataAll(token,fromDate,toDate)
+            for(const element in dateList){
+                var data = await  ApiCall.getExcelDataAll(token,dateList[element])
+                exData.push(data?.result[0])
+                let result = await element;
+            }
         }
-        var excelFiltred = await exData?.result.map((ligne)=>({
+        var excelFiltred = await exData?.map((ligne)=>({
                 date:ligne.date_j,
                 cm:(ligne.ticket_normal+ligne.ticket_illisible+ligne.ticket_perdu),
                 abonne:ligne.recharge_abonne+ligne.nouveau_abonne+ligne.recharge_abonne_oncf,
@@ -184,7 +195,7 @@ const Topnav = () => {
                 total:ligne.total
             })
         )
-        setExcelData(excelFiltred)
+        await setExcelData(excelFiltred)
         setVille(null)
 
         if(excelData && exporter){
@@ -209,16 +220,18 @@ const Topnav = () => {
               };
               rows.unshift(headerRow);
             exporter.save(options);
+            setExcelData(null)
             return
         }
         Alert.close()
         Alert.error('Exportation echoué', 5000)
     }
     
-    const handleIntervalDateChange = (value) => {
+    const handleIntervalDateChange = async(value) => {
         setIsSelected(true)
         setFromDate(value[0])
         setToDate(value[1])
+        
     }
     const handleYearChange = (year) =>{
         setIsSelected(true)

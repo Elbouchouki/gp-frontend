@@ -192,7 +192,6 @@ const Dashboard = () => {
     useEffect(() => {
         async function fetchData(){
             setLoading(true)
-            console.log(new Date())
             const daything = await ApiCall.getStatistiques(token,"day");
             setDaily([daything.recus[0]?.count,daything.recus[0]?.sum])
             var countArticle  = []

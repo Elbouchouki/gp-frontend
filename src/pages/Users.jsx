@@ -340,8 +340,6 @@ const Card = ({roles,user,update,listUsers}) => {
         return !listUsers.some(user => user.username === username)
     }
     const checkCIN =(cin)=>{
-        console.log(cin)
-        console.log(user.cin)
         if (cin===user.cin) return true
         return !listUsers.some(user => user.cin === cin)
     }

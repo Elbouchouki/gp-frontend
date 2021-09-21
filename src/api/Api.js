@@ -1,16 +1,32 @@
 import axios from "axios";
 import moment from "moment";
 export default class ApiCall {
-  static async getExcelData(token, ville_id, from_date, to_date) {
+  static async getDates(token, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD");
       const date_to = moment(to_date).format("YYYY-MM-DD");
+      const dates = await axios.post(
+        `${process.env.REACT_APP_API_URL}excel/dates`,
+        {
+          date_from: date_from,
+          date_to: date_to,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return dates.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async getExcelData(token, ville_id, date) {
+    try {
       const excelData = await axios.post(
         `${process.env.REACT_APP_API_URL}excel`,
         {
           ville_id: ville_id,
-          date_from: date_from,
-          date_to: date_to,
+          dates: date,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -21,15 +37,12 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getExcelDataAll(token, from_date, to_date) {
+  static async getExcelDataAll(token, date) {
     try {
-      const date_from = moment(from_date).format("YYYY-MM-DD");
-      const date_to = moment(to_date).format("YYYY-MM-DD");
       const excelDataAll = await axios.post(
         `${process.env.REACT_APP_API_URL}excel/all`,
         {
-          date_from: date_from,
-          date_to: date_to,
+          dates: date,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
