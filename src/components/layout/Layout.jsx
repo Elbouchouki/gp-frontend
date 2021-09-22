@@ -6,6 +6,7 @@ import TopNav from '../topnav/TopNav'
 import TopNavMobile from '../topnav/TopNavMobile'
 import Routes from '../Routes'
 import Login from "../../pages/Login"
+import Maintenance from "../../pages/Maintenance"
 import { BrowserRouter, Route } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { Loader } from 'rsuite'
@@ -77,23 +78,26 @@ const Layout = () => {
                 </div>)
     }
     return (
-        
-        loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
-        authReducer?.user?
-        <BrowserRouter>
-            <Route render={(props) => (
-                <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
-                    <Sidebar {...props}/>
-                    <div className="layout__content">
-                        <TopNav/>
-                        <div className="layout__content-main">
-                            <Routes/>
-                        </div>
-                    </div>
-                </div>
-            )}/>
-        </BrowserRouter>:<Login/>
+            <Maintenance/>
     )
+    // (
+        
+    //     loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
+    //     authReducer?.user?
+    //     <BrowserRouter>
+    //         <Route render={(props) => (
+    //             <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
+    //                 <Sidebar {...props}/>
+    //                 <div className="layout__content">
+    //                     <TopNav/>
+    //                     <div className="layout__content-main">
+    //                         <Routes/>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}/>
+    //     </BrowserRouter>:<Login/>
+    // )
 }
 
 export default Layout
