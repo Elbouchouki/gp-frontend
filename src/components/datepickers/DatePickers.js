@@ -8,6 +8,7 @@ const styles = {
 export const DatePickerDate = ({ handleDateChange }) => {
   return (
     <DatePicker
+      isoWeek
       block
       style={styles}
       onChange={(value) => {
@@ -36,6 +37,7 @@ export const DatePickerDate = ({ handleDateChange }) => {
 export const DatePickerWeekDate = ({ active, handleDateChange }) => {
   return (
     <DateRangePicker
+      isoWeek
       showOneCalendar={isMobile}
       cleanable={false}
       block
@@ -69,6 +71,7 @@ export const DatePickerWeekDate = ({ active, handleDateChange }) => {
 export const DatePickerFreeDate = ({ handleDateChange }) => {
   return (
     <DateRangePicker
+      isoWeek
       showOneCalendar={isMobile}
       cleanable={false}
       block
@@ -120,6 +123,7 @@ export const DatePickerFreeDate = ({ handleDateChange }) => {
 export const DatePickerMonthDate = ({ active, handleDateChange }) => {
   return (
     <DateRangePicker
+      isoWeek
       showOneCalendar={isMobile}
       cleanable={false}
       block
