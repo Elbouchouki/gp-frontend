@@ -160,6 +160,7 @@ const Topnav = () => {
         setShowLogoutModal(false);
     }
     const exportModalopen=(event)=>{
+        setVille(null)
         setSeason(event)
         setShowExportModal(true);
     }
@@ -169,8 +170,8 @@ const Topnav = () => {
     const confirmExportModal = async () =>{
         setIsSelected(false);
         setShowExportModal(false);
-        Alert.info('Exportation encours...')
-        Alert.warning("L'exportation prend du temps", 30000)
+        // Alert.info('Exportation encours...')
+        Alert.warning("Exportation encours...", 90000)
         const datesReq = await ApiCall.getDates(token,fromDate,toDate)
         const dateList = await datesReq?.result.map(element => element.date)
         var exData = [];
@@ -196,7 +197,6 @@ const Topnav = () => {
             })
         )
         await setExcelData(excelFiltred)
-        setVille(null)
         if(exporter){
             Alert.close()
             Alert.success('Telechargement ...', 5000)
@@ -208,7 +208,7 @@ const Topnav = () => {
                 height: 70,
                 cells: [
                   {
-                    value: `REPORTING DES CA JOURNALIERES ${!ville?"DE TOUS LES PARKING":"DU PARKING DE "+getVille(ville)} EN DH/HT ${interval}`,
+                    value: `REPORTING DES CA JOURNALIERES ${!ville?"DE TOUS LES PARKING":"DU PARKING DE "+getVille(ville)} EN DH/TTC ${interval}`,
                     fontSize: 16,
                     colSpan: 5,
                     wrap:true,
