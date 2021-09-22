@@ -20,12 +20,14 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-device-detect": "^1.17.0",
     "react-dom": "^17.0.2",
+    "react-particles-js": "^3.5.3",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-to-print": "^2.13.0",
     "redux": "^4.1.1",
-    "rsuite": "^4.10.2",
+    "rsuite": "^4.10.3",
+    "tsparticles": "^1.35.1",
     "web-vitals": "^1.1.2"
   },
   "scripts": {
