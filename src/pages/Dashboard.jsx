@@ -32,6 +32,7 @@ const StCustomNav = ({ active, onSelect, ...props }) => {
 const DatePickerFreeDate = ({ handleDateChange }) => {
     return (
       <DateRangePicker
+        isoWeek
         cleanable={false}
         style={{marginTop: 10}}
         showOneCalendar
@@ -61,6 +62,7 @@ const DatePickerFreeDate = ({ handleDateChange }) => {
     return (
       <DateRangePicker
         cleanable={false}
+        isoWeek
         style={{marginTop: 10}}
         showOneCalendar
         onChange={(value) => {
