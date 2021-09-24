@@ -5,7 +5,7 @@ import TopNav from '../topnav/TopNav'
 import TopNavMobile from '../topnav/TopNavMobile'
 import Routes from '../Routes'
 import Login from "../../pages/Login"
-import Maintenance from "../../pages/Maintenance"
+// import Maintenance from "../../pages/Maintenance"
 import { isMobile } from "react-device-detect";
 import { BrowserRouter, Route } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -13,8 +13,6 @@ import { Loader } from 'rsuite'
 import ThemeAction from '../../redux/actions/ThemeAction'
 import AuthAction from "../../redux/actions/AuthAction"
 import Dashboard from "../../pages/mobile/Dashboard"
-import MaintenanceMobile from '../maintenance/MaintenanceMobile';
-
 
 const Layout = () => {
 
@@ -35,38 +33,43 @@ const Layout = () => {
         dispatch(ThemeAction.setColor(colorClass))
         setLoading(false)
     }, [dispatch])
-    // if (isMobile) {
-        //  (loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
-        // authReducer?.user?
-        // <BrowserRouter>
-        //     <Route render={(props) => (
-        //         <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
-        //             <TopNavMobile/>
-        //                 <div className="layout__content-mobile">
-        //                     <Dashboard/>
-        //                 </div>
-        //         </div>
-        //     )}/>
-        // </BrowserRouter>:<Login/>)
-        isMobile ? <MaintenanceMobile/> :
-                                            loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
-                                            authReducer?.user?
-                                            <BrowserRouter>
-                                                <Route render={(props) => (
-                                                    <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
-                                                        <Sidebar {...props}/>
-                                                        <div className="layout__content">
-                                                            <TopNav/>
-                                                            <div className="layout__content-main">
-                                                                <Routes/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}/>
-                                            </BrowserRouter>:<Login/>
-    // (
+    if (isMobile) {
+         (loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
+        authReducer?.user?
+        <BrowserRouter>
+            <Route render={(props) => (
+                <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
+                    <TopNavMobile/>
+                        <div className="layout__content-mobile">
+                            <Dashboard/>
+                        </div>
+                </div>
+            )}/>
+        </BrowserRouter>:<Login/>)
+    // // if (isMobile){
+    //     return (
     //         <Maintenance/>
-    // )
+    //     )
+    }
+   
+    return(
+        
+        loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
+        authReducer?.user?
+        <BrowserRouter>
+            <Route render={(props) => (
+                <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
+                    <Sidebar {...props}/>
+                    <div className="layout__content">
+                        <TopNav/>
+                        <div className="layout__content-main">
+                            <Routes/>
+                        </div>
+                    </div>
+                </div>
+            )}/>
+        </BrowserRouter>:<Login/>
+    )
 }
 
 export default Layout
