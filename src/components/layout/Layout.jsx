@@ -34,7 +34,7 @@ const Layout = () => {
         setLoading(false)
     }, [dispatch])
     if (isMobile) {
-         (loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
+        return (loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
         authReducer?.user?
         <BrowserRouter>
             <Route render={(props) => (
