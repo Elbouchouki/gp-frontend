@@ -5,13 +5,13 @@
         "icon": "bx bx-category-alt"
     },
     {
-        "display_name": "Tickets Horaire",
+        "display_name": "Tickets",
         "route": "/tickets",
         "icon": "bx bxs-coupon",
         "role":"show_recu_normal"
     },
     {
-        "display_name": "Abonnés",
+        "display_name": "Abonnements",
         "route": "/abonnés",
         "icon": "bx bx-credit-card",
         "role":"show_recu_recharge_abonne"

@@ -5,7 +5,7 @@ import TopNav from '../topnav/TopNav'
 import TopNavMobile from '../topnav/TopNavMobile'
 import Routes from '../Routes'
 import Login from "../../pages/Login"
-// import Maintenance from "../../pages/Maintenance"
+import Maintenance from "../maintenance/Maintenance"
 import { isMobile } from "react-device-detect";
 import { BrowserRouter, Route } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -34,22 +34,22 @@ const Layout = () => {
         setLoading(false)
     }, [dispatch])
     if (isMobile) {
-        return (loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
-        authReducer?.user?
-        <BrowserRouter>
-            <Route render={(props) => (
-                <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
-                    <TopNavMobile/>
-                        <div className="layout__content-mobile">
-                            <Dashboard/>
-                        </div>
-                </div>
-            )}/>
-        </BrowserRouter>:<Login/>)
-    // // if (isMobile){
-    //     return (
-    //         <Maintenance/>
-    //     )
+        // return (loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
+        // authReducer?.user?
+        // <BrowserRouter>
+        //     <Route render={(props) => (
+        //         <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
+        //             <TopNavMobile/>
+        //                 <div className="layout__content-mobile">
+        //                     <Dashboard/>
+        //                 </div>
+        //         </div>
+        //     )}/>
+        // </BrowserRouter>:<Login/>)
+    // if (isMobile){
+        return (
+            <Maintenance/>
+        )
     }
    
     return(

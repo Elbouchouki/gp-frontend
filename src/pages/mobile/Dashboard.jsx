@@ -329,7 +329,7 @@ const Dashboard = () => {
                                 <div style={{display:'flex',justifyContent:'center',padding:'50px'}}>
                                     <Loader  content="Chargement en cours..." />
                                 </div>
-                                :<CustomList dataList={stData}/>}
+                                :<CustomList dates={[fromDate,toDate]} dataList={stData}/>}
 
              
             </div>
