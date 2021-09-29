@@ -1,16 +1,66 @@
 import React,{useRef,useState} from 'react'
 import {useReactToPrint} from 'react-to-print'
-import { FlexboxGrid , List,IconButton,Icon,Modal,Button} from 'rsuite'
+import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
+import TextImageIcon from '@rsuite/icons/TextImage';
+import DetailIcon from '@rsuite/icons/Detail';
+import FileDownloadIcon from '@rsuite/icons/FileDownload';
+import {aggregateBy } from "@progress/kendo-data-query";
+import { FlexboxGrid , List,IconButton,Icon,Modal,Button,Dropdown,Alert} from 'rsuite'
 import RecusListItem from './RecusListItem'
 import moment from 'moment'
 const RecuTotalList = ({data,dates,articles}) => {
     const printRef = useRef()
+    const [exportData,setExportData]=useState(null)
+    const [exporter,setExporter] =useState(null)
     const [show,setShow]=useState(false);
     const closeModal=()=> {
       setShow(false)
     }
-    const openModal=()=> {
+    const openModal= async() => {
+      const datas = await articles.map((element,index)=> ({
+        title:data[`${element}`]?.name ,
+        nbr:data[`${element}`]?.['confirmé'].cpt ,
+        somme:data[`${element}`]?.['confirmé'].total,
+        nbrAn:data[`${element}`]?.['annulé'].cpt ,
+        sommeAn:data[`${element}`]?.['annulé'].total
+       })
+       )
+      setExportData(datas)
       setShow(true)
+    }
+    const handleExport =()=>{
+      Alert.warning("Exportation encours...", 90000)
+    if(exporter){
+      Alert.close()
+      Alert.success('Telechargement ...', 5000)
+      const options = exporter.workbookOptions();
+      const rows = options.sheets[0].rows;
+      options.sheets[0].frozenRows = 2;
+      const interval = `DU ${moment(dates[0]).format("DD/MM/YYYY")} AU ${moment(dates[1]).format("DD/MM/YYYY")}`
+      const headerRow = {
+          height: 70,
+          cells: [
+            {
+              value: `Details Tickets ${interval}`,
+              fontSize: 16,
+              colSpan: 5,
+              wrap:true,
+              textAlign:"center",
+              verticalAlign:"center"
+            },
+          ],
+        };
+        rows.unshift(headerRow);
+      try {
+          exporter.save(options);
+      } catch (error) {
+          Alert.close()
+          Alert.error('Erreur', 5000)
+      }
+      return
+    }
+    Alert.close()
+    Alert.error('Exportation echoué', 5000)
     }
     const handlePrint = useReactToPrint({
       documentTitle:`details`,
@@ -116,7 +166,7 @@ const RecuTotalList = ({data,dates,articles}) => {
         </List.Item>
         <Modal show={show} onHide={closeModal}>
           <Modal.Header>
-            <Modal.Title>Détails</Modal.Title>
+            <Modal.Title>Détails Tickets</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div ref={printRef}>
@@ -138,7 +188,7 @@ const RecuTotalList = ({data,dates,articles}) => {
                     overflow: 'hidden'
                   }}
                 >
-                    <div style={titleStyle}>Détails Recus</div>
+                    <div style={titleStyle}>Détails Tickets</div>
                   <div style={slimText}>
                     <div>                
                       {moment(dates[0]).format("DD/MM/YYYY")===moment(dates[1]).format("DD/MM/YYYY") ? `Le ${moment(dates[0]).format("DD/MM/YYYY")}.`:`De ${moment(dates[0]).format("DD/MM/YYYY")} à ${moment(dates[1]).format("DD/MM/YYYY")}.`}
@@ -192,14 +242,89 @@ const RecuTotalList = ({data,dates,articles}) => {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button onClick={handlePrint} appearance="primary">
-              Imprimer
-            </Button>
+            <Dropdown placement="leftEnd" title=" Sauvegarder" appearance="primary" noCaret icon={<TextImageIcon />}>
+              <Dropdown.Item onClick={handleExport} icon={<DetailIcon/>}>Fichier Excel</Dropdown.Item>
+              <Dropdown.Item onClick={handlePrint} icon={<FileDownloadIcon />}>Impression PDF</Dropdown.Item>
+            </Dropdown>
             <Button onClick={closeModal} appearance="subtle">
               Fermer
             </Button>
           </Modal.Footer>
         </Modal>
+        <ExcelExport
+                data={exportData}
+                fileName={`DetailsTickets-${moment(dates[0]).format("DD/MM/YYYY")}-${moment(dates[1]).format("DD/MM/YYYY")}.xlsx`}
+                ref={setExporter}
+                creator="GestPark"
+
+        >
+                <ExcelExportColumn 
+                field="title"
+                title=" "
+                width={200} 
+                cellOptions={{
+                    color:"#fff",
+                    background: "#808080",
+                }}
+                footer={()=>"Totals"}
+                />
+                <ExcelExportColumn 
+                field="nbr"
+                title="Nbr.T Confirmés" 
+                width={120} 
+                footer={() => {
+                  const tol = aggregateBy(exportData, [
+                      {
+                        field: "nbr",
+                        aggregate: "sum",
+                      },
+                    ]);
+                  return `${tol.nbr.sum}`;
+                }}/>
+                
+                <ExcelExportColumn 
+                field="somme"
+                title="Total.T Confirmés" 
+                width={120}
+                footer={() => {
+                  const tol = aggregateBy(exportData, [
+                      {
+                        field: "somme",
+                        aggregate: "sum",
+                      },
+                    ]);
+                  return `${tol.somme.sum}`;
+                }}/>
+                
+                <ExcelExportColumn 
+                field="nbrAn"
+                title="Nbr.T Annulés" 
+                width={120}
+                footer={() => {
+                  const tol = aggregateBy(exportData, [
+                      {
+                        field: "nbrAn",
+                        aggregate: "sum",
+                      },
+                    ]);
+                  return `${tol.nbrAn.sum}`;
+                }}/>
+                
+                <ExcelExportColumn
+                field="sommeAn"
+                title="Total.T Annulés"
+                width={120}
+                footer={() => {
+                  const tol = aggregateBy(exportData, [
+                      {
+                        field: "sommeAn",
+                        aggregate: "sum",
+                      },
+                    ]);
+                  return `${tol.sommeAn.sum}`;
+                }}/>
+                
+        </ExcelExport>
     </List>
     )
 }

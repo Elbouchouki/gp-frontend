@@ -255,33 +255,7 @@ const Recu = (props) => {
             }
             var filtred = []
             var baseFilter = props.type==="normal"?tarification:tarificationAbonne
-            // if(ville !== null && ville !== undefined && tarifs.length === 0){
-            //     filtred.push(...listRecus.filter(item => {
-            //         return (
-            //             item.Ville.id === ville &&
-            //             (articles.length === 0 ?true:articles.includes(item.Article.id)) &&
-            //             ((etats===null || etats===undefined) ?true:item.etats === etats)
-            //         )
-            //     }))
-            // }
-            // if(tarifs.length !== 0 &&(ville===null || ville===undefined)){
-            //     filtred.push(...listRecus.filter(item => {
-            //         return (
-            //             tarifs.includes(item.valeur) &&
-            //             (articles.length === 0 ?true:articles.includes(item.Article.id)) &&
-            //             ((etats===null || etats===undefined) ?true:item.etats === etats)
-            //         )
-            //     }))
-            //     if(tarifs.includes(-1)){
-            //         filtred.push(...listRecus.filter(item =>{
-            //             return (
-            //                 !baseFilter.includes(item.valeur) && 
-            //                 (articles.length === 0 ?true:articles.includes(item.Article.id))&&
-            //                 ((etats===null || etats===undefined) ?true:item.etats === etats)
-            //             )
-            //         } ))
-            //     }
-            // }
+            
             if(tarifs.length !== 0){
                 var temp = []
                 temp.push(...listRecus.filter(item => tarifs.includes(item.valeur)))
@@ -303,9 +277,8 @@ const Recu = (props) => {
                         ((etats===null || etats===undefined) ?true:item.etats === etats)
                     )
                 }))
-                
             }
-            
+
             setfiltredRecus(filtred)
             if(filtred.length !== 0){
                 var all = props.type ==="normal" ? {

@@ -11,6 +11,7 @@ import ApiCall from '../../api/Api'
 import {useSelector,useDispatch } from 'react-redux'
 import AuthAction from "../../redux/actions/AuthAction"
 import moment from "moment";
+import groupArray from 'group-array'
 import {getVille,monthFullSwitch} from "../../helper/helper"
 
 const VilleSelect = ({items,handleUpdate,handleChange}) =>{
@@ -170,38 +171,41 @@ const Topnav = () => {
     const confirmExportModal = async () =>{
         setIsSelected(false);
         setShowExportModal(false);
-        // Alert.info('Exportation encours...')
         Alert.warning("Exportation encours...", 90000)
-        const datesReq = await ApiCall.getDates(token,fromDate,toDate)
-        const dateList = await datesReq?.result.map(element => element.date)
-        var exData = [];
-        if(ville){
-            for(const element in dateList){
-                var data = await  ApiCall.getExcelData(token,ville,dateList[element])
-                exData.push(data?.result[0])
-                let result = await element;
-            }
-        }else{
-            for(const element in dateList){
-                var data = await  ApiCall.getExcelDataAll(token,dateList[element])
-                exData.push(data?.result[0])
-                let result = await element;
-            }
+        var data = []
+        if(ville){            
+            data = await  ApiCall.getExcelData(token,ville,fromDate,toDate) 
+        }else{        
+            data = await  ApiCall.getExcelDataAll(token,fromDate,toDate)        
         }
-        var excelFiltred = await exData?.map((ligne)=>({
-                date:ligne.date_j,
-                cm:(ligne.ticket_normal+ligne.ticket_illisible+ligne.ticket_perdu),
-                abonne:ligne.recharge_abonne+ligne.nouveau_abonne+ligne.recharge_abonne_oncf,
-                taj:ligne.total_an,
-                total:ligne.total
+        var excelFiltred = []
+        const groupedData = groupArray(data.result,'date',"etats",'article_id')
+        Object.keys(groupedData).forEach(dateKey =>  
+            {
+            const nbr_cm = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.nbr||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.nbr||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.nbr||0)
+            const cm = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.montant||0)
+            const abonne = (groupedData[dateKey]['confirmé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[8]?.[0]?.montant||0)
+            const nbr_taj = (groupedData[dateKey]['annulé']?.[1]?.[0]?.nbr||0)+(groupedData[dateKey]['annulé']?.[2]?.[0]?.nbr||0)+(groupedData[dateKey]['annulé']?.[3]?.[0]?.nbr||0)
+            const taj = (groupedData[dateKey]['annulé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[3]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[8]?.[0]?.montant||0)
+            const total = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[8]?.[0]?.montant||0)
+            excelFiltred.push({
+                date:dateKey,
+                nbr_cm:nbr_cm,
+                cm:cm,
+                abonne:abonne,
+                nbr_taj:nbr_taj,
+                taj:taj,
+                total:total
             })
-        )
+        })
         await setExcelData(excelFiltred)
         if(exporter){
             Alert.close()
             Alert.success('Telechargement ...', 5000)
             const options = exporter.workbookOptions();
             const rows = options.sheets[0].rows;
+            let rowIndex = 0;
+            let lastDay = 0;
             options.sheets[0].frozenRows = 2;
             const interval = season==="month"?"MOIS "+monthFullSwitch(moment(toDate).month()+1)+" "+moment(fromDate).year():`DU ${moment(fromDate).format("DD/MM/YYYY")} AU ${moment(toDate).format("DD/MM/YYYY")}`
             const headerRow = {
@@ -210,13 +214,34 @@ const Topnav = () => {
                   {
                     value: `REPORTING DES CAS JOURNALIERES ${!ville?"DE TOUS LES PARKING":"DU PARKING DE "+getVille(ville)} EN DH/TTC ${interval}`,
                     fontSize: 16,
-                    colSpan: 5,
+                    colSpan: 7,
                     wrap:true,
                     textAlign:"center",
                     verticalAlign:"center"
                   },
                 ],
               };
+              rows[0].cells.push({background: "#7a7a7a",
+                                colSpan: 1,
+                                color: "#fff",
+                                firstCell: false,
+                                rowSpan: 1,
+                                value: "Change"})
+              rows.forEach((row) => {
+                if (row.type === "data") {
+                    let thisDay = parseFloat(row.cells[6].value)
+                    if(rowIndex === 0){
+                        row.cells.push({value: "", background: "#000"})
+                        lastDay=thisDay
+                      }else{
+                        let value = ((thisDay-lastDay)/lastDay).toLocaleString("en", { style: "percent", minimumFractionDigits: 2 })
+                        let background = ((thisDay-lastDay)/lastDay*100)<0?"#ff6e6e":"#3ec215"
+                        row.cells.push({value: value, background: background})
+                        lastDay=thisDay
+                      }
+                      rowIndex++
+                }
+              });
               rows.unshift(headerRow);
             try {
                 exporter.save(options);
@@ -311,7 +336,7 @@ const Topnav = () => {
                         >
                             <Dropdown.Item eventKey="week">Hebdomadaire</Dropdown.Item>
                             <Dropdown.Item eventKey="month">Mensuel</Dropdown.Item>
-                            <Dropdown.Item disabled eventKey="year">Annuel (En maintenance)</Dropdown.Item>     
+                            <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>     
                             <Dropdown.Item eventKey="custom">Libre</Dropdown.Item>        
                     </Dropdown>
                 </div>:null}  
@@ -326,12 +351,26 @@ const Topnav = () => {
                 fileName={`Reporting-${!ville?"Tous":getVille(ville)}-${moment(fromDate).format("DD/MM/YYYY")}-${moment(toDate).format("DD/MM/YYYY")}.xlsx`}
                 ref={setExporter}
                 filterable={true}
-                creator="Elbouchouki"
+                creator="GestPark"
 
             >   
                 <ExcelExportColumn field="date" title="Date" width={120} 
                 footer={()=>"Totals"}/>
-                <ExcelExportColumn field="cm" title="CM (P)" width={120} 
+                <ExcelExportColumn field="nbr_cm"
+                title="nbrT"
+                width={60} 
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "nbr_cm",
+                          aggregate: "sum",
+                        },
+                      ]);
+                    return `${tol.nbr_cm?.sum===undefined?0:tol.nbr_cm?.sum}`;
+                }}/>
+                <ExcelExportColumn field="cm"
+                title="CM (P)"
+                width={120} 
                 footer={() => {
                     const tol = aggregateBy(excelData, [
                         {
@@ -339,9 +378,11 @@ const Topnav = () => {
                           aggregate: "sum",
                         },
                       ]);
-                    return `${tol.cm.sum}`;
+                    return `${tol.cm?.sum===undefined?0:tol.cm?.sum}`;
                 }}/>
-                <ExcelExportColumn field="abonne" title="AB" width={120} 
+                <ExcelExportColumn field="abonne" 
+                title="AB" 
+                width={120} 
                 footer={() => {
                     const tol = aggregateBy(excelData, [
                         {
@@ -349,9 +390,26 @@ const Topnav = () => {
                           aggregate: "sum",
                         },
                       ]);
-                    return `${tol.abonne.sum}`;
+                    return `${tol.abonne?.sum===undefined?0:tol.abonne?.sum}`;
                 }}/>
-                <ExcelExportColumn field="taj" title="T A JUSTIFER" width={120}
+                <ExcelExportColumn field="nbr_taj" 
+                title="nbrT" 
+                width={60}
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "nbr_taj",
+                          aggregate: "sum",
+                        },
+                      ]);
+                    return `${tol.nbr_taj?.sum===undefined?0:tol.nbr_taj?.sum}`;
+                }}/>
+                <ExcelExportColumn field="taj" 
+                title="T A JUSTIFER" 
+                width={120}
+                // cellOptions={{
+                //     background: "#ff6e6e",
+                // }}
                 footer={() => {
                     const tol = aggregateBy(excelData, [
                         {
@@ -359,9 +417,14 @@ const Topnav = () => {
                           aggregate: "sum",
                         },
                       ]);
-                    return `${tol.taj.sum}`;
+                    return `${tol.taj?.sum===undefined?0:tol.taj?.sum}`;
                 }}/>
-                <ExcelExportColumn field="total" title="Total" width={120} 
+                <ExcelExportColumn field="total"
+                title="Total"
+                width={120} 
+                // cellOptions={{
+                //     background: "#3ec215",
+                // }}
                 footer={() => {
                     const tol = aggregateBy(excelData, [
                         {
@@ -369,7 +432,7 @@ const Topnav = () => {
                           aggregate: "sum",
                         },
                       ]);
-                    return `${tol.total.sum}`;
+                    return `${tol.total?.sum===undefined?0:tol.total?.sum}`;
                 }}/>
             </ExcelExport>
 

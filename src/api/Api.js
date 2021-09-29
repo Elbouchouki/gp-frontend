@@ -20,13 +20,16 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getExcelData(token, ville_id, date) {
+  static async getExcelData(token, ville_id, date_from, date_to) {
+    var date_f = moment(date_from).format("YYYY-MM-DD 00:00:00");
+    var date_t = moment(date_to).format("YYYY-MM-DD 23:59:59");
     try {
       const excelData = await axios.post(
         `${process.env.REACT_APP_API_URL}excel`,
         {
           ville_id: ville_id,
-          dates: date,
+          date_from: date_f,
+          date_to: date_t,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -37,33 +40,36 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getExcelDataAll(token, date) {
+  static async getExcelDataAll(token, date_from, date_to) {
+    var date_f = moment(date_from).format("YYYY-MM-DD 00:00:00");
+    var date_t = moment(date_to).format("YYYY-MM-DD 23:59:59");
     try {
-      const excelDataAll = await axios.post(
+      const excelData = await axios.post(
         `${process.env.REACT_APP_API_URL}excel/all`,
         {
-          dates: date,
+          date_from: date_f,
+          date_to: date_t,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      return excelDataAll.data;
+      return excelData.data;
     } catch (error) {
       console.log(error);
     }
   }
   static async getVilleStatistiques(token, active, from_date, to_date) {
     try {
-      var date_from = moment(from_date).format("YYYY-MM-DD");
-      var date_to = moment(to_date).format("YYYY-MM-DD");
+      var date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
+      var date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
       if (active === "yesterday") {
-        date_from = moment().subtract(1, "days").format("YYYY-MM-DD");
-        date_to = moment().subtract(1, "days").format("YYYY-MM-DD");
+        date_from = moment().subtract(1, "days").format("YYYY-MM-DD 00:00:00");
+        date_to = moment().subtract(1, "days").format("YYYY-MM-DD 23:59:59");
       }
       if (active === "day") {
-        date_from = moment().format("YYYY-MM-DD");
-        date_to = moment().format("YYYY-MM-DD");
+        date_from = moment().format("YYYY-MM-DD 00:00:00");
+        date_to = moment().format("YYYY-MM-DD 23:59:59");
       }
       const villeStatistiques = await axios.post(
         `${process.env.REACT_APP_API_URL}excel/ville`,
@@ -132,6 +138,25 @@ export default class ApiCall {
         }
       );
       return recus.data.result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async getBilans(token, from_date, to_date) {
+    try {
+      const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
+      const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      const bilans = await axios.post(
+        `${process.env.REACT_APP_API_URL}bilans`,
+        {
+          date_from: date_from,
+          date_to: date_to,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return bilans.data.result;
     } catch (error) {
       console.log(error);
     }

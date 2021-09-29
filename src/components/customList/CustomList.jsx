@@ -1,6 +1,10 @@
 import React, { useState,useRef } from 'react'
 import {useReactToPrint} from 'react-to-print'
-import { FlexboxGrid , List,Icon, Button,Modal } from 'rsuite'
+import { FlexboxGrid , List,Icon, Button,Modal,Dropdown ,Alert} from 'rsuite'
+import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
+import DetailIcon from '@rsuite/icons/Detail';
+import FileDownloadIcon from '@rsuite/icons/FileDownload';
+import TextImageIcon from '@rsuite/icons/TextImage';
 import { isMobile } from "react-device-detect";
 import moment from 'moment';
 import ListItem from './ListItem';
@@ -39,6 +43,8 @@ const CustomList = ({dataList,dates},...props) => {
     textAlign:"center"
   };
   const [currentItem,setCurrentItem]=useState(null);
+  const [exportData,setExportData]=useState(null)
+  const [exporter,setExporter] =useState(null)
   const printRef = useRef()
   const [show,setShow]=useState(false);
   const closeModal=()=> {
@@ -46,7 +52,97 @@ const CustomList = ({dataList,dates},...props) => {
   }
   const openModal=(item)=> {
     setCurrentItem(item)
+    
+    setExportData(
+      [
+       {
+        title:"Tickets Horaire" ,nbr:item.nbr_ticket_normal ,somme:item.ticket_normal  ,nbrAn:item.nbr_ticket_normal_an ,sommeAn:item.ticket_normal_an 
+        
+       },
+       {
+        title:"Tickets Illisible" ,nbr:item.nbr_ticket_illisible ,somme:item.ticket_illisible  ,nbrAn:item.nbr_ticket_illisible_an ,sommeAn:item.ticket_illisible_an 
+        
+       },
+       {
+        title:"Tickets Perdu" ,nbr:item.nbr_ticket_perdu ,somme:item.ticket_perdu  ,nbrAn:item.nbr_ticket_perdu_an ,sommeAn:item.ticket_perdu_an 
+        
+       },
+       {
+        title:"Nouveaux Abonnés" ,nbr:item.nbr_nouveau_abonne ,somme:item.nouveau_abonne  ,nbrAn:item.nbr_nouveau_abonne_an ,sommeAn:item.nouveau_abonne_an 
+        
+       },
+       {
+        title:"Recharges Abonnés Normaux" ,nbr:item.nbr_recharge_abonne ,somme:item.recharge_abonne  ,nbrAn:item.nbr_recharge_abonne_an ,sommeAn:item.recharge_abonne_an 
+        
+       },
+       {
+        title:"Recharges Abonnés ONCF" ,nbr:item.nbr_recharge_abonne_oncf ,somme:item.recharge_abonne_oncf  ,nbrAn:item.nbr_recharge_abonne_oncf_an ,sommeAn:item.recharge_abonne_oncf_an 
+       }
+      ]
+    )
     setShow(true)
+  }
+  const handleExport=()=>{
+    Alert.warning("Exportation encours...", 90000)
+    if(exporter){
+      Alert.close()
+      Alert.success('Telechargement ...', 5000)
+      const options = exporter.workbookOptions();
+      const rows = options.sheets[0].rows;
+      options.sheets[0].frozenRows = 2;
+      const interval = `DU ${moment(dates[0]).format("DD/MM/YYYY")} AU ${moment(dates[1]).format("DD/MM/YYYY")}`
+      const headerRow = {
+          height: 70,
+          cells: [
+            {
+              value: `Details ${currentItem?.ville} ${interval}`,
+              fontSize: 16,
+              colSpan: 5,
+              wrap:true,
+              textAlign:"center",
+              verticalAlign:"center"
+            },
+          ],
+        };
+        const addonTitle = {type:"header",
+                            value: "", 
+                            cells:[
+                              {value: "", color: "#fff",background:"#fff"},
+                              {value: "CM (P)", color: "#fff",background:"#808080"},
+                              {value: "Abonnements", color: "#fff",background:"#808080"},
+                              {value: "Tarifs à justifier", color: "#fff",background:"#808080"},
+                              {value: "Total", color: "#fff",background:"#808080"},
+                            ],
+                            background:"#808080"
+                            }
+        const addonData = {type:"data",
+        value: "", 
+        cells:[
+          {value: "", color: "#000"},
+          {value: currentItem?.ticket_normal+currentItem?.ticket_illisible+currentItem?.ticket_perdu, color: "#3ec215"},
+          {value: currentItem?.nouveau_abonne+currentItem?.recharge_abonne+currentItem?.recharge_abonne_oncf, color: "#3ec215"},
+          {value: currentItem?.ticket_normal_an+currentItem?.ticket_illisible_an+currentItem?.ticket_perdu_an+currentItem?.nouveau_abonne_an+currentItem?.recharge_abonne_an+currentItem?.recharge_abonne_oncf_an, color: "#ff6e6e"},
+          {value: currentItem?.ticket_normal+currentItem?.ticket_illisible+currentItem?.ticket_perdu+currentItem?.nouveau_abonne+currentItem?.recharge_abonne+currentItem?.recharge_abonne_oncf, color: "#000"},
+        ],
+        }
+        rows.unshift(headerRow);
+        rows.push({type:"data",
+        value: "", 
+        cells:[],
+        })
+        rows.push(addonTitle)
+        rows.push(addonData)
+        console.log(rows)
+      try {
+          exporter.save(options);
+      } catch (error) {
+          Alert.close()
+          Alert.error('Erreur', 5000)
+      }
+      return
+    }
+    Alert.close()
+    Alert.error('Exportation echoué', 5000)
   }
   const handlePrint = useReactToPrint({
     documentTitle:`details-${currentItem?.ville}`,
@@ -82,7 +178,7 @@ const CustomList = ({dataList,dates},...props) => {
                 </div> */}
               </FlexboxGrid.Item>
               {/*peak data*/}
-              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+              <FlexboxGrid.Item colspan={3} style={styleCenter}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={slimText}>CM (P)</div>
                   <div style={dataStyle}>
@@ -113,7 +209,7 @@ const CustomList = ({dataList,dates},...props) => {
                 
               </FlexboxGrid.Item>
               {/*uv data*/}
-              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+              <FlexboxGrid.Item colspan={3} style={styleCenter}>
                 <div style={{ textAlign: 'right' }}>
                   <div style={slimText}>Tàj</div>
                     <div style={dataStyle}>
@@ -122,6 +218,27 @@ const CustomList = ({dataList,dates},...props) => {
                         :<span style={{color:"red"}}>
                           {"-"+(item.ticket_normal_an+item.ticket_illisible_an+item.ticket_perdu_an+item.nouveau_abonne_an+item.recharge_abonne_an+item.recharge_abonne_oncf_an)?.toLocaleString()}
                          </span>
+                      }
+                      </div>
+                </div>
+                
+              </FlexboxGrid.Item>
+              <FlexboxGrid.Item colspan={3} style={styleCenter}>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={slimText}>Bilans</div>
+                    <div style={dataStyle}>
+                      {(item.bilans)===0?
+                        0:
+                        (item.bilans)<3?<span style={{color:"green"}}>
+                                          {(item.bilans)}
+                                        </span>:
+                       (item.bilans)===3?<span style={{color:"orange"}}>
+                                          {(item.bilans)}
+                                          </span>:
+                                          <span style={{color:"red"}}>
+                                          {(item.bilans)}
+                                          </span>
+                        
                       }
                       </div>
                 </div>
@@ -265,7 +382,7 @@ const CustomList = ({dataList,dates},...props) => {
                         <div style={{ textAlign: 'right' }}>
                           <div style={slimText}>Tàj</div>
                             <div style={dataStyle}>
-                              {(currentItem?.ticket_normal_an+currentItem?.ticket_illisible_an+currentItem?.ticket_perdu_an+currentItem?.recharge_abonne_an)===0?
+                              {(currentItem?.ticket_normal_an+currentItem?.ticket_illisible_an+currentItem?.ticket_perdu_an+currentItem?.nouveau_abonne_an+currentItem?.recharge_abonne_an+currentItem?.recharge_abonne_oncf_an)===0?
                                 0
                                 :<span style={{color:"red"}}>
                                   {"-"+(currentItem?.ticket_normal_an+currentItem?.ticket_illisible_an+currentItem?.ticket_perdu_an+currentItem?.nouveau_abonne_an+currentItem?.recharge_abonne_an+currentItem?.recharge_abonne_oncf_an)?.toLocaleString()}
@@ -289,14 +406,61 @@ const CustomList = ({dataList,dates},...props) => {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button onClick={handlePrint} appearance="primary">
+            {/* <Button onClick={handlePrint} appearance="primary">
               Imprimer
-            </Button>
+            </Button> */}
+            <Dropdown placement="leftEnd" title=" Sauvegarder" appearance="primary" noCaret icon={<TextImageIcon />}>
+              <Dropdown.Item onClick={handleExport} icon={<DetailIcon/>}>Fichier Excel</Dropdown.Item>
+              <Dropdown.Item onClick={handlePrint} icon={<FileDownloadIcon />}>Impression PDF</Dropdown.Item>
+            </Dropdown>
             <Button onClick={closeModal} appearance="subtle">
-              Fermer
+              Fermer  
             </Button>
           </Modal.Footer>
         </Modal>
+        <ExcelExport
+                data={exportData}
+                fileName={`Details-${currentItem?.ville}-${moment(dates[0]).format("DD/MM/YYYY")}-${moment(dates[1]).format("DD/MM/YYYY")}.xlsx`}
+                ref={setExporter}
+                creator="Elbouchouki"
+
+        >
+                <ExcelExportColumn 
+                field="title"
+                title=" "
+                width={200} 
+                cellOptions={{
+                    color:"#fff",
+                    background: "#808080",
+                }}
+                />
+                <ExcelExportColumn 
+                field="nbr"
+                title="Nbr Tickets" 
+                width={120} 
+                />
+                <ExcelExportColumn 
+                field="somme"
+                title="Somme" 
+                width={120}
+                />
+                <ExcelExportColumn 
+                field="nbrAn"
+                title="Nbr Tickets An" 
+                width={120}
+                // cellOptions={{
+                //     background: "#ff6e6e",
+                // }}
+                />
+                <ExcelExportColumn
+                field="sommeAn"
+                title="Somme Annulations"
+                width={120} 
+                // cellOptions={{
+                //     background: "#3ec215",
+                // }}
+                />
+        </ExcelExport>
       </List>
     )
 }

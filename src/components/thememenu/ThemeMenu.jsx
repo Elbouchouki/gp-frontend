@@ -117,7 +117,7 @@ const ThemeMenu = () => {
                 <button className="theme-menu__close" onClick={() => closeMenu()}>
                     <i className='bx bx-x'></i>
                 </button>
-                <div className="theme-menu__select">
+                {/* <div className="theme-menu__select">
                     <span>Themes</span>
                     <ul className="mode-list">
                         {
@@ -131,7 +131,7 @@ const ThemeMenu = () => {
                             ))
                         }
                     </ul>
-                </div>
+                </div> */}
                 <div className="theme-menu__select">
                     <span>Colours</span>
                     <ul className="mode-list">

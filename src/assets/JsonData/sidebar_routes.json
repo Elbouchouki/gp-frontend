@@ -17,11 +17,18 @@
         "role":"show_recu_recharge_abonne"
     },
     {
+        "display_name": "Bilans",
+        "route": "/bilans",
+        "icon": "bx bxs-note",
+        "role":"show_bilan"
+    },
+    {
         "display_name": "Mouvements",
         "route": "/mouvements",
         "icon": "bx bxs-traffic-barrier",
         "role":"show_mouvement"
-    },{
+    }
+    ,{
         "display_name": "Utilisateurs",
         "route": "/utilisateurs",
         "icon": "bx bxs-user-detail",
