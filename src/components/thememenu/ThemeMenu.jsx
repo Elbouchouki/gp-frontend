@@ -3,7 +3,7 @@ import React, {useRef, useState, useEffect} from 'react'
 import './thememenu.css'
 
 import { useDispatch } from 'react-redux'
-import { Icon } from 'rsuite'
+import { Gear } from '@rsuite/icons'
 import ThemeAction from '../../redux/actions/ThemeAction'
 
 const mode_settings = [
@@ -110,7 +110,7 @@ const ThemeMenu = () => {
     return (
         <div>
             <button ref={menu_toggle_ref} className="dropdown__toggle" onClick={() => setActiveMenu()}>
-                <Icon icon="cog" />
+                <Gear style={{fontSize:"1.5em"}}/>
             </button>
             <div ref={menu_ref} className="theme-menu">
                 <h4>Parametrage</h4>

@@ -1,7 +1,7 @@
 import axios from "axios";
 import moment from "moment";
 export default class ApiCall {
-  static async getDates(token, from_date, to_date) {
+  static async getDates(token, active, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD");
       const date_to = moment(to_date).format("YYYY-MM-DD");
@@ -20,9 +20,21 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getExcelData(token, ville_id, date_from, date_to) {
-    var date_f = moment(date_from).format("YYYY-MM-DD 00:00:00");
-    var date_t = moment(date_to).format("YYYY-MM-DD 23:59:59");
+  static async getExcelData(
+    token,
+    active,
+    ville_id,
+    date_from,
+    date_to,
+    hour_from,
+    hour_to,
+    is_hour,
+    hour_type
+  ) {
+    const date_f = moment(date_from).format("YYYY-MM-DD");
+    const date_t = moment(date_to).format("YYYY-MM-DD");
+    const hour_f = moment(hour_from).format("HH:mm");
+    const hour_t = moment(hour_to).format("HH:mm");
     try {
       const excelData = await axios.post(
         `${process.env.REACT_APP_API_URL}excel`,
@@ -30,6 +42,10 @@ export default class ApiCall {
           ville_id: ville_id,
           date_from: date_f,
           date_to: date_t,
+          hour_from: hour_f,
+          hour_to: hour_t,
+          is_hour: is_hour,
+          hour_type: hour_type,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -40,25 +56,29 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getExcelDataAll(token, date_from, date_to) {
-    var date_f = moment(date_from).format("YYYY-MM-DD 00:00:00");
-    var date_t = moment(date_to).format("YYYY-MM-DD 23:59:59");
-    try {
-      const excelData = await axios.post(
-        `${process.env.REACT_APP_API_URL}excel/all`,
-        {
-          date_from: date_f,
-          date_to: date_t,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      return excelData.data;
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  // static async getExcelDataAll(token, active, date_from, date_to) {
+  //   var date_f = moment(date_from).format("YYYY-MM-DD 00:00:00");
+  //   var date_t = moment(date_to).format("YYYY-MM-DD 23:59:59");
+  //   if (active === "free") {
+  //     date_f = moment(date_from).format("YYYY-MM-DD HH:mm");
+  //     date_t = moment(date_to).format("YYYY-MM-DD HH:mm");
+  //   }
+  //   try {
+  //     const excelData = await axios.post(
+  //       `${process.env.REACT_APP_API_URL}excel/all`,
+  //       {
+  //         date_from: date_f,
+  //         date_to: date_t,
+  //       },
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       }
+  //     );
+  //     return excelData.data;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
   static async getVilleStatistiques(token, active, from_date, to_date) {
     try {
       var date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
@@ -122,10 +142,14 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getRecus(token, article, from_date, to_date) {
+  static async getRecus(token, active, article, from_date, to_date) {
     try {
-      const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
-      const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      var date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
+      var date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      if (active === "free") {
+        date_from = moment(from_date).format("YYYY-MM-DD HH:mm");
+        date_to = moment(to_date).format("YYYY-MM-DD HH:mm");
+      }
       const recus = await axios.post(
         `${process.env.REACT_APP_API_URL}recus`,
         {
@@ -142,10 +166,14 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getBilans(token, from_date, to_date) {
+  static async getBilans(token, active, from_date, to_date) {
     try {
-      const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
-      const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      var date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
+      var date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      if (active === "free") {
+        date_from = moment(from_date).format("YYYY-MM-DD HH:mm");
+        date_to = moment(to_date).format("YYYY-MM-DD HH:mm");
+      }
       const bilans = await axios.post(
         `${process.env.REACT_APP_API_URL}bilans`,
         {
@@ -161,10 +189,14 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async getMouvements(token, from_date, to_date) {
+  static async getMouvements(token, active, from_date, to_date) {
     try {
-      const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
-      const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      var date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
+      var date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      if (active === "free") {
+        date_from = moment(from_date).format("YYYY-MM-DD HH:mm");
+        date_to = moment(to_date).format("YYYY-MM-DD HH:mm");
+      }
       const mouvements = await axios.post(
         `${process.env.REACT_APP_API_URL}mouvements`,
         {
@@ -200,6 +232,26 @@ export default class ApiCall {
       const statisticCustom = await axios.post(
         `${process.env.REACT_APP_API_URL}statistic`,
         {
+          date_from: date_from,
+          date_to: date_to,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return statisticCustom.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  static async inOut(token, ville_id, from_date, to_date) {
+    try {
+      const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
+      const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
+      const statisticCustom = await axios.post(
+        `${process.env.REACT_APP_API_URL}statistic/inout`,
+        {
+          ville_id: ville_id,
           date_from: date_from,
           date_to: date_to,
         },

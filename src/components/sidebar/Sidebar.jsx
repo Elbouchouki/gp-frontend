@@ -2,6 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link  } from 'react-router-dom'
 import './sidebar.css'
+import { Tag } from 'rsuite';
 import smallLogo from '../../assets/images/favicon.png'
 import logo from '../../assets/images/gestpark.svg'
 import sidebar_items from '../../assets/JsonData/sidebar_routes.json'
@@ -12,7 +13,7 @@ const SidebarItem = props => {
             <div className={`sidebar__item-inner ${active}`}>
                 <i className={props.icon}></i>
                 <span>
-                    {props.title}
+                    {props.title}{"  "}{props.dev ?<Tag>En développment</Tag>:null}
                 </span>
             </div>
         </div>
@@ -38,6 +39,7 @@ const Sidebar = props => {
                                             title={item.display_name}
                                             icon={item.icon}
                                             active={index === activeItem}
+                                            dev={item.dev}
                                         />
                                     </Link>
                         }

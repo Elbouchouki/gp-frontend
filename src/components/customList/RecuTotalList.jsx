@@ -1,11 +1,10 @@
 import React,{useRef,useState} from 'react'
 import {useReactToPrint} from 'react-to-print'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
-import TextImageIcon from '@rsuite/icons/TextImage';
-import DetailIcon from '@rsuite/icons/Detail';
-import FileDownloadIcon from '@rsuite/icons/FileDownload';
+
+import { More,Detail,FileDownload ,TextImage } from '@rsuite/icons';
 import {aggregateBy } from "@progress/kendo-data-query";
-import { FlexboxGrid , List,IconButton,Icon,Modal,Button,Dropdown,Alert} from 'rsuite'
+import { FlexboxGrid , List, IconButton ,Modal,Button,Dropdown,toaster,Message} from 'rsuite'
 import RecusListItem from './RecusListItem'
 import moment from 'moment'
 const RecuTotalList = ({data,dates,articles}) => {
@@ -29,10 +28,18 @@ const RecuTotalList = ({data,dates,articles}) => {
       setShow(true)
     }
     const handleExport =()=>{
-      Alert.warning("Exportation encours...", 90000)
+      toaster.push(
+        <Message type="warning" showIcon closable>
+          Exportation encours...
+        </Message>
+      );
     if(exporter){
-      Alert.close()
-      Alert.success('Telechargement ...', 5000)
+       toaster.clear()
+       toaster.push(
+        <Message type="success" showIcon closable>
+          Telechargement ...
+        </Message>
+      );
       const options = exporter.workbookOptions();
       const rows = options.sheets[0].rows;
       options.sheets[0].frozenRows = 2;
@@ -54,13 +61,21 @@ const RecuTotalList = ({data,dates,articles}) => {
       try {
           exporter.save(options);
       } catch (error) {
-          Alert.close()
-          Alert.error('Erreur', 5000)
+           toaster.clear()
+          toaster.push(
+            <Message type="error" showIcon closable>
+              Erreur            
+            </Message>
+          );
       }
       return
     }
-    Alert.close()
-    Alert.error('Exportation echoué', 5000)
+     toaster.clear()
+     toaster.push(
+      <Message type="error" showIcon closable>
+        Exportation echoué      
+      </Message>
+    );
     }
     const handlePrint = useReactToPrint({
       documentTitle:`details`,
@@ -159,12 +174,12 @@ const RecuTotalList = ({data,dates,articles}) => {
                     ...styleCenter
                     }}
                 >
-                    <IconButton onClick={openModal} appearance="subtle" icon={<Icon icon="more" />} />
+                    <IconButton onClick={openModal} appearance="subtle" icon={<More  />} />
                      
                 </FlexboxGrid.Item>
             </FlexboxGrid>
         </List.Item>
-        <Modal show={show} onHide={closeModal}>
+        <Modal open={show} onClose={closeModal}>
           <Modal.Header>
             <Modal.Title>Détails Tickets</Modal.Title>
           </Modal.Header>
@@ -172,11 +187,8 @@ const RecuTotalList = ({data,dates,articles}) => {
             <div ref={printRef}>
             <FlexboxGrid style={{marginTop:15,marginBottom:15}}>
                 <FlexboxGrid.Item colspan={4} style={styleCenter}>
-                  <Icon
-                    icon="detail"
-                    style={{
-                      fontSize: '1.5em'
-                    }}
+                  <Detail 
+                   style={{fontSize:"3em"}}
                   />
                 </FlexboxGrid.Item>
                 <FlexboxGrid.Item
@@ -242,9 +254,9 @@ const RecuTotalList = ({data,dates,articles}) => {
           </Modal.Body>
 
           <Modal.Footer>
-            <Dropdown placement="leftEnd" title=" Sauvegarder" appearance="primary" noCaret icon={<TextImageIcon />}>
-              <Dropdown.Item onClick={handleExport} icon={<DetailIcon/>}>Fichier Excel</Dropdown.Item>
-              <Dropdown.Item onClick={handlePrint} icon={<FileDownloadIcon />}>Impression PDF</Dropdown.Item>
+            <Dropdown placement="leftEnd" title=" Sauvegarder" appearance="primary" noCaret icon={<TextImage />}>
+              <Dropdown.Item onClick={handleExport} icon={<Detail/>}>Fichier Excel</Dropdown.Item>
+              <Dropdown.Item onClick={handlePrint} icon={<FileDownload />}>Impression PDF</Dropdown.Item>
             </Dropdown>
             <Button onClick={closeModal} appearance="subtle">
               Fermer

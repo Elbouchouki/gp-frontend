@@ -1,17 +1,24 @@
 import React ,{useState,useEffect,useRef}from 'react'
 import ApiCall from "../api/Api"
 import { useSelector } from 'react-redux'
-import {ControlLabel,Schema,Loader,Icon,Tag,FormControl,FormGroup,SelectPicker ,ButtonToolbar,IconButton,Form,Modal,Button,Notification} from "rsuite"
+import SpinnerIcon from '@rsuite/icons/legacy/Spinner';
+import { Shield,CharacterAuthorize ,Plus,Visible,EyeClose,Edit,RemindFill,Trash} from '@rsuite/icons';
+import TagIcon from '@rsuite/icons/Tag';
+import {Form,Schema,Loader ,Tag,SelectPicker,IconButton ,ButtonToolbar, Button,Modal,toaster,Notification} from "rsuite"
 import "../assets/css/users.css"
 
 
 const openNotification=(funcName,desc)=> {
-    Notification[funcName]({
-      title: funcName,
-      placement:"topEnd",
-      duration: 10000,
-      description: <p>{desc}</p>
-    });
+    toaster.push(<Notification
+    type={funcName}
+    header={funcName}
+    
+    duration={3000}
+    
+    >
+        <p>{desc}</p>
+    </Notification>,{placement:"topEnd"})
+    
   }
 
 
@@ -29,12 +36,11 @@ const DeleteModal = ({show,close,user,update,token})=>{
         return
     }
     return(
-        <Modal backdrop={true} show={show} onHide={close} size="xs">
+        <Modal backdrop={true} open={show} onClose={close} size="xs">
             <Modal.Body>
-            <Icon
-                icon="warning"
+            <RemindFill
+                color= '#FF2E2E'
                 style={{
-                color: '#FF2E2E',
                 fontSize: 24,
                 padding:5
                 }}
@@ -92,7 +98,7 @@ const UpdateModal = ({roles,show,close,user,update,token,currUser,model})=>{
         close()
       }
     return(
-        <Modal backdrop={true} show={show} onHide={close} size="xs">
+        <Modal backdrop={true} open={show} onClose={close} size="xs">
             <Modal.Header>
                 <Modal.Title>Modification</Modal.Title>
             </Modal.Header>
@@ -106,27 +112,25 @@ const UpdateModal = ({roles,show,close,user,update,token,currUser,model})=>{
                 model={model}
                 checkTrigger="blur"
                 >
-                    <FormGroup >
-                        <ControlLabel>Nom d'utilisateur</ControlLabel>
-                        <FormControl disabled={currUser.username===user.username} name="username"/ >    
-                    </FormGroup>
-                    <FormGroup >
-                        <ControlLabel>CIN</ControlLabel>
-                        <FormControl name="cin" />
-                    </FormGroup>
-                    <FormGroup>
-                        <ControlLabel>Nom</ControlLabel>
-                        <FormControl name="nom" />
-                    </FormGroup>
-                    <FormGroup>
-                        <ControlLabel>Prenom</ControlLabel>
-                        <FormControl name="prenom" />
-                    </FormGroup>
-                    <FormGroup>
-                        <ControlLabel>Role</ControlLabel>
-                        
-                            
-                        <FormControl
+                    <Form.Group >
+                        <Form.ControlLabel>Nom d'utilisateur</Form.ControlLabel>
+                        <Form.Control disabled={currUser.username===user.username} name="username"/ >    
+                    </Form.Group>
+                    <Form.Group >
+                        <Form.ControlLabel>CIN</Form.ControlLabel>
+                        <Form.Control name="cin" />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>Nom</Form.ControlLabel>
+                        <Form.Control name="nom" />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>Prenom</Form.ControlLabel>
+                        <Form.Control name="prenom" />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>Role</Form.ControlLabel>
+                        <Form.Control
                             name="role_id"
                             accepter={SelectPicker}
                             data={roles}
@@ -139,39 +143,34 @@ const UpdateModal = ({roles,show,close,user,update,token,currUser,model})=>{
                             if (roles.length === 0) {
                                 return (
                                 <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
-                                    <Icon icon="spinner" spin /> Chargement en cours...
+                                    <SpinnerIcon pulse style={{ fontSize: '2em' }} /> Chargement en cours...
                                 </p>
                                 );
                             }
                             return menu;
                             }}
                         />
-                    </FormGroup>
-                    
-                    <FormGroup>
-                        <ControlLabel>E-mail</ControlLabel>
-                        <FormControl name="mail" />
-                    </FormGroup>
-                    <FormGroup>
-                        <ControlLabel>Mot de passe</ControlLabel>
-                        <FormControl name="password" />
-                    </FormGroup>
-                    <FormGroup>
+                    </Form.Group>              
+                    <Form.Group>
+                        <Form.ControlLabel>E-mail</Form.ControlLabel>
+                        <Form.Control name="mail" />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>Mot de passe</Form.ControlLabel>
+                        <Form.Control name="password" />
+                    </Form.Group>
+                    <Form.Group>
                         <ButtonToolbar>
                             <Button loading={loading} onClick={handleSubmit} appearance="primary">Modifier</Button>
                             <Button onClick={close} appearance="default">Annuler</Button>
                         </ButtonToolbar>
-                    </FormGroup>
+                    </Form.Group>
                     
                 </Form>
             </Modal.Body>
         </Modal>
     )
 }
-
-
-
-
 const AddModal = ({roles,show,close,user,update,token,listUsers})=>{
     const formRef = useRef()
     const [loading,setLoading]=useState(false)
@@ -194,7 +193,6 @@ const AddModal = ({roles,show,close,user,update,token,listUsers})=>{
         return !listUsers.some(user => user.username === username)
     }
     const checkCIN =(cin)=>{
-
         return !listUsers.some(user => user.cin === cin)
     }
     const model = Schema.Model({
@@ -228,7 +226,7 @@ const AddModal = ({roles,show,close,user,update,token,listUsers})=>{
         close()
       }
     return(
-        <Modal backdrop={true} show={show} onHide={close} size="xs">
+        <Modal backdrop={true} open={show} onClose={close} size="xs">
             <Modal.Header>
                 <Modal.Title>Nouveau utilisateur</Modal.Title>
             </Modal.Header>
@@ -242,27 +240,25 @@ const AddModal = ({roles,show,close,user,update,token,listUsers})=>{
                 model={model}
                 checkTrigger="blur"
                 >
-                    <FormGroup >
-                        <ControlLabel>Nom d'utilisateur</ControlLabel>
-                        <FormControl name="username"/ >    
-                    </FormGroup>
-                    <FormGroup >
-                        <ControlLabel>CIN</ControlLabel>
-                        <FormControl name="cin" />
-                    </FormGroup>
-                    <FormGroup>
-                        <ControlLabel>Nom</ControlLabel>
-                        <FormControl name="nom" />
-                    </FormGroup>
-                    <FormGroup>
-                        <ControlLabel>Prenom</ControlLabel>
-                        <FormControl name="prenom" />
-                    </FormGroup>
-                    <FormGroup>
-                        <ControlLabel>Role</ControlLabel>
-                        
-                            
-                        <FormControl
+                    <Form.Group >
+                        <Form.ControlLabel>Nom d'utilisateur</Form.ControlLabel>
+                        <Form.Control name="username"/ >    
+                    </Form.Group>
+                    <Form.Group >
+                        <Form.ControlLabel>CIN</Form.ControlLabel>
+                        <Form.Control name="cin" />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>Nom</Form.ControlLabel>
+                        <Form.Control name="nom" />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>Prenom</Form.ControlLabel>
+                        <Form.Control name="prenom" />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>Role</Form.ControlLabel>
+                        <Form.Control
                             name="role_id"
                             accepter={SelectPicker}
                             data={roles}
@@ -274,38 +270,33 @@ const AddModal = ({roles,show,close,user,update,token,listUsers})=>{
                             if (roles.length === 0) {
                                 return (
                                 <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
-                                    <Icon icon="spinner" spin /> Chargement en cours...
+                                    <SpinnerIcon pulse style={{ fontSize: '2em' }} /> Chargement en cours...
                                 </p>
                                 );
                             }
                             return menu;
                             }}
                         />
-                    </FormGroup>
-                    
-                    <FormGroup>
-                        <ControlLabel>E-mail</ControlLabel>
-                        <FormControl name="mail" />
-                    </FormGroup>
-                    <FormGroup>
-                        <ControlLabel>Mot de passe</ControlLabel>
-                        <FormControl name="password" />
-                    </FormGroup>
-                    <FormGroup>
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>E-mail</Form.ControlLabel>
+                        <Form.Control name="mail" />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.ControlLabel>Mot de passe</Form.ControlLabel>
+                        <Form.Control name="password" />
+                    </Form.Group>
+                    <Form.Group>
                         <ButtonToolbar>
                             <Button loading={loading} onClick={handleSubmit} appearance="primary">Ajouter</Button>
                             <Button onClick={close} appearance="default">Annuler</Button>
                         </ButtonToolbar>
-                    </FormGroup>
-                    
+                    </Form.Group>
                 </Form>
             </Modal.Body>
         </Modal>
     )
 }
-
-
-
 const Card = ({roles,user,update,listUsers}) => {
     const authReducer = useSelector(state=>state.AuthReducer)
     const token = authReducer.token
@@ -314,7 +305,6 @@ const Card = ({roles,user,update,listUsers}) => {
     const [showPass,setShowPass]=useState(false)
     const [showDeleteModal,setShowDeleteModal]=useState(false)
     const [showUpdateModal,setShowUpdateModal]=useState(false)
-    
     const handleShowPass = () => {
         setShowPass(!showPass)
     }
@@ -356,15 +346,15 @@ const Card = ({roles,user,update,listUsers}) => {
             <div className="users_card">
                 <div className="row" style={{justifyContent:"space-between"}}>
                         <Tag className="users_header" color={user.role_id ===1 ?"cyan":"yellow"}>
-                            {user.role_id ===1 ? <Icon style={{marginRight:5}} icon="certificate" /> : <Icon style={{marginRight:5}} icon="twinkle-star" />}
-                            {user.Role?.role_name}{currUser.username===user.username?<Icon style={{marginLeft:7}} icon="id-card" />:null}
+                            {user.role_id ===1 ? <Shield style={{marginRight:5}}/> : <TagIcon style={{marginRight:5}} />}
+                            {user.Role?.role_name}{currUser.username===user.username?<CharacterAuthorize style={{marginLeft:7}}/>:null}
                         </Tag>
                         <div className="row" >
                             {permissions.some((element) => element.name ==="update_users")?
-                            <IconButton onClick={()=>updateModalOpen()} style={{marginRight:5}} icon={<Icon icon="edit2"  />}/>
+                            <IconButton onClick={()=>updateModalOpen()} style={{marginRight:5}} icon={<Edit/>}/>
                             :null}
                             {permissions.some((element) => element.name ==="delete_users")?
-                            <IconButton  onClick={()=>deleteModalOpen()} style={{marginRight:5}}icon={<Icon icon="trash" />} color="red" appearance="primary" disabled={currUser.username===user.username}/>
+                            <IconButton  onClick={()=>deleteModalOpen()} style={{marginRight:5}}icon={<Trash/>} color="red" appearance="primary" disabled={currUser.username===user.username}/>
                             :null}
                         </div>
                 </div>
@@ -380,9 +370,9 @@ const Card = ({roles,user,update,listUsers}) => {
                 <div className="row users_items" style={{alignItems:"center"}}>
                     {showPass ? user.password : "**********"}{" "}
                     {!showPass?
-                        <IconButton className="users_info_button" onClick={handleShowPass} circle size="sm" icon={<Icon icon="eye"  />}/>
+                        <IconButton className="users_info_button" onClick={handleShowPass} circle size="sm" icon={<Visible/>}/>
                         :
-                        <IconButton className="users_info_button" onClick={handleShowPass} circle size="sm"  icon={<Icon icon="eye-slash"  />} />
+                        <IconButton className="users_info_button" onClick={handleShowPass} circle size="sm"  icon={<EyeClose />} />
                     }
                 </div>
             </div>  
@@ -392,9 +382,7 @@ const Card = ({roles,user,update,listUsers}) => {
         </div>
     )
 }
-
 const Users = () => {
-
     const authReducer = useSelector(state=>state.AuthReducer)
     const user = authReducer.user
     const token = authReducer.token
@@ -403,7 +391,6 @@ const Users = () => {
     const [toggleUpdate,setToggleUpdate]=useState(false)
     const [loading,setLoading]=useState(false)
     const [showAddModal,setShowAddModal]=useState(false)
-
     const addModalOpen=()=>{
         setShowAddModal(true);
     }
@@ -441,12 +428,10 @@ const Users = () => {
                 {
                     loading? <div className="col-12 row"  style={{marginTop:100,justifyContent:"center"}}><Loader content="Chargement d'utilisateurs en cours"/></div>:listUsers.users?.map(element=><Card listUsers={listUsers?.users} roles={roles}update={updateUsers} user={element} />)
                 }
-                    {loading?null:<IconButton className="users_shadow" onClick={addModalOpen}  style={{margin:30,width: 100,height: 100}}  size="lg" icon={<Icon style={{padding:33,fontSize:30}} icon="plus" />} /> }
+                    {loading?null:<IconButton className="users_shadow" onClick={addModalOpen}  style={{margin:30,width: 100,height: 100}} icon={<Plus style={{fontSize:30}}/>} /> }
                 </div>
-
             <AddModal roles={roles} token={token} listUsers={listUsers?.users} update={updateUsers}  user={user} show={showAddModal} close={addModalClose}/>
             </div>
     )
 }
-
 export default Users

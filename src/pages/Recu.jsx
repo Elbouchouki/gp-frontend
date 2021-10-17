@@ -1,6 +1,7 @@
 import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
-import { Nav, Icon ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
+import SpinnerIcon from '@rsuite/icons/legacy/Spinner';
+import { Nav ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
 import { tarification,tarificationAbonne } from '../helper/helper'
 import { DatePickerDate,DatePickerFreeDate,DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../components/datepickers/DatePickers'
 import RecuTotalList from '../components/customList/RecuTotalList'
@@ -48,7 +49,7 @@ const VilleSelect = ({items,handleUpdate,handleChange}) =>{
       if (items.length === 0) {
         return (
           <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
-            <Icon icon="spinner" spin /> Chargement en cours...
+            <SpinnerIcon pulse style={{ fontSize: '2em' }} /> Chargement en cours...
           </p>
         );
       }
@@ -68,7 +69,7 @@ const TarifsSelect = ({items,handleChange,handleUpdate,type}) =>{
         if (items.length === 0) {
           return (
             <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
-              <Icon icon="spinner" spin /> Chargement en cours...
+              <SpinnerIcon pulse style={{ fontSize: '2em' }} /> Chargement en cours...
             </p>
           );
         }
@@ -96,7 +97,7 @@ const ArticleSelect = ({items,handleChange,handleUpdate}) =>{
         if (items.length === 0) {
           return (
             <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
-              <Icon icon="spinner" spin /> Chargement en cours...
+              <SpinnerIcon pulse style={{ fontSize: '2em' }} /> Chargement en cours...
             </p>
           );
         }
@@ -393,7 +394,7 @@ const Recu = (props) => {
     useEffect(() => {
         async function fetchRecus(){
             setLoading(true)
-            const recus = await ApiCall.getRecus(token,props.articleId,fromDate,toDate)
+            const recus = await ApiCall.getRecus(token,active,props.articleId,fromDate,toDate)
             setListRecus(recus)
             setLoading(false)
         }
@@ -402,7 +403,7 @@ const Recu = (props) => {
             setLoading(true)
           };
         
-    },[fromDate,toDate,props.articleId,token])
+    },[fromDate,toDate,props.articleId,token,active])
     return (
 
         <div>

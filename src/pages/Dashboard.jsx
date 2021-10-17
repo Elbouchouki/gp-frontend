@@ -3,7 +3,9 @@ import Chart from 'react-apexcharts'
 import { useSelector } from 'react-redux'
 import StatusCard from '../components/status-card/StatusCard'
 import CustomList from'../components/customList/CustomList'
-import { Nav , Loader, Icon,DateRangePicker} from 'rsuite'
+import { Nav , Loader,DateRangePicker} from 'rsuite'
+import {Trend,BarChart} from '@rsuite/icons';
+
 import ApiCall from '../api/Api'
 import { monthSwitch, seasonSwitch } from '../helper/helper'
 import moment from 'moment'
@@ -41,7 +43,7 @@ const DatePickerFreeDate = ({ handleDateChange }) => {
         }}
         defaultValue={[new Date(),new Date()]}
         placeholder="Date Libre"
-        format="DD/MM/YYYY"
+        format="dd/MM/yyyy"
         locale={{
           sunday: "Dim",
           monday: "Lun",
@@ -70,7 +72,7 @@ const DatePickerFreeDate = ({ handleDateChange }) => {
         }}
         defaultValue={[moment().subtract(1, 'days').toDate(),moment().subtract(1, 'days').toDate()]}
         placeholder="Date Libre"
-        format="DD/MM/YYYY"
+        format="dd/MM/yyyy"
         locale={{
           sunday: "Dim",
           monday: "Lun",
@@ -255,7 +257,6 @@ const Dashboard = () => {
             setSevenChartLoading(true)
         }
     }, [token])
-
     return (
         <div>
                 <div className="row" style={{justifyContent:"space-between",margin:10,alignItems:"center"}} > 
@@ -293,7 +294,7 @@ const Dashboard = () => {
                     <div className="card" >
                         <div className="row" style={{justifyContent:"space-between",alignItems:"center"}}>
                             <h5>Statistiques {seasonSwitch(active)}</h5>
-                            {loading ? <Loader content="Chargement en cours..." />:<Icon icon="bar-chart" size="2x" />}
+                            {loading ? <Loader content="Chargement en cours..." />:<Trend size="2em" />}
                         </div>    
                         <Chart
                             options={themeReducer === 'theme-mode-dark' ? {
@@ -310,7 +311,6 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-
             <div className="col-12">
                 <div className="card" >
                     <div className="row" style={{justifyContent:"space-between",margin:10,alignItems:"center"}} >
@@ -329,18 +329,18 @@ const Dashboard = () => {
                                 :
                                 <CustomList dates={[stFromDate,stToDate]} dataList={stData}/>
                                 }
+                        
+                   
+                                
 
                 </div>
             </div>
-                    
-
-
             <div className="row">
             <div className="col-8">
                     <div className="card" >
                         <div className="row" style={{justifyContent:"space-between",alignItems:"center"}}>
                         <h5 >Les mois précédents</h5>
-                        {sevenChartLoading ? <Loader content="Chargement des données en cours..." />:<Icon icon="line-chart" size="2x" />}
+                        {sevenChartLoading ? <Loader content="Chargement des données en cours..." />:<BarChart size="2em" />}
                              </div>    
                         
                         {/* chart */}

@@ -2,36 +2,49 @@
     {
         "display_name": "Accueil",
         "route": "/",
-        "icon": "bx bx-category-alt"
+        "icon": "bx bx-category-alt",
+        "dev": false
     },
     {
         "display_name": "Tickets",
         "route": "/tickets",
         "icon": "bx bxs-coupon",
-        "role":"show_recu_normal"
+        "role":"show_recu_normal",
+        "dev": false
     },
     {
         "display_name": "Abonnements",
         "route": "/abonnés",
         "icon": "bx bx-credit-card",
-        "role":"show_recu_recharge_abonne"
+        "role":"show_recu_recharge_abonne",
+        "dev": false
     },
     {
         "display_name": "Bilans",
         "route": "/bilans",
         "icon": "bx bxs-note",
-        "role":"show_bilan"
+        "role":"show_bilan",
+        "dev": false
+    },
+    {
+        "display_name": "Traffic",
+        "route": "/traffic",
+        "icon": "bx bx-transfer",
+        "role":"show_traffic",
+        "dev": true
     },
     {
         "display_name": "Mouvements",
         "route": "/mouvements",
         "icon": "bx bxs-traffic-barrier",
-        "role":"show_mouvement"
+        "role":"show_mouvement",
+        "dev": false
     }
     ,{
         "display_name": "Utilisateurs",
         "route": "/utilisateurs",
         "icon": "bx bxs-user-detail",
-        "role":"manage_users"
+        "role":"show_users",
+        "dev": false
     }
 ]

@@ -1,7 +1,8 @@
 import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
 import { DateRangePicker } from 'rsuite'
-import { Nav, Icon, DatePicker ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
+import SpinnerIcon from '@rsuite/icons/legacy/Spinner';
+import { Nav, DatePicker ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
 import { listMouvs } from '../helper/helper'
 import ApiCall from '../api/Api'
 import { useSelector } from 'react-redux'
@@ -42,7 +43,7 @@ const DatePickerDate =({handleDateChange})=>{
     block
     style={styles}
     onChange={(value) => { handleDateChange(value) }}       
-    format="DD/MM/YYYY"
+    format="dd/MM/yyyy"
     locale={{
         sunday: 'Dim',
         monday: 'Lun',
@@ -69,7 +70,7 @@ const DatePickerWeekDate = ({ active, handleDateChange }) => {
         showWeekNumbers={active === 'week' ? true : false}
         placeholder="Choisir une date"
         ranges={[]}
-        format="DD/MM/YYYY"
+        format="dd/MM/yyyy"
         locale={{
             sunday: 'Dim',
             monday: 'Lun',
@@ -101,7 +102,7 @@ const VilleSelect = ({items,handleUpdate,handleChange}) =>{
       if (items.length === 0) {
         return (
           <p style={{ padding: 4, color: '#999', textAlign: 'center' }}>
-            <Icon icon="spinner" spin /> Chargement en cours...
+            <SpinnerIcon pulse style={{ fontSize: '2em' }} /> Chargement en cours...
           </p>
         );
       }

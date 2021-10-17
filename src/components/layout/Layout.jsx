@@ -2,7 +2,6 @@ import React, {useEffect,useState} from 'react'
 import './layout.css'
 import Sidebar from '../sidebar/Sidebar'
 import TopNav from '../topnav/TopNav'
-import TopNavMobile from '../topnav/TopNavMobile'
 import Routes from '../Routes'
 import Login from "../../pages/Login"
 import Maintenance from "../maintenance/Maintenance"
@@ -12,7 +11,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { Loader } from 'rsuite'
 import ThemeAction from '../../redux/actions/ThemeAction'
 import AuthAction from "../../redux/actions/AuthAction"
-import Dashboard from "../../pages/mobile/Dashboard"
 
 const Layout = () => {
 

@@ -1,10 +1,9 @@
 import React, { useState,useRef } from 'react'
 import {useReactToPrint} from 'react-to-print'
-import { FlexboxGrid , List,Icon, Button,Modal,Dropdown ,Alert} from 'rsuite'
+import Building from "../../assets/images/building.svg"
+import { Location,Detail ,TextImage,FileDownload,Icon} from '@rsuite/icons';
+import { FlexboxGrid , List , Button,Modal,Dropdown , toaster,Message} from 'rsuite'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export';
-import DetailIcon from '@rsuite/icons/Detail';
-import FileDownloadIcon from '@rsuite/icons/FileDownload';
-import TextImageIcon from '@rsuite/icons/TextImage';
 import { isMobile } from "react-device-detect";
 import moment from 'moment';
 import ListItem from './ListItem';
@@ -83,10 +82,18 @@ const CustomList = ({dataList,dates},...props) => {
     setShow(true)
   }
   const handleExport=()=>{
-    Alert.warning("Exportation encours...", 90000)
+    toaster.push(
+      <Message type="warning" showIcon closable>
+        Exportation encours...
+      </Message>
+    );
     if(exporter){
-      Alert.close()
-      Alert.success('Telechargement ...', 5000)
+       toaster.clear()
+       toaster.push(
+        <Message type="success" showIcon closable>
+          Telechargement ...
+        </Message>
+      );
       const options = exporter.workbookOptions();
       const rows = options.sheets[0].rows;
       options.sheets[0].frozenRows = 2;
@@ -136,13 +143,21 @@ const CustomList = ({dataList,dates},...props) => {
       try {
           exporter.save(options);
       } catch (error) {
-          Alert.close()
-          Alert.error('Erreur', 5000)
+           toaster.clear()
+           toaster.push(
+            <Message type="error" showIcon closable>
+              Erreur
+            </Message>
+          );
       }
       return
     }
-    Alert.close()
-    Alert.error('Exportation echoué', 5000)
+     toaster.clear()
+     toaster.push(
+      <Message type="error" showIcon closable>
+        Exportation echoué
+      </Message>
+    );
   }
   const handlePrint = useReactToPrint({
     documentTitle:`details-${currentItem?.ville}`,
@@ -154,13 +169,14 @@ const CustomList = ({dataList,dates},...props) => {
             <FlexboxGrid>
               {/*icon*/}
               {isMobile?null:<FlexboxGrid.Item colspan={2} style={styleCenter}>
-                <Icon
-                  icon="car"
+                <img src={Building} alt="img" style={{width:"40px",height:"40px"}} />
+                {/* <Icon
+                  as={Building}
                   style={{
                     color: 'darkgrey',
-                    fontSize: '1.5em'
+                    fontSize:"3em"
                   }}
-                />
+                /> */}
               </FlexboxGrid.Item>}
               {/*base info*/}
               <FlexboxGrid.Item
@@ -227,16 +243,16 @@ const CustomList = ({dataList,dates},...props) => {
                 <div style={{ textAlign: 'right' }}>
                   <div style={slimText}>Bilans</div>
                     <div style={dataStyle}>
-                      {(item.bilans)===0?
+                      {(item.bilan)===0?
                         0:
-                        (item.bilans)<3?<span style={{color:"green"}}>
-                                          {(item.bilans)}
+                        (item.bilan)<3?<span style={{color:"green"}}>
+                                          {(item.bilan)}
                                         </span>:
-                       (item.bilans)===3?<span style={{color:"orange"}}>
-                                          {(item.bilans)}
+                       (item.bilan)===3?<span style={{color:"orange"}}>
+                                          {(item.bilan)}
                                           </span>:
                                           <span style={{color:"red"}}>
-                                          {(item.bilans)}
+                                          {(item.bilan)}
                                           </span>
                         
                       }
@@ -268,7 +284,7 @@ const CustomList = ({dataList,dates},...props) => {
         ))}
 
 
-        <Modal show={show} onHide={closeModal}>
+        <Modal open={show} onClose={closeModal}>
           <Modal.Header>
             <Modal.Title>Détails</Modal.Title>
           </Modal.Header>
@@ -276,13 +292,14 @@ const CustomList = ({dataList,dates},...props) => {
             <div ref={printRef}>
               <FlexboxGrid style={{marginTop:15}}>
                 <FlexboxGrid.Item colspan={4} style={styleCenter}>
-                  <Icon
-                    icon="car"
+                  <img src={Building} alt="small" style={{width:"65px",height:"65px",marginTop:-20}} />
+                  {/* <Icon
+                   as={Building}
                     style={{
                       color: 'darkgrey',
-                      fontSize: '1.5em'
+                      fontSize:"3em"
                     }}
-                  />
+                  /> */}
                 </FlexboxGrid.Item>
                 <FlexboxGrid.Item
                   colspan={20}
@@ -296,7 +313,7 @@ const CustomList = ({dataList,dates},...props) => {
                   <div style={titleStyle}>{currentItem?.ville}</div>
                   <div style={slimText}>
                     <div>                
-                      {moment(dates[0]).format("DD/MM/YYYY")===moment(dates[1]).format("DD/MM/YYYY") ? `Le ${moment(dates[0]).format("DD/MM/YYYY")}.`:`De ${moment(dates[0]).format("DD/MM/YYYY")} à ${moment(dates[1]).format("DD/MM/YYYY")}.`}
+                      {moment(dates[0]).format("DD/MM/YYYY HH:mm")===moment(dates[1]).format("DD/MM/YYYY HH:mm") ? `Le ${moment(dates[0]).format("DD/MM/YYYY")}.`:`De ${moment(dates[0]).format("DD/MM/YYYY HH:mm")} à ${moment(dates[1]).format("DD/MM/YYYY HH:mm")}.`}
                     </div>
                   </div>
                 </FlexboxGrid.Item>
@@ -409,9 +426,9 @@ const CustomList = ({dataList,dates},...props) => {
             {/* <Button onClick={handlePrint} appearance="primary">
               Imprimer
             </Button> */}
-            <Dropdown placement="leftEnd" title=" Sauvegarder" appearance="primary" noCaret icon={<TextImageIcon />}>
-              <Dropdown.Item onClick={handleExport} icon={<DetailIcon/>}>Fichier Excel</Dropdown.Item>
-              <Dropdown.Item onClick={handlePrint} icon={<FileDownloadIcon />}>Impression PDF</Dropdown.Item>
+            <Dropdown placement="leftEnd" title=" Sauvegarder" appearance="primary" noCaret icon={<TextImage />}>
+              <Dropdown.Item onClick={handleExport} icon={<Detail/>}>Fichier Excel</Dropdown.Item>
+              <Dropdown.Item onClick={handlePrint} icon={<FileDownload />}>Impression PDF</Dropdown.Item>
             </Dropdown>
             <Button onClick={closeModal} appearance="subtle">
               Fermer  

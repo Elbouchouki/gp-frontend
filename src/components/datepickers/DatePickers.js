@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 import { isMobile } from "react-device-detect";
-import { DatePicker, DateRangePicker, SelectPicker, Icon } from "rsuite";
+import { DatePicker, DateRangePicker, SelectPicker } from "rsuite";
 const styles = {
   marginBottom: 10,
 };
@@ -14,7 +14,7 @@ export const DatePickerDate = ({ handleDateChange }) => {
       onChange={(value) => {
         handleDateChange(value);
       }}
-      format="DD/MM/YYYY"
+      format="dd/MM/yyyy"
       locale={{
         sunday: "Dim",
         monday: "Lun",
@@ -51,7 +51,7 @@ export const DatePickerWeekDate = ({ active, handleDateChange }) => {
       showWeekNumbers={true}
       placeholder="Semaine"
       ranges={[]}
-      format="DD/MM/YYYY"
+      format="dd/MM/yyyy"
       locale={{
         sunday: "Dim",
         monday: "Lun",
@@ -103,7 +103,7 @@ export const DatePickerFreeDate = ({ handleDateChange }) => {
           ],
         },
       ]}
-      format="DD/MM/YYYY"
+      format="dd/MM/yyyy HH:mm"
       locale={{
         sunday: "Dim",
         monday: "Lun",
@@ -136,7 +136,7 @@ export const DatePickerMonthDate = ({ active, handleDateChange }) => {
       hoverRange={active}
       placeholder="Mois"
       ranges={[]}
-      format="DD/MM/YYYY"
+      format="dd/MM/yyyy"
       locale={{
         sunday: "Dim",
         monday: "Lun",
@@ -156,16 +156,16 @@ export const DatePickerMonthDate = ({ active, handleDateChange }) => {
 export const YearSelect = ({ items, handleChange }) => {
   const years = [
     {
-      value: parseInt(moment().format("YYYY")),
-      label: moment().format("YYYY"),
+      value: parseInt(moment().format("yyyy")),
+      label: moment().format("yyyy"),
     },
     {
-      value: parseInt(moment().subtract(12, "months").format("YYYY")),
-      label: moment().subtract(12, "months").format("YYYY"),
+      value: parseInt(moment().subtract(12, "months").format("yyyy")),
+      label: moment().subtract(12, "months").format("yyyy"),
     },
     {
-      value: parseInt(moment().subtract(24, "months").format("YYYY")),
-      label: moment().subtract(24, "months").format("YYYY"),
+      value: parseInt(moment().subtract(24, "months").format("yyyy")),
+      label: moment().subtract(24, "months").format("yyyy"),
     },
   ];
   return (

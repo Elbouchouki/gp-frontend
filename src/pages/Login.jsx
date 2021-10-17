@@ -1,5 +1,6 @@
 import React,{useState,useRef} from 'react'
-import { Form,Schema,FormGroup,ControlLabel,Alert,FormControl,Icon,InputGroup,Button ,Message,Panel} from 'rsuite'
+import { TagLock,Member } from '@rsuite/icons';
+import { Form,Schema,toaster,Message ,InputGroup,Button ,Panel} from 'rsuite'
 import ApiAuth from '../api/ApiAuth';
 import smallLogo from '../assets/images/favicon.png'
 import logo from '../assets/images/gestpark.svg'
@@ -15,15 +16,15 @@ const model = Schema.Model({
   
 const TextField=({ name, label, accepter,value,icon,errorPlacement, ...props })=>{
       return (
-        <FormGroup>
-            <ControlLabel>{label} </ControlLabel>
+        <Form.Group>
+            <Form.ControlLabel>{label} </Form.ControlLabel>
             <InputGroup inside>
-                <FormControl name={name} accepter={accepter} errorPlacement={errorPlacement?errorPlacement:"bottomEnd"} {...props} />
+                <Form.Control name={name} accepter={accepter} errorPlacement={errorPlacement?errorPlacement:"bottomEnd"} {...props} />
                 <InputGroup.Addon>
-                    <Icon icon={icon} />
+                    {icon}
                 </InputGroup.Addon>
              </InputGroup>
-        </FormGroup>
+        </Form.Group>
       )
   }
 
@@ -51,7 +52,11 @@ const Login = () => {
         const auth =await ApiAuth.signin(formValue.username,formValue.password)
         setLoading(false)
         if(!auth){
-            Alert.error("Nom d'utilisateur ou mot de passe est incorrect", 5000)
+            toaster.push(
+                <Message type="error" showIcon closable>
+                  Nom d'utilisateur ou mot de passe est incorrect
+                </Message>
+              );
             return;
         }
         localStorage.setItem('user',JSON.stringify(auth.user))
@@ -80,8 +85,8 @@ const Login = () => {
                     checkTrigger="blur"
                     >
 
-                    <TextField icon="avatar"  name="username" label="Nom d'utilisateur" />
-                    <TextField icon="lock" name="password" label="Mot de passe" type="password" />
+                    <TextField icon={<Member/>}  name="username" label="Nom d'utilisateur" />
+                    <TextField icon={<TagLock/>} name="password" label="Mot de passe" type="password" />
                     
                     <br />
                     <Button style={{width:120,height:40}} loading={loading} appearance="primary" onClick={handleSubmit}>

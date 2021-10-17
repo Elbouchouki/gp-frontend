@@ -1,13 +1,24 @@
 import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
-import moment from 'moment'
-import { Nav ,Loader,SelectPicker ,Tag } from 'rsuite'
 import SpinnerIcon from '@rsuite/icons/legacy/Spinner';
+import { Nav ,Loader,SelectPicker ,Tag,CheckPicker } from 'rsuite'
+import { tarification,tarificationAbonne } from '../helper/helper'
 import { DatePickerDate,DatePickerFreeDate,DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../components/datepickers/DatePickers'
 import ApiCall from '../api/Api'
 import { useSelector } from 'react-redux'
 
+const customerTableHead = [
+    'Caisse',
+    'Type',
+    'Valeur',
+    "Date d'entrer",
+    'Date de sortie',
+    'Ville',
+    'Etat',
+]
+
 const renderHead = (item, index) => <th key={index}>{item}</th>
+
 const styles = {
     marginBottom: 10
 };
@@ -45,19 +56,18 @@ const VilleSelect = ({items,handleUpdate,handleChange}) =>{
     }}
   />
 }
-
-
-const Bilan = (props) => {
+const Traffic = (props) => {
     const authReducer = useSelector(state=>state.AuthReducer)
+    // const user = authReducer.user
     const token = authReducer.token
     const [active, setActive] = useState('day')
     const [fromDate, setFromDate] = useState(new Date())
     const [toDate, setToDate] = useState(new Date())
     const [loading,setLoading] = useState(true)
-    const [listBilans,setListBilans]=useState([])
     const [listVilles,setListVilles]=useState([])
-    const [filtredBilans,setfiltredBilans]=useState([])
-    const [ville,setVille]=useState(null)
+    const [ville,setVille]=useState(0)
+    const [listTarifs,setListTarifs]=useState([])
+    const [listArticles,setListArticles]=useState([])
     const handleIntervalDateChange = (value) => {
         setFromDate(value[0])
         setToDate(value[1])
@@ -72,6 +82,7 @@ const Bilan = (props) => {
         setFromDate(new Date(year,0,1))
         setToDate(new Date(year,11,31))
     }
+
     const handleSelect = (activeKey) => {
         if(active=== activeKey){
             return
@@ -85,74 +96,81 @@ const Bilan = (props) => {
             return;
         }
     }
+
+    
+    const handleTarifUpdate=async()=> {
+        if (listTarifs.length === 0) {
+            const tarifs  = await ApiCall.getTarifs(token,props.type)
+            setListTarifs(tarifs)
+            return;
+        }
+    }
+    const handleArticleUpdate=async()=> {
+        if (listArticles.length === 0 && props.type ==="normal") {
+            const articles  = await ApiCall.getArticles(token,props.type)
+            setListArticles(articles)
+            return;
+        }
+    }
     const handleVilleChange=(value)=>{
        setVille(value)
     }
-    const renderBody = (item, index) => {
-        const duration = moment.duration(moment(item.date_f,'DD/MM/YYYY HH:mm').diff(moment(item.date_d,'DD/MM/YYYY HH:mm')))
-        const hours = parseInt(duration.asHours())
-        const minutes = duration.asMinutes()%60
-        const dur = hours?minutes?hours+"h:"+minutes+"m":hours+"h":minutes+"min"
-        return(<tr key={index}>
-            <td>{item.poste}</td>
-            {/* <td>{item.caisse}</td> */}
-            <td>{item.caisser}</td>
-            <td>{item.montant+" Dh"}</td>
-            <td>{item.date_d}</td>
-            <td>{item.date_f}</td>
-            <td>{dur}</td>
-            <td>{item.Ville.nom_ville}</td>
-            {/* <td><Tag color={item.etats==="confirmé"?"green":"red"} >{item.etats} </Tag></td> */}
-        </tr>)
-    }
-        
-        
-    
-    const customerTableHead =[
-        'Poste',
-        // 'Caisse',
-        'Caisser',
-        'Montant',
-        'Date de début',
-        'Date de fin',
-        'Durée',
-        'Ville'
-    ]
-    useEffect(() => {
-        async function filterBilans(){
-            await setTimeout(setLoading(true),500)
-            var filtred = []
-            if ((ville===null || ville===undefined)){
-                filtred=listBilans
-            }else{
-                filtred.push(...listBilans.filter(item => item.Ville.id === ville ))
+    const renderBody = (item, index) => (
+        <tr key={index}>
+            <td>{item.caisse}</td>
+            <td>{item.Article.desc_art}</td>
+            {
+                props.type==="abonné"?<td>{item.societe.trim()}</td>:null
             }
-            setfiltredBilans(filtred)
-            setLoading(false)
-        }
-        filterBilans()
-        return () => {
-            setLoading(true)
-            setfiltredBilans([])
-          };
-        
-    }, [listBilans,ville])
+            {
+                props.type==="abonné"?<td>{item.participant.trim()}</td>:null
+            }
+            {props.type==="normal"?<td><Tag color={item.valeur ===0?"orange":tarification.includes(item.valeur)?"blue":"violet"}>{item.valeur} Dh</Tag></td>:
+                        <td><Tag color={item.valeur ===0?"orange":tarificationAbonne.includes(item.valeur)?"blue":"violet"}>{item.valeur} Dh</Tag></td>
+                    }
+            
+            <td>{item.date_e}</td>
+            {
+                props.type==="normal"?<td>{item.date_s}</td>:null
+            }
+            <td>{item.Ville.nom_ville}</td>
+            <td><Tag color={item.etats==="confirmé"?"green":"red"} >{item.etats} </Tag></td>
+        </tr>
+    )
+    const customerTableHead = props.type === "normal"?[
+        'Caisse',
+        'Type',
+        'Valeur',
+        "Date d'entrer",
+        'Date de sortie',
+        'Ville',
+        'Etat',
+    ]:[
+        'Caisse',
+        'Type',
+        'Société',
+        'Participant',
+        'Valeur',
+        "Date",
+        'Ville',
+        'Etat',
+    ]
+    
 
     useEffect(() => {
-        async function fetchBilans(){
+        async function fetchRecus(){
             setLoading(true)
-            const bilans = await ApiCall.getBilans(token,fromDate,toDate)
-            console.log(bilans)
-            console.log(fromDate,toDate)
-            setListBilans(bilans)
+            const inout = await ApiCall.inOut(token,ville,fromDate,toDate)
+            console.log(inout)
+            // setListRecus(recus)
             setLoading(false)
         }
-        fetchBilans()
+        fetchRecus()
         return () => {
             setLoading(true)
           };
         
-    },[fromDate,toDate,token])
+    },[fromDate, toDate, token, ville])
     return (
 
         <div>
@@ -187,40 +205,42 @@ const Bilan = (props) => {
                                 </div>
                                 <div className="col-12">                       
                                     <div className="row">
-                                        <div className="col-4">
+                                       
+                                        <div className="col-3">
                                             <VilleSelect items={listVilles} handleChange={handleVilleChange} handleUpdate={handleVilleUpdate}/>
-                                        </div>                            
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div className="card__body">
                             {
-                                filtredBilans===undefined
-                                ? 
-                                <div style={{display:'flex',justifyContent:'center'}}>Problèmes de connections</div>
-                                :
-                                loading
-                                ?
-                                <div style={{display:'flex',justifyContent:'center',padding:'50px'}}>
-                                    <Loader  content="Chargement en cours..." />
-                                </div>
-                                :
-                                filtredBilans.length === 0
-                                ?
-                                <div style={{display:'flex',justifyContent:'center'}}>Pas de données</div>
-                                :
-                                <div>
-                                    {/* <div style={{margin:20}}><BilanTotalList articles=} dates={[fromDate,toDate]} data={totals}/></div> */}
-                                    <Table
-                                    limit='10'
-                                    headData={customerTableHead}
-                                    renderHead={(item, index) => renderHead(item, index)}
-                                    bodyData={filtredBilans}
-                                    renderBody={(item, index) => renderBody(item, index)}
-                                    />
 
-                                </div>
+                                // filtredRecus===undefined
+                                // ? 
+                                // <div style={{display:'flex',justifyContent:'center'}}>Problèmes de connections</div>
+                                // :
+                                // loading
+                                // ?
+                                // <div style={{display:'flex',justifyContent:'center',padding:'50px'}}>
+                                //     <Loader  content="Chargement en cours..." />
+                                // </div>
+                                // :
+                                // filtredRecus.length === 0
+                                // ?
+                                // <div style={{display:'flex',justifyContent:'center'}}>Pas de données</div>
+                                // :
+                                // <div>
+                                //     <div style={{margin:20}}><RecuTotalList articles={props.articleId} dates={[fromDate,toDate]} data={totals}/></div>
+                                //     <Table
+                                //     limit='10'
+                                //     headData={customerTableHead}
+                                //     renderHead={(item, index) => renderHead(item, index)}
+                                //     bodyData={filtredRecus}
+                                //     renderBody={(item, index) => renderBody(item, index)}
+                                //     />
+
+                                // </div>
                                 
                             }
                         </div>
@@ -231,4 +251,4 @@ const Bilan = (props) => {
     )
 }
 
-export default Bilan
+export default Traffic

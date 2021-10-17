@@ -1,5 +1,5 @@
 {
-  "name": "tua-react-admin",
+  "name": "gestpark-elbouchouki",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -28,7 +28,7 @@
     "react-scripts": "4.0.3",
     "react-to-print": "^2.13.0",
     "redux": "^4.1.1",
-    "rsuite": "^4.10.3",
+    "rsuite": "^5.0.0",
     "tsparticles": "^1.35.1",
     "web-vitals": "^1.1.2"
   },
