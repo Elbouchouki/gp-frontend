@@ -141,7 +141,7 @@ const Bilan = (props) => {
     useEffect(() => {
         async function fetchBilans(){
             setLoading(true)
-            const bilans = await ApiCall.getBilans(token,fromDate,toDate)
+            const bilans = await ApiCall.getBilans(token,active,fromDate,toDate)
             console.log(bilans)
             console.log(fromDate,toDate)
             setListBilans(bilans)
