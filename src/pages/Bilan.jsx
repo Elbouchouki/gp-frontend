@@ -1,11 +1,16 @@
 import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
 import moment from 'moment'
-import { Nav ,Loader,SelectPicker ,Tag } from 'rsuite'
+import { Nav ,Loader,SelectPicker,IconButton ,Tag,toaster,Message } from 'rsuite'
+import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export'
+import { Detail } from '@rsuite/icons';
+import {aggregateBy } from "@progress/kendo-data-query"
 import SpinnerIcon from '@rsuite/icons/legacy/Spinner';
 import { DatePickerDate,DatePickerFreeDate,DatePickerWeekDate,DatePickerMonthDate,YearSelect } from '../components/datepickers/DatePickers'
 import ApiCall from '../api/Api'
 import { useSelector } from 'react-redux'
+import {getVille} from "../helper/helper"
+import { isElementOfType } from 'react-dom/cjs/react-dom-test-utils.production.min'
 
 const renderHead = (item, index) => <th key={index}>{item}</th>
 const styles = {
@@ -52,11 +57,14 @@ const Bilan = (props) => {
     const token = authReducer.token
     const [active, setActive] = useState('day')
     const [fromDate, setFromDate] = useState(new Date())
+    const [exporter,setExporter] =useState(null)
     const [toDate, setToDate] = useState(new Date())
     const [loading,setLoading] = useState(true)
     const [listBilans,setListBilans]=useState([])
     const [listVilles,setListVilles]=useState([])
     const [filtredBilans,setfiltredBilans]=useState([])
+    const [excelData,setExcelData]=useState(null)
+    const [exportLoading,setExportLoading]=useState(false)
     const [ville,setVille]=useState(null)
     const handleIntervalDateChange = (value) => {
         setFromDate(value[0])
@@ -143,7 +151,6 @@ const Bilan = (props) => {
             setLoading(true)
             const bilans = await ApiCall.getBilans(token,active,fromDate,toDate)
             console.log(bilans)
-            console.log(fromDate,toDate)
             setListBilans(bilans)
             setLoading(false)
         }
@@ -152,9 +159,72 @@ const Bilan = (props) => {
             setLoading(true)
           };
         
-    },[fromDate,toDate,token])
+    },[fromDate,toDate,token,active])
+    const exportation = async () =>{
+        setExportLoading(true)
+        var excelFiltred = []
+        filtredBilans.forEach(element =>{
+            const duration = moment.duration(moment(element.date_f,'DD/MM/YYYY HH:mm').diff(moment(element.date_d,'DD/MM/YYYY HH:mm')))
+            const hours = parseInt(duration.asHours())
+            const minutes = duration.asMinutes()%60
+            const dur = hours?minutes?hours+"h:"+minutes+"m":hours+"h":minutes+"min"
+            excelFiltred.push({
+                caisser:element.caisser,
+                montant:element.montant,
+                date_d:element.date_d,
+                date_f:element.date_f,
+                duree:dur,
+                poste:element.poste,
+                ville:element.Ville?.nom_ville
+            })
+        })
+        await setExcelData(excelFiltred)
+        setExportLoading(false)
+        if(exporter){
+             toaster.clear()
+             toaster.push(
+                <Message type="success" showIcon closable>
+                  Telechargement ...   
+                </Message>
+              )
+            const options = exporter.workbookOptions()
+            const rows = options.sheets[0].rows
+            options.sheets[0].frozenRows = 2
+            const interval = `DU ${moment(fromDate).format("DD/MM/YYYY")} AU ${moment(toDate).format("DD/MM/YYYY")}`
+            const headerRow = {
+                height: 70,
+                cells: [
+                  {
+                    value: `Bilans ${!ville?"DE TOUS LES PARKING":"DU PARKING DE "+getVille(ville)} EN DH/TTC ${interval}`,
+                    fontSize: 16,
+                    colSpan: 7,
+                    wrap:true,
+                    textAlign:"center",
+                    verticalAlign:"center"
+                  },
+                ],
+              }
+              rows.unshift(headerRow)
+            try {
+              exporter.save(options)
+            } catch (error) {
+                 toaster.clear()
+                 toaster.push(
+                    <Message type="error" showIcon closable>
+                      Erreur  
+                    </Message>
+                  )
+            }
+            return
+        }
+         toaster.clear()
+         toaster.push(
+            <Message type="error" showIcon closable>
+              Exportation echoué  
+            </Message>
+          )
+    }
     return (
-
         <div>
             <h2 className="page-header">
                 {props.pageTitle}
@@ -189,7 +259,12 @@ const Bilan = (props) => {
                                     <div className="row">
                                         <div className="col-4">
                                             <VilleSelect items={listVilles} handleChange={handleVilleChange} handleUpdate={handleVilleUpdate}/>
-                                        </div>                            
+                                        </div> 
+                                        {filtredBilans?.length!==0?
+                                            <div className="col-4">
+                                                <IconButton onClick={exportation} loading={exportLoading} size="md" appearance='primary' color="green" icon={<Detail />} />
+                                            </div>
+                                        :null}    
                                     </div>
                                 </div>
                             </div>
@@ -227,6 +302,28 @@ const Bilan = (props) => {
                     </div>
                 </div>
             </div>
+            <ExcelExport
+                data={excelData}
+                fileName={`Bilans-${!ville?"Tous":getVille(ville)}-${moment(fromDate).format("DD/MM/YYYY")}-${moment(toDate).format("DD/MM/YYYY")}.xlsx`}
+                ref={setExporter}
+                filterable={true}
+                creator="GestPark"
+            >
+                <ExcelExportColumn field="poste" title="Poste" width={80}/>
+                <ExcelExportColumn field="caisser" title="Caisser" width={100} footer={()=>"Totals"}/>
+                <ExcelExportColumn field="montant"
+                title="Montant"
+                width={60} 
+                footer={() => {
+                    var sum = 0;
+                    excelData.forEach(element =>sum+=parseFloat(element.montant))
+                    return sum
+                }}/>
+                <ExcelExportColumn field="date_d" title="Poste" width={180}/>
+                <ExcelExportColumn field="date_f" title="Poste" width={180}/>
+                <ExcelExportColumn field="duree" title="Duree" width={100}/>
+                <ExcelExportColumn field="ville" title="Ville" width={120}/>
+            </ExcelExport>
         </div>
     )
 }

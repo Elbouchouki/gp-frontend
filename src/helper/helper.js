@@ -79,6 +79,11 @@ export const getVille = (villeId) => {
       return "Ville";
   }
 };
+export const getVilles = (villeId) => {
+  var ville = "";
+  villeId.forEach((element) => (ville += getVille(element) + " "));
+  return ville;
+};
 export const monthFullSwitch = (month) => {
   switch (month) {
     case 1:
