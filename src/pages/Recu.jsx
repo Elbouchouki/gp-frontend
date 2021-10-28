@@ -425,7 +425,7 @@ const Recu = (props) => {
                                                         :active ==="day"?
                                                         <DatePickerDate handleDateChange={handleDateChange}/>
                                                         :active === "year" ?<YearSelect handleChange={handleYearChange} />
-                                                        :<DatePickerFreeDate handleDateChange={handleIntervalDateChange} />
+                                                        :<DatePickerFreeDate handleDateChange={handleIntervalDateChange} hour={true} />
                                                 }
                                         </div>
                                         <div className="col-4">
@@ -439,20 +439,20 @@ const Recu = (props) => {
                                 <div className="col-12">                       
                                     <div className="row">
                                        
-                                        <div className="col-3">
+                                        <div className="col-3" >
                                             <VilleSelect items={listVilles} handleChange={handleVilleChange} handleUpdate={handleVilleUpdate}/>
                                         </div>
-                                        <div className="col-3">
+                                        <div className="col-3" style={{paddingBottom:10}} >
                                             <TarifsSelect type={props.type} items={listTarifs} handleChange={handleTarifChange} handleUpdate={handleTarifUpdate}/>
                                         </div>
                                             
                                     </div>
                                     {props.type ==="normal"?
                                     <div className="row">
-                                        <div className="col-3">
+                                        <div className="col-3" style={{paddingBottom:10}} >
                                             <ArticleSelect items={listArticles} handleChange={handleArticleChange} handleUpdate={handleArticleUpdate}/>
                                         </div>
-                                        <div className="col-3">
+                                        <div className="col-3" style={{paddingBottom:10}} >
                                             <EtatsSelect items={listArticles} handleChange={handleEtatsChange}/>
                                         </div>                                        
                                     </div>:

@@ -2,6 +2,7 @@ import React ,{ useState ,useEffect }from 'react'
 import Table from '../components/table/Table'
 import moment from 'moment'
 import { Nav ,Loader,SelectPicker,IconButton ,Tag,toaster,Message } from 'rsuite'
+import { isMobile } from "react-device-detect";
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export'
 import { Detail } from '@rsuite/icons';
 import {aggregateBy } from "@progress/kendo-data-query"
@@ -10,7 +11,6 @@ import { DatePickerDate,DatePickerFreeDate,DatePickerWeekDate,DatePickerMonthDat
 import ApiCall from '../api/Api'
 import { useSelector } from 'react-redux'
 import {getVille} from "../helper/helper"
-import { isElementOfType } from 'react-dom/cjs/react-dom-test-utils.production.min'
 
 const renderHead = (item, index) => <th key={index}>{item}</th>
 const styles = {
@@ -236,22 +236,44 @@ const Bilan = (props) => {
                             <div className="row">
                                 <div className="col-12" >
                                     <div className="row" style={{justifyContent:"space-between"}} > 
-                                        <div className="col-6">
-                                                {active === 'week'?
-                                                        <DatePickerWeekDate active={active} handleDateChange={handleIntervalDateChange} />
-                                                        :active ==="month"?
-                                                        <DatePickerMonthDate active={active} handleDateChange={handleIntervalDateChange} />
-                                                        :active ==="day"?
-                                                        <DatePickerDate handleDateChange={handleDateChange}/>
-                                                        :active === "year" ?<YearSelect handleChange={handleYearChange} />
-                                                        :<DatePickerFreeDate handleDateChange={handleIntervalDateChange} />
-                                                }
-                                        </div>
-                                        <div className="col-4">
-                                            <div className="row" style={{justifyContent:"flex-end"}} > 
-                                                    <CustomNav appearance="subtle" active={active} onSelect={handleSelect} />
+                                        {isMobile?
+                                        <>
+                                            <div className="col-4">
+                                                <div className="row" style={{justifyContent:"flex-end"}} > 
+                                                        <CustomNav appearance="subtle" active={active} onSelect={handleSelect} />
+                                                </div>
                                             </div>
-                                        </div>
+                                            <div className="col-6">
+                                                    {active === 'week'?
+                                                            <DatePickerWeekDate active={active} handleDateChange={handleIntervalDateChange} />
+                                                            :active ==="month"?
+                                                            <DatePickerMonthDate active={active} handleDateChange={handleIntervalDateChange} />
+                                                            :active ==="day"?
+                                                            <DatePickerDate handleDateChange={handleDateChange}/>
+                                                            :active === "year" ?<YearSelect handleChange={handleYearChange} />
+                                                            :<DatePickerFreeDate handleDateChange={handleIntervalDateChange} hour={true} />
+                                                    }
+                                            </div>
+                                        </>
+                                        :
+                                        <>
+                                            <div className="col-6">
+                                                    {active === 'week'?
+                                                            <DatePickerWeekDate active={active} handleDateChange={handleIntervalDateChange} />
+                                                            :active ==="month"?
+                                                            <DatePickerMonthDate active={active} handleDateChange={handleIntervalDateChange} />
+                                                            :active ==="day"?
+                                                            <DatePickerDate handleDateChange={handleDateChange}/>
+                                                            :active === "year" ?<YearSelect handleChange={handleYearChange} />
+                                                            :<DatePickerFreeDate handleDateChange={handleIntervalDateChange} hour={true} />
+                                                    }
+                                            </div>
+                                            <div className="col-4">
+                                                <div className="row" style={{justifyContent:"flex-end"}} > 
+                                                        <CustomNav appearance="subtle" active={active} onSelect={handleSelect} />
+                                                </div>
+                                            </div>
+                                        </>}
                                        
                                     </div>
                                 </div>
