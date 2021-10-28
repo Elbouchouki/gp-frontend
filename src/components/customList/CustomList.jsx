@@ -139,7 +139,7 @@ const CustomList = ({dataList,dates},...props) => {
         })
         rows.push(addonTitle)
         rows.push(addonData)
-        console.log(rows)
+        // console.log(rows)
       try {
           exporter.save(options);
       } catch (error) {
@@ -245,15 +245,17 @@ const CustomList = ({dataList,dates},...props) => {
                     <div style={dataStyle}>
                       {(item.bilan)===0?
                         0:
-                        (item.bilan)<3?<span style={{color:"green"}}>
-                                          {(item.bilan)}
-                                        </span>:
-                       (item.bilan)===3?<span style={{color:"orange"}}>
-                                          {(item.bilan)}
-                                          </span>:
-                                          <span style={{color:"red"}}>
-                                          {(item.bilan)}
-                                          </span>
+                        (item.bilan)<3?
+                            <span style={{color:"green"}}>
+                              {(item.bilan)}
+                            </span>:
+                       (item.bilan)===3?
+                            <span style={{color:"orange"}}>
+                              {(item.bilan)}
+                            </span>:
+                            <span style={{color:"red"}}>
+                              {(item.bilan)}
+                            </span>
                         
                       }
                       </div>

@@ -224,6 +224,7 @@ const Dashboard = () => {
         async function fetchData(){
             setStLoading(true)
             const villeStatistiques = await ApiCall.getVilleStatistiques(token,stActive,stFromDate,stToDate)
+            console.log(villeStatistiques)
             setStData(villeStatistiques)
             setStLoading(false)
         }
