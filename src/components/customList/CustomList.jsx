@@ -168,7 +168,7 @@ const CustomList = ({dataList,dates},...props) => {
           <List.Item key={index}>
             <FlexboxGrid>
               {/*icon*/}
-              {isMobile?null:<FlexboxGrid.Item colspan={2} style={styleCenter}>
+              {<FlexboxGrid.Item colspan={2} style={styleCenter}>
                 <img src={Building} alt="img" style={{width:"40px",height:"40px"}} />
                 {/* <Icon
                   as={Building}
@@ -276,7 +276,7 @@ const CustomList = ({dataList,dates},...props) => {
                   ...styleCenter
                 }}
               >
-                {isMobile?null:<Button appearance="ghost" onClick={()=>openModal(item)} >Détails</Button>}
+                {<Button appearance="ghost" onClick={()=>openModal(item)} >Détails</Button>}
                 
               </FlexboxGrid.Item>
             </FlexboxGrid>

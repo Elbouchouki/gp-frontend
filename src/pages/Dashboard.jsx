@@ -197,7 +197,7 @@ const Dashboard = () => {
         async function fetchData(){
             setLoading(true)
             const daything = await ApiCall.getStatistiques(token,"day");
-            setDaily([daything.recus[0]?.count,daything.recus[0]?.sum])
+            setDaily([daything?.recus[0]?.count,daything?.recus[0]?.sum])
             var countArticle  = []
             var sumArticle = []
             var interval = null;
@@ -242,7 +242,7 @@ const Dashboard = () => {
             var sum = 0
             var count = 0
             const seven = await ApiCall.getStatistiques(token,"seven");
-            seven.seven.forEach(element => {
+            seven?.seven?.forEach(element => {
                 count +=element.count
                 sum +=element.sum
                 countSeven.push(element.count)
@@ -327,16 +327,14 @@ const Dashboard = () => {
                                     <Loader  content="Chargement en cours..." />
                                 </div>
                                 :
-                                <CustomList dates={[stFromDate,stToDate]} dataList={stData}/>
+                                    <div style={{overflowY:"auto"}}>
+                                         <CustomList dates={[stFromDate,stToDate]} dataList={stData}/>
+                                    </div>
                                 }
-                        
-                   
-                                
-
                 </div>
             </div>
             <div className="row">
-            <div className="col-8">
+                <div className="col-8">
                     <div className="card" >
                         <div className="row" style={{justifyContent:"space-between",alignItems:"center"}}>
                         <h5 >Les mois précédents</h5>
