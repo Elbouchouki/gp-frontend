@@ -185,7 +185,7 @@ const Traffic = (props) => {
             <h2 className="page-header">
                 {props.pageTitle}
             </h2>
-            <div className="row">
+            {/* <div className="row">
                 <div className="col-12">
                     <div className="card">
                         <div className="card__header"> 
@@ -301,7 +301,7 @@ const Traffic = (props) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }
