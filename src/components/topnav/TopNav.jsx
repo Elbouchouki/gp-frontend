@@ -4,7 +4,7 @@ import {useHistory ,Link} from 'react-router-dom'
 import Dropdownn from "../dropdown/Dropdown"
 import ThemeMenu from '../thememenu/ThemeMenu'
 import SpinnerIcon from '@rsuite/icons/legacy/Spinner'
-import { Project , Search,HelpOutline,UserBadge,Exit ,Export,RemindFill,Gear} from '@rsuite/icons'
+import { Project , Search,HelpOutline,UserBadge,Exit ,Export,RemindFill,Gear,Menu } from '@rsuite/icons'
 import { Modal,Button,Message,toaster,Dropdown,IconButton,AutoComplete,Whisper, InputGroup,Popover,SelectPicker,Tag,RadioGroup,Radio} from 'rsuite'
 import { DatePickerWeekDate,DatePickerMonthDate,YearSelect,DatePickerFreeDate,HourPicker} from '../datepickers/DatePickers'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export'
@@ -479,8 +479,10 @@ const Topnav = props => {
     return (
       <div className="navLayout">
         <div className="navButton">
-              <button ref={nav_toggle_ref} onClick={() => setActiveNav()}>
-                  <Gear style={{fontSize:"1.5em"}}/>
+              <button ref={nav_toggle_ref} onClick={()=>{}
+                // () => setActiveNav()
+                }>
+                  <Menu style={{fontSize:"1.5em"}}/>
               </button>
               <div ref={nav_ref} className="nav-mobile">
                   {/* <h4>Navigation</h4> */}
