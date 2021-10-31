@@ -56,29 +56,23 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  // static async getExcelDataAll(token, active, date_from, date_to) {
-  //   var date_f = moment(date_from).format("YYYY-MM-DD 00:00:00");
-  //   var date_t = moment(date_to).format("YYYY-MM-DD 23:59:59");
-  //   if (active === "free") {
-  //     date_f = moment(date_from).format("YYYY-MM-DD HH:mm");
-  //     date_t = moment(date_to).format("YYYY-MM-DD HH:mm");
-  //   }
-  //   try {
-  //     const excelData = await axios.post(
-  //       `${process.env.REACT_APP_API_URL}excel/all`,
-  //       {
-  //         date_from: date_f,
-  //         date_to: date_t,
-  //       },
-  //       {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       }
-  //     );
-  //     return excelData.data;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
+  static async getOncfData(token, ville, year) {
+    try {
+      const oncfData = await axios.post(
+        `${process.env.REACT_APP_API_URL}excel/oncf`,
+        {
+          ville_id: ville,
+          year: year,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return oncfData.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
   static async getVilleStatistiques(token, active, from_date, to_date) {
     try {
       var date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
@@ -244,12 +238,12 @@ export default class ApiCall {
       console.log(error);
     }
   }
-  static async inOut(token, ville_id, from_date, to_date) {
+  static async traffic(token, ville_id, from_date, to_date) {
     try {
       const date_from = moment(from_date).format("YYYY-MM-DD 00:00:00");
       const date_to = moment(to_date).format("YYYY-MM-DD 23:59:59");
-      const statisticCustom = await axios.post(
-        `${process.env.REACT_APP_API_URL}statistic/inout`,
+      const traffic = await axios.post(
+        `${process.env.REACT_APP_API_URL}statistic/traffic`,
         {
           ville_id: ville_id,
           date_from: date_from,
@@ -259,7 +253,7 @@ export default class ApiCall {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      return statisticCustom.data;
+      return traffic.data;
     } catch (error) {
       console.log(error);
     }

@@ -68,7 +68,37 @@ export const DatePickerWeekDate = ({ active, handleDateChange }) => {
     />
   );
 };
-export const DatePickerFreeDate = ({ handleDateChange }) => {
+export const HourPicker = ({ active, handleHourChange }) => {
+  return (
+    <DateRangePicker
+      isoWeek
+      disabled={active}
+      block
+      style={{ marginBottom: 10 }}
+      onChange={(value) => {
+        handleHourChange(value);
+      }}
+      placeholder="Heure*"
+      ranges={[]}
+      format="HH:mm"
+      locale={{
+        sunday: "Dim",
+        monday: "Lun",
+        tuesday: "Mar",
+        wednesday: "Mer",
+        thursday: "Jeu",
+        friday: "Ven",
+        saturday: "Sam",
+        ok: "OK",
+        today: "Aujourd'hui",
+        yesterday: "Hier",
+        last7Days: "Last 7 days",
+      }}
+    />
+  );
+};
+
+export const DatePickerFreeDate = ({ handleDateChange, hour }) => {
   return (
     <DateRangePicker
       isoWeek
@@ -103,7 +133,7 @@ export const DatePickerFreeDate = ({ handleDateChange }) => {
           ],
         },
       ]}
-      format="dd/MM/yyyy HH:mm"
+      format={hour ? "dd/MM/yyyy HH:mm" : "dd/MM/yyyy"}
       locale={{
         sunday: "Dim",
         monday: "Lun",

@@ -212,36 +212,36 @@ const RecuTotalList = ({data,dates,articles}) => {
                 <List hover>
                         <List.Item>
                             <FlexboxGrid>
-                            <FlexboxGrid.Item
-                                colspan={8}
-                                style={{
-                                ...styleCenter,
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                overflow: 'hidden'
-                                }}
-                            >   
-                            </FlexboxGrid.Item>
-                            <FlexboxGrid.Item colspan={4} style={styleCenter}>
-                                <div style={{ textAlign: 'center' }}>
-                                <div style={slimText}>Nbr.T Confirmés</div>
-                                </div>
-                            </FlexboxGrid.Item>
-                            <FlexboxGrid.Item colspan={4} style={styleCenter}>
-                                <div style={{ textAlign: 'center' }}>
-                                <div style={slimText}>Total.T Confirmés</div>
-                                </div>
-                            </FlexboxGrid.Item>
-                            <FlexboxGrid.Item colspan={4} style={styleCenter}>
-                                <div style={{ textAlign: 'center' }}>
-                                <div style={slimText}>Nbr.T Annulés</div>
-                                </div>
-                            </FlexboxGrid.Item>
-                            <FlexboxGrid.Item colspan={4} style={styleCenter}>
-                                <div style={{ textAlign: 'center' }}>
-                                <div style={slimText}>Total.T Annulés</div>
-                                </div>
-                            </FlexboxGrid.Item>
+                              <FlexboxGrid.Item
+                                  colspan={8}rcalc
+                                  style={{
+                                  ...styleCenter,
+                                  flexDirection: 'column',
+                                  alignItems: 'center',
+                                  overflow: 'hidden'
+                                  }}
+                              >   
+                              </FlexboxGrid.Item>
+                              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+                                  <div style={{ textAlign: 'center' }}>
+                                  <div style={slimText}>Nbr.T Confirmés</div>
+                                  </div>
+                              </FlexboxGrid.Item>
+                              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+                                  <div style={{ textAlign: 'center' }}>
+                                  <div style={slimText}>Total.T Confirmés</div>
+                                  </div>
+                              </FlexboxGrid.Item>
+                              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+                                  <div style={{ textAlign: 'center' }}>
+                                  <div style={slimText}>Nbr.T Annulés</div>
+                                  </div>
+                              </FlexboxGrid.Item>
+                              <FlexboxGrid.Item colspan={4} style={styleCenter}>
+                                  <div style={{ textAlign: 'center' }}>
+                                  <div style={slimText}>Total.T Annulés</div>
+                                  </div>
+                              </FlexboxGrid.Item>
                             </FlexboxGrid>
                         </List.Item>
                     

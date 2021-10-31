@@ -32,24 +32,10 @@ const Layout = () => {
         setLoading(false)
     }, [dispatch])
     if (isMobile) {
-        // return (loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
-        // authReducer?.user?
-        // <BrowserRouter>
-        //     <Route render={(props) => (
-        //         <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
-        //             <TopNavMobile/>
-        //                 <div className="layout__content-mobile">
-        //                     <Dashboard/>
-        //                 </div>
-        //         </div>
-        //     )}/>
-        // </BrowserRouter>:<Login/>)
-    // if (isMobile){
         return (
             <Maintenance/>
         )
     }
-   
     return(
         
         loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
@@ -59,7 +45,7 @@ const Layout = () => {
                 <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
                     <Sidebar {...props}/>
                     <div className="layout__content">
-                        <TopNav/>
+                        <TopNav {...props}/>
                         <div className="layout__content-main">
                             <Routes/>
                         </div>
