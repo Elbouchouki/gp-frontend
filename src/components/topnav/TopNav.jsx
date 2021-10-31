@@ -1,26 +1,31 @@
-import React,{useState} from 'react'
+import React,{useState,useRef} from 'react'
 import './topnav.css'
-import {useHistory } from 'react-router-dom'
+import {useHistory ,Link} from 'react-router-dom'
 import Dropdownn from "../dropdown/Dropdown"
 import ThemeMenu from '../thememenu/ThemeMenu'
 import SpinnerIcon from '@rsuite/icons/legacy/Spinner'
-import { Project , Search,HelpOutline,UserBadge,Exit ,Export,RemindFill} from '@rsuite/icons'
-import { Modal,Button,Message,toaster,Dropdown,IconButton,AutoComplete,Whisper, InputGroup,Popover,SelectPicker,DateRangePicker,RadioGroup,Radio} from 'rsuite'
-import { DatePickerWeekDate,DatePickerMonthDate,YearSelect} from '../datepickers/DatePickers'
+import { Project , Search,HelpOutline,UserBadge,Exit ,Export,RemindFill,Gear} from '@rsuite/icons'
+import { Modal,Button,Message,toaster,Dropdown,IconButton,AutoComplete,Whisper, InputGroup,Popover,SelectPicker,Tag,RadioGroup,Radio} from 'rsuite'
+import { DatePickerWeekDate,DatePickerMonthDate,YearSelect,DatePickerFreeDate,HourPicker} from '../datepickers/DatePickers'
 import { ExcelExport,ExcelExportColumn, } from '@progress/kendo-react-excel-export'
 import {aggregateBy } from "@progress/kendo-data-query"
 import ApiCall from '../../api/Api'
 import {useSelector,useDispatch } from 'react-redux'
+import { isMobile } from "react-device-detect";
 import AuthAction from "../../redux/actions/AuthAction"
 import moment from "moment"
 import groupArray from 'group-array'
 import {getVille,monthFullSwitch} from "../../helper/helper"
+import smallLogo from '../../assets/images/favicon.png'
+import logo from '../../assets/images/gestpark.svg'
+import sidebar_items from '../../assets/JsonData/sidebar_routes.json'
+
 
 const VilleSelect = ({items,handleUpdate,handleChange}) =>{
     return <SelectPicker
     block
-    placeholder="Ville*"
-    data={items.filter(item => item.active === true)}
+    placeholder="Ville"
+    data={items?.filter(item => item.active === true)}
     style={{
         marginBottom: 10
     }}
@@ -39,89 +44,6 @@ const VilleSelect = ({items,handleUpdate,handleChange}) =>{
     }}
   />
 }
-
-const DatePickerFreeDate = ({ handleDateChange }) => {
-    return (
-      <DateRangePicker
-        isoWeek
-        cleanable={false}
-        block
-        style={{marginBottom: 10}}
-        onChange={(value) => {
-          handleDateChange(value)
-        }}
-        placeholder="Date Libre"
-        ranges={[
-          {
-            label: "Ce Mois",
-            value: [
-              moment().startOf("month").toDate(),
-              moment().endOf("month").toDate(),
-            ],
-          },
-          {
-            label: "Cette Semaine",
-            value: [
-              moment().startOf("week").toDate(),
-              moment().endOf("week").toDate(),
-            ],
-          },
-          {
-            label: "Cette Année",
-            value: [
-              moment().startOf("year").toDate(),
-              moment().endOf("year").toDate(),
-            ],
-          },
-        ]}
-        format="dd/MM/yyyy"
-        locale={{
-          sunday: "Dim",
-          monday: "Lun",
-          tuesday: "Mar",
-          wednesday: "Mer",
-          thursday: "Jeu",
-          friday: "Ven",
-          saturday: "Sam",
-          ok: "OK",
-          today: "Aujourd'hui",
-          yesterday: "Hier",
-          last7Days: "Last 7 days",
-        }}
-      />
-    )
-  }
-
-
-  const HourPicker = ({active, handleHourChange }) => {
-    return (
-      <DateRangePicker
-        isoWeek
-        disabled={active}
-        block
-        style={{marginBottom: 10}}
-        onChange={(value) => {
-          handleHourChange(value)
-        }}
-        placeholder="Heure*"
-        ranges={[]}
-        format="HH:mm"
-        locale={{
-          sunday: "Dim",
-          monday: "Lun",
-          tuesday: "Mar",
-          wednesday: "Mer",
-          thursday: "Jeu",
-          friday: "Ven",
-          saturday: "Sam",
-          ok: "OK",
-          today: "Aujourd'hui",
-          yesterday: "Hier",
-          last7Days: "Last 7 days",
-        }}
-      />
-    )
-  }
 
 
 const LogoutModal = ({handleLogout,show,close})=>(
@@ -146,8 +68,7 @@ const LogoutModal = ({handleLogout,show,close})=>(
             </Modal.Footer>
         </Modal>
     )
-const ExportModal = ({isSelected,hourType,setHourType,show,close,confirme,dateChange,handleHourChange,yearChange,season,listVilles,handleVilleChange,handleVilleUpdate}) =>(
-    
+const ExportModal = ({year,isSelected,hourType,setHourType,show,close,confirme,dateChange,handleHourChange,ville,yearChange,season,listVilles,handleVilleChange,handleVilleUpdate}) =>(
     <Modal size="xs" backdrop="static"  open={show} onClose={close}>
         <Modal.Header>
             <Modal.Title>
@@ -165,19 +86,19 @@ const ExportModal = ({isSelected,hourType,setHourType,show,close,confirme,dateCh
                     :season ==="year"?
                     <YearSelect handleChange={yearChange} />
                     :
-                    <DatePickerFreeDate handleDateChange={dateChange} />
+                    season === "oncf" ?null:<DatePickerFreeDate handleDateChange={dateChange} />
                     }
-                    <HourPicker active={isSelected?false:true} handleHourChange={handleHourChange}/>
-                    <RadioGroup onChange={setHourType} value={hourType} disabled={isSelected?false:true} name="radioList" inline appearance="picker" defaultValue="A">
+                    {season === "oncf" ?<YearSelect handleChange={yearChange}/>:<HourPicker active={isSelected?false:true} handleHourChange={handleHourChange}/>}
+                    {season === "oncf" ?null:<RadioGroup onChange={setHourType} value={hourType} disabled={isSelected?false:true} name="radioList" inline appearance="picker" defaultValue="A">
                       <span style={{padding: '8px 2px 8px 10px',display: 'inline-block',verticalAlign: 'middle'}}>
                         Type d'heure: </span>
                       <Radio value="C">Continue</Radio>
                       <Radio value="P">Périodique</Radio>
-                    </RadioGroup>
+                    </RadioGroup>}
                 </div>
             </Modal.Body>
         <Modal.Footer>
-            <Button color="green" disabled={isSelected?false:true} onClick={confirme} appearance="primary">
+            <Button color="green" disabled={season === "oncf" ?year?ville===null?true:false:true:isSelected?false:true} onClick={confirme} appearance="primary">
                 Exporter
             </Button>
             <Button onClick={close} color="red" appearance="subtle">
@@ -205,14 +126,30 @@ const searchTypes = [
         icon: "window-close-o"
     }
   ]
-  
-const Topnav = () => {
+  const clickOutsideRef = (content_ref, toggle_ref) => {
+    document.addEventListener('mousedown', (e) => {
+        // user click toggle
+        if (toggle_ref.current && toggle_ref.current.contains(e.target)) {
+            content_ref.current.classList.toggle('active')
+        } else {
+            // user click outside toggle and content
+            if (content_ref.current && !content_ref.current.contains(e.target)) {
+                content_ref.current.classList.remove('active')
+            }
+        }
+    })
+}
+const Topnav = props => {
     const history = useHistory()
     const dispatch = useDispatch()
     const authReducer = useSelector(state=>state.AuthReducer)
     const user = authReducer.user
+    const permissions = authReducer.user.permissions
+    const activeItem = sidebar_items.findIndex(item => item.route === props.location.pathname)
     const token = authReducer.token
     const [exporter,setExporter] =useState(null)
+    const [oncf,setOncf] =useState(null)
+    const [year,setYear] =useState(null)
     const search = React.createRef()
     const [showExportModal,setShowExportModal]=useState(false)
     const [showLogoutModal,setShowLogoutModal]=useState(false)
@@ -228,6 +165,11 @@ const Topnav = () => {
     const [hourType,setHourType]=useState('C')
     const [isSelected,setIsSelected]=useState(false)
     const [excelData,setExcelData]=useState(null)
+    const nav_ref = useRef(null)
+    const nav_toggle_ref = useRef(null)
+    clickOutsideRef(nav_ref, nav_toggle_ref)
+    const setActiveNav = () => nav_ref.current.classList.add('active')
+    const closeNav = () => nav_ref.current.classList.remove('active')
     const handleVilleUpdate=async()=> {
         if (listVilles.length === 0) {
             const villes  = await ApiCall.getVilles(token)
@@ -263,30 +205,51 @@ const Topnav = () => {
               Exportation encours...     
             </Message>
           )
-        const data = await  ApiCall.getExcelData(token,season,ville,fromDate,toDate,fromHour,toHour,isHourSelected,hourType)
         var excelFiltred = []
-        const groupedData = groupArray(data.result,'date',"etats",'article_id')
-        Object.keys(groupedData).forEach(dateKey =>  
+        if(season === "oncf"){
+          
+          const oncfData = await  ApiCall.getOncfData(token,ville,year);
+          const oncfDataGrouped = groupArray(oncfData.result,'mois',"etats",'article_id')
+          Object.keys(oncfDataGrouped).forEach(moisKey =>  
             {
-            const nbr_cm = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.nbr||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.nbr||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.nbr||0)
-            const cm = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.montant||0)
-            const abonne = (groupedData[dateKey]['confirmé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[8]?.[0]?.montant||0)
-            const nbr_taj = (groupedData[dateKey]['annulé']?.[1]?.[0]?.nbr||0)+(groupedData[dateKey]['annulé']?.[2]?.[0]?.nbr||0)+(groupedData[dateKey]['annulé']?.[3]?.[0]?.nbr||0)
-            const taj = (groupedData[dateKey]['annulé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[3]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[8]?.[0]?.montant||0)
-            const total = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[8]?.[0]?.montant||0)
+            const nbr_abos = (oncfDataGrouped[moisKey]['confirmé']?.[6]?.[0]?.nbr||0)+(oncfDataGrouped[moisKey]['confirmé']?.[7]?.[0]?.nbr||0)+(oncfDataGrouped[moisKey]['confirmé']?.[8]?.[0]?.nbr||0)
+            const cumul = (oncfDataGrouped[moisKey]['confirmé']?.[1]?.[0]?.montant||0)+(oncfDataGrouped[moisKey]['confirmé']?.[2]?.[0]?.montant||0)+(oncfDataGrouped[moisKey]['confirmé']?.[3]?.[0]?.montant||0+oncfDataGrouped[moisKey]['confirmé']?.[6]?.[0]?.montant||0)+(oncfDataGrouped[moisKey]['confirmé']?.[7]?.[0]?.montant||0)+(oncfDataGrouped[moisKey]['confirmé']?.[8]?.[0]?.montant||0)
+            const abos = (oncfDataGrouped[moisKey]['confirmé']?.[6]?.[0]?.montant||0)+(oncfDataGrouped[moisKey]['confirmé']?.[7]?.[0]?.montant||0)+(oncfDataGrouped[moisKey]['confirmé']?.[8]?.[0]?.montant||0)
             excelFiltred.push({
-                date:dateKey,
-                nbr_cm:nbr_cm,
-                cm:cm,
-                abonne:abonne,
-                nbr_taj:nbr_taj,
-                taj:taj,
-                total:total
+                mois:"Cumul recette "+monthFullSwitch(parseInt(moisKey)),
+                cumul:cumul,
+                abos:(abos*100/cumul).toFixed(2),
+                abo:abos,
+                nbr_abos:nbr_abos,
             })
         })
         await setExcelData(excelFiltred)
+        console.log(excelFiltred)
+        }else{
+          const data = await  ApiCall.getExcelData(token,season,ville,fromDate,toDate,fromHour,toHour,isHourSelected,hourType)
+          const groupedData = groupArray(data.result,'date',"etats",'article_id')
+          Object.keys(groupedData).forEach(dateKey =>  
+              {
+              const nbr_cm = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.nbr||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.nbr||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.nbr||0)
+              const cm = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.montant||0)
+              const abonne = (groupedData[dateKey]['confirmé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[8]?.[0]?.montant||0)
+              const nbr_taj = (groupedData[dateKey]['annulé']?.[1]?.[0]?.nbr||0)+(groupedData[dateKey]['annulé']?.[2]?.[0]?.nbr||0)+(groupedData[dateKey]['annulé']?.[3]?.[0]?.nbr||0)
+              const taj = (groupedData[dateKey]['annulé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[3]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[8]?.[0]?.montant||0)
+              const total = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[8]?.[0]?.montant||0)
+              excelFiltred.push({
+                  date:dateKey,
+                  nbr_cm:nbr_cm,
+                  cm:cm,
+                  abonne:abonne,
+                  nbr_taj:nbr_taj,
+                  taj:taj,
+                  total:total
+              })
+          })
+          await setExcelData(excelFiltred)
+        }
         setIsHourSelected(false)
-        if(exporter){
+        if(season!=="oncf"&&exporter){
              toaster.clear()
              toaster.push(
                 <Message type="success" showIcon closable>
@@ -297,29 +260,85 @@ const Topnav = () => {
             const rows = options.sheets[0].rows
             let rowIndex = 0
             let lastDay = 0
-            options.sheets[0].frozenRows = 2
+            options.sheets[0].frozenRows = 3
             const type = hourType === "C"?"Continue":"Périodique"
             const interval = season==="month"?isHourSelected?"MOIS "+monthFullSwitch(moment(toDate).month()+1)+" "+moment(fromDate).year()+`${"| "+moment(fromHour).format("HH:mm")+" --> "+moment(toHour).format("HH:mm")+" "+type}`:"MOIS "+monthFullSwitch(moment(toDate).month()+1)+" "+moment(fromDate).year():isHourSelected?`DU ${moment(fromDate).format("DD/MM/YYYY")} AU ${moment(toDate).format("DD/MM/YYYY")} | ${+" "+moment(fromHour).format("HH:mm")+" --> "+moment(toHour).format("HH:mm")+" "+type}`:`DU ${moment(fromDate).format("DD/MM/YYYY")} AU ${moment(toDate).format("DD/MM/YYYY")}`
             const headerRow = {
-                height: 70,
+                height: 40,
                 cells: [
                   {
                     value: `REPORTING DES CAS JOURNALIERES ${!ville?"DE TOUS LES PARKING":"DU PARKING DE "+getVille(ville)} EN DH/TTC ${interval}`,
-                    fontSize: 16,
+                    fontSize: 14,
                     colSpan: 7,
                     wrap:true,
                     textAlign:"center",
-                    verticalAlign:"center"
+                    verticalAlign:"center",
+                    bold:true
                   },
                 ],
               }
+              const borderStyle = {
+                color: "black",
+                size: "1",
+              }
+              const emptyRow={
+                "value": "",
+                "colSpan": 1,
+                "firstCell": false,
+                "rowSpan": 1,
+                textAlign:"center",
+                verticalAlign:"center"
+            }
+            const subHeaderRow = {
+                cells: [
+                  emptyRow,
+                  {
+                      "background": "#7a7a7a",
+                      "color": "#fff",
+                      "value": "Tickets",
+                      "colSpan": 2,
+                      "firstCell": false,
+                      "rowSpan": 1,
+                      textAlign:"center",
+                      verticalAlign:"center",
+                      borderBottom:borderStyle,
+                      borderLeft:borderStyle,
+                      borderRight:borderStyle,
+                      borderTop:borderStyle,
+                  },
+                  {
+                      "background": "#7a7a7a",
+                      "color": "#fff",
+                      "value": "Tickets à justifiés",
+                      "colSpan": 2,
+                      "firstCell": false,
+                      "rowSpan": 1,
+                      textAlign:"center",
+                      verticalAlign:"center",
+                      borderBottom:borderStyle,
+                      borderLeft:borderStyle,
+                      borderRight:borderStyle,
+                      borderTop:borderStyle,
+                  },
+                  emptyRow,
+                  emptyRow,
+                  emptyRow
+                ]
+            }
               rows[0].cells.push({background: "#7a7a7a",
                                 colSpan: 1,
                                 color: "#fff",
                                 firstCell: false,
-                                rowSpan: 1,
-                                value: "Change"})
+                                value: "Change",
+                                textAlign:"center",
+                                verticalAlign:"center"})
               rows.forEach((row) => {
+                row.cells.forEach(cell=>{
+                  cell["borderBottom"]=borderStyle
+                  cell["borderLeft"]=borderStyle
+                  cell["borderRight"]=borderStyle
+                  cell["borderTop"]=borderStyle
+                })
                 if (row.type === "data") {
                     let thisDay = parseFloat(row.cells[6].value)
                     if(rowIndex === 0){
@@ -327,16 +346,54 @@ const Topnav = () => {
                         lastDay=thisDay
                       }else{
                         let value = ((thisDay-lastDay)/lastDay).toLocaleString("en", { style: "percent", minimumFractionDigits: 2 })
-                        let background = ((thisDay-lastDay)/lastDay*100)<0?"#ff6e6e":"#3ec215"
+                        let background = ((thisDay-lastDay)/lastDay*100)<0?"#ed6065":"#48cc79"
                         row.cells.push({value: value, background: background})
                         lastDay=thisDay
                       }
                       rowIndex++
                 }
               })
+              rows.unshift(subHeaderRow)
               rows.unshift(headerRow)
             try {
               exporter.save(options)
+            } catch (error) {
+                 toaster.clear()
+                 toaster.push(
+                    <Message type="error" showIcon closable>
+                      Erreur  
+                    </Message>
+                  )
+            }
+            setExcelData(null)
+            return
+        }
+        if(season ==="oncf"&&oncf){
+          toaster.clear()
+             toaster.push(
+                <Message type="success" showIcon closable>
+                  Telechargement ...   
+                </Message>
+              )
+            const options = oncf.workbookOptions()
+            const rows = options.sheets[0].rows
+            options.sheets[0].frozenRows = 2
+            const headerRow = {
+                height: 70,
+                cells: [
+                  {
+                    value: `REPORTING ANNEE ${year+" DU PARKING DE "+getVille(ville)}`,
+                    fontSize: 16,
+                    colSpan: 4,
+                    wrap:true,
+                    textAlign:"center",
+                    verticalAlign:"center"
+                  },
+                ],
+              }
+              rows.unshift(headerRow)
+            try {
+              oncf.save(options)
             } catch (error) {
                  toaster.clear()
                  toaster.push(
@@ -361,7 +418,8 @@ const Topnav = () => {
             <Dropdown.Menu onSelect={exportModalopen}>
                 <Dropdown.Item eventKey="week">Hebdomadaire</Dropdown.Item>
                 <Dropdown.Item eventKey="month">Mensuel</Dropdown.Item>
-                <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>     
+                <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>
+                <Dropdown.Item eventKey="oncf">ONCF</Dropdown.Item>
                 <Dropdown.Item eventKey="free">Libre</Dropdown.Item>
             </Dropdown.Menu>
           </Popover>
@@ -377,7 +435,12 @@ const Topnav = () => {
         setFromHour(value[0])
         setToHour(value[1])
     }
+   
     const handleYearChange = (year) =>{
+      if(season ==="oncf"){
+        setYear(year)
+        return
+      }
         setIsSelected(true)
         setFromDate(new Date(year,0,1))
         setToDate(new Date(year,11,31))
@@ -400,26 +463,73 @@ const Topnav = () => {
         dispatch(AuthAction.setToken(null))
         dispatch(AuthAction.setUser(null))
     }
-   
+    const SidebarItem = props => {
+      const active = props.active ? 'active' : ''
+      return (
+          <div className="sidebar__item">
+              <div className={`sidebar__item-inner ${active}`}>
+                  <i className={props.icon}></i>
+                  <span>
+                      {props.title}{"  "}{props.dev ?<Tag>En développment</Tag>:null}
+                  </span>
+              </div>
+          </div>
+      )
+  }
     return (
+      <div className="navLayout">
+        <div className="navButton">
+              <button ref={nav_toggle_ref} onClick={() => setActiveNav()}>
+                  <Gear style={{fontSize:"1.5em"}}/>
+              </button>
+              <div ref={nav_ref} className="nav-mobile">
+                  {/* <h4>Navigation</h4> */}
+                  <button className="nav-mobile__close" onClick={() => closeNav()}>
+                      <i className='bx bx-x'></i>
+                  </button>
+                  <div className="sidebar__logo">
+                    <img src={smallLogo} alt="small" /> <img src={logo} alt="gestpark" />
+                  </div>
+                  <div className="sideContent">
+                      {
+                          sidebar_items.map((item, index) => {
+                              if (permissions.some((element) => element.name === item.role ||  item.role === undefined)){
+                                  
+                                  return <Link to={item.route} key={index}>
+                                              <SidebarItem
+                                                  title={item.display_name}
+                                                  icon={item.icon}
+                                                  active={index === activeItem}
+                                                  dev={item.dev}
+                                              />
+                                          </Link>
+                              }
+                              return null  
+                          })
+                      }
+                  </div>
+              </div>
+          </div>
+          <div className="searching">
+                    <InputGroup inside style={{width: 250,marginBottom: 10}}>
+                        <AutoComplete ref={search} value={searchValue} onChange={setSearchValue} data={searchTypes} onSelect={handleSearch}
+                        placeholder="Recherche"
+                        renderItem={item => {
+                            return (
+                              <div>
+                                {/* <Icon icon={item.icon} style={{marginRight: 10}}/>  */}
+                                <Project style={{marginRight: 10}} />
+                                <strong>{item.label}</strong>
+                              </div>
+                            )
+                          }}
+                        />
+                        <InputGroup.Addon>
+                            <Search/>
+                        </InputGroup.Addon>
+                    </InputGroup>
+              </div>
         <div className='topnav'>
-                <InputGroup inside style={{width: 250,marginBottom: 10}}>
-                    <AutoComplete ref={search} value={searchValue} onChange={setSearchValue} data={searchTypes} onSelect={handleSearch}
-                    placeholder="Recherche"
-                    renderItem={item => {
-                        return (
-                          <div>
-                            {/* <Icon icon={item.icon} style={{marginRight: 10}}/>  */}
-                            <Project style={{marginRight: 10}} />
-                            <strong>{item.label}</strong>
-                          </div>
-                        )
-                      }}
-                    />
-                    <InputGroup.Addon>
-                        <Search/>
-                    </InputGroup.Addon>
-                </InputGroup>
             <div className="topnav__right">
                 <div className="topnav__right-item">
                     <Dropdown onSelect={handleDropDown} title="Mon Compte" placement="bottomEnd">
@@ -437,6 +547,13 @@ const Topnav = () => {
                 {user.permissions.some((element) => element.name === "export_excel")
                 ?
                 <div className="topnav__right-item">
+                        
+
+                    {isMobile?
+                    <Whisper placement="bottomEnd" trigger="click" speaker={renderMenu}>
+                      <IconButton color="green" appearance="primary" icon={<Export/>} placement="right" circle/>
+                    </Whisper>
+                    :
                     <Whisper placement="bottomStart" trigger="click" speaker={renderMenu}>
                         <IconButton color="green" appearance="primary" icon={<Export style={{
                             color:"white",
@@ -444,23 +561,9 @@ const Topnav = () => {
                         }} />} placement="left">
                             Exporter
                         </IconButton>
-                    </Whisper>
-                    {/* <Dropdown
-                    title="Exporter"
-                        onSelect={exportModalopen}
-                        icon={<Export  style={{
-                                                fontSize:"1.5em"
-                                            }}/>}
-                        
-                        placement="bottomEnd"
-                        >
-                            <Dropdown.Item eventKey="week">Hebdomadaire</Dropdown.Item>
-                            <Dropdown.Item eventKey="month">Mensuel</Dropdown.Item>
-                            <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>     
-                            <Dropdown.Item eventKey="custom">Libre</Dropdown.Item>        
-                    </Dropdown> */}
+                    </Whisper>}
                 </div>:null}  
-                <div className="topnav__right-item">
+                <div className="menu topnav__right-item">
                     <ThemeMenu />
                 </div>
             </div>
@@ -469,14 +572,18 @@ const Topnav = () => {
                 fileName={`Reporting-${!ville?"Tous":getVille(ville)}-${moment(fromDate).format("DD/MM/YYYY")}-${moment(toDate).format("DD/MM/YYYY")}.xlsx`}
                 ref={setExporter}
                 filterable={true}
-                creator="GestPark"
-
+                creator="GestParkCorp"
             >   
-                <ExcelExportColumn field="date" title="Date" width={120} 
-                footer={()=>"Totals"}/>
+                <ExcelExportColumn field="date" title="Date" width={120}
+                  footer={()=>"Totals"}
+                  headerCellOptions={{
+                    textAlign:"center",
+                    verticalAlign:"center"
+                  }}
+                />
                 <ExcelExportColumn field="nbr_cm"
-                title="nbrT"
-                width={60} 
+                title="Nombre"
+                width={100} 
                 footer={() => {
                     const tol = aggregateBy(excelData, [
                         {
@@ -485,9 +592,18 @@ const Topnav = () => {
                         },
                       ])
                     return `${tol.nbr_cm?.sum===undefined?0:tol.nbr_cm?.sum}`
-                }}/>
+                }}
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
+                />
                 <ExcelExportColumn field="cm"
-                title="CM (P)"
+                title="CA"
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
                 width={120} 
                 footer={() => {
                     const tol = aggregateBy(excelData, [
@@ -498,21 +614,13 @@ const Topnav = () => {
                       ])
                     return `${tol.cm?.sum===undefined?0:tol.cm?.sum}`
                 }}/>
-                <ExcelExportColumn field="abonne" 
-                title="AB" 
-                width={120} 
-                footer={() => {
-                    const tol = aggregateBy(excelData, [
-                        {
-                          field: "abonne",
-                          aggregate: "sum",
-                        },
-                      ])
-                    return `${tol.abonne?.sum===undefined?0:tol.abonne?.sum}`
-                }}/>
                 <ExcelExportColumn field="nbr_taj" 
-                title="nbrT" 
-                width={60}
+                title="Nombre" 
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
+                width={100}
                 footer={() => {
                     const tol = aggregateBy(excelData, [
                         {
@@ -523,7 +631,11 @@ const Topnav = () => {
                     return `${tol.nbr_taj?.sum===undefined?0:tol.nbr_taj?.sum}`
                 }}/>
                 <ExcelExportColumn field="taj" 
-                title="T A JUSTIFER" 
+                title="CA" 
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
                 width={120}
                 // cellOptions={{
                 //     background: "#ff6e6e",
@@ -537,12 +649,30 @@ const Topnav = () => {
                       ])
                     return `${tol.taj?.sum===undefined?0:tol.taj?.sum}`
                 }}/>
+                <ExcelExportColumn field="abonne" 
+                title="CA Abonnements" 
+                width={150} 
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "abonne",
+                          aggregate: "sum",
+                        },
+                      ])
+                    return `${tol.abonne?.sum===undefined?0:tol.abonne?.sum}`
+                }}/>
+                
                 <ExcelExportColumn field="total"
-                title="Total"
-                width={120} 
-                // cellOptions={{
-                //     background: "#3ec215",
-                // }}
+                title="Total CA en DH/TTC"
+                width={150} 
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
                 footer={() => {
                     const tol = aggregateBy(excelData, [
                         {
@@ -553,9 +683,64 @@ const Topnav = () => {
                     return `${tol.total?.sum===undefined?0:tol.total?.sum}`
                 }}/>
             </ExcelExport>
-            <ExportModal setHourType={setHourType} hourType={hourType} handleHourChange={handleHourChange} confirme={confirmExportModal} isSelected={isSelected} season={season} yearChange={handleYearChange} dateChange={handleIntervalDateChange} show={showExportModal} close={exportModalClose} listVilles={listVilles} handleVilleChange={handleVilleChange} handleVilleUpdate={handleVilleUpdate}/>
+            {/* ------------------------------- separation ------------------------------- */}
+            <ExcelExport
+                data={excelData}
+                fileName={`Reporting-${getVille(ville)+"-"+year}.xlsx`}
+                ref={setOncf}
+                filterable={true}
+                creator="GestParkCorp"
+            >   
+                <ExcelExportColumn field="mois" title="Mois" width={200} 
+                footer={()=>"Cumul recettes exercice en cours"}/>
+                <ExcelExportColumn field="cumul"
+                title="Cumul recette"
+                width={100} 
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "cumul",
+                          aggregate: "sum",
+                        },
+                      ])
+                    return `${tol.cumul?.sum===undefined?0:tol.cumul?.sum}`
+                }}/>
+                <ExcelExportColumn field="abos"
+                title="Dont Recette abonnements %"
+                width={120} 
+                footer={() => {
+                    const abo = aggregateBy(excelData, [
+                        {
+                          field: "abo",
+                          aggregate: "sum",
+                        },
+                      ])
+                      const recette = aggregateBy(excelData, [
+                        {
+                          field: "cumul",
+                          aggregate: "sum",
+                        },
+                      ])
+                      const res = (abo?.abo?.sum*100/recette.cumul.sum).toFixed(2)
+                    return `${res||0}`
+                }}/>
+                <ExcelExportColumn field="nbr_abos" 
+                title="Nombre abonnés" 
+                width={120} 
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "nbr_abos",
+                          aggregate: "sum",
+                        },
+                      ])
+                    return `${tol.nbr_abos?.sum===undefined?0:tol.nbr_abos?.sum}`
+                }}/>
+            </ExcelExport>
+            <ExportModal year={year} ville={ville} setHourType={setHourType} hourType={hourType} handleHourChange={handleHourChange} confirme={confirmExportModal} isSelected={isSelected} season={season} yearChange={handleYearChange} dateChange={handleIntervalDateChange} show={showExportModal} close={exportModalClose} listVilles={listVilles} handleVilleChange={handleVilleChange} handleVilleUpdate={handleVilleUpdate}/>
             <LogoutModal handleLogout={handleLogout} show={showLogoutModal} close={logoutModalClose}/>
         </div>
+      </div>
     )
 }
 
