@@ -232,6 +232,9 @@ const Topnav = props => {
               {
               const nbr_cm = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.nbr||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.nbr||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.nbr||0)
               const cm = (groupedData[dateKey]['confirmé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[3]?.[0]?.montant||0)
+              const n_abonne = parseInt(groupedData[dateKey]['confirmé']?.[6]?.[0]?.nbr||0)
+              const r_abonne = parseInt(groupedData[dateKey]['confirmé']?.[7]?.[0]?.nbr||0)
+              const rr_abonne = parseInt(groupedData[dateKey]['confirmé']?.[8]?.[0]?.nbr||0)
               const abonne = (groupedData[dateKey]['confirmé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['confirmé']?.[8]?.[0]?.montant||0)
               const nbr_taj = (groupedData[dateKey]['annulé']?.[1]?.[0]?.nbr||0)+(groupedData[dateKey]['annulé']?.[2]?.[0]?.nbr||0)+(groupedData[dateKey]['annulé']?.[3]?.[0]?.nbr||0)
               const taj = (groupedData[dateKey]['annulé']?.[1]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[2]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[3]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[6]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[7]?.[0]?.montant||0)+(groupedData[dateKey]['annulé']?.[8]?.[0]?.montant||0)
@@ -240,12 +243,16 @@ const Topnav = props => {
                   date:dateKey,
                   nbr_cm:nbr_cm,
                   cm:cm,
+                  n_abonne:n_abonne,
+                  r_abonne:r_abonne,
+                  rr_abonne:rr_abonne,
                   abonne:abonne,
                   nbr_taj:nbr_taj,
                   taj:taj,
                   total:total
               })
           })
+          console.log(excelFiltred)
           await setExcelData(excelFiltred)
         }
         setIsHourSelected(false)
@@ -269,7 +276,7 @@ const Topnav = props => {
                   {
                     value: `REPORTING DES CAS JOURNALIERES ${!ville?"DE TOUS LES PARKING":"DU PARKING DE "+getVille(ville)} EN DH/TTC ${interval}`,
                     fontSize: 14,
-                    colSpan: 7,
+                    colSpan: 10,
                     wrap:true,
                     textAlign:"center",
                     verticalAlign:"center",
@@ -320,7 +327,20 @@ const Topnav = props => {
                       borderRight:borderStyle,
                       borderTop:borderStyle,
                   },
-                  emptyRow,
+                  {
+                    "background": "#7a7a7a",
+                    "color": "#fff",
+                    "value": "Abonnements",
+                    "colSpan": 4,
+                    "firstCell": false,
+                    "rowSpan": 1,
+                    textAlign:"center",
+                    verticalAlign:"center",
+                    borderBottom:borderStyle,
+                    borderLeft:borderStyle,
+                    borderRight:borderStyle,
+                    borderTop:borderStyle,
+                },
                   emptyRow,
                   emptyRow
                 ]
@@ -340,7 +360,7 @@ const Topnav = props => {
                   cell["borderTop"]=borderStyle
                 })
                 if (row.type === "data") {
-                    let thisDay = parseFloat(row.cells[6].value)
+                    let thisDay = parseFloat(row.cells[9].value)
                     if(rowIndex === 0){
                         row.cells.push({value: "", background: "#000"})
                         lastDay=thisDay
@@ -419,7 +439,7 @@ const Topnav = props => {
                 <Dropdown.Item eventKey="week">Hebdomadaire</Dropdown.Item>
                 <Dropdown.Item eventKey="month">Mensuel</Dropdown.Item>
                 <Dropdown.Item eventKey="year">Annuel</Dropdown.Item>
-                <Dropdown.Item eventKey="oncf">{"ONCF "}<Tag>DEV</Tag></Dropdown.Item>
+                <Dropdown.Item eventKey="oncf">{"Recettes "}<Tag>DEV</Tag></Dropdown.Item>
                 <Dropdown.Item eventKey="free">Libre</Dropdown.Item>
             </Dropdown.Menu>
           </Popover>
@@ -650,6 +670,54 @@ const Topnav = props => {
                         },
                       ])
                     return `${tol.taj?.sum===undefined?0:tol.taj?.sum}`
+                }}/>
+                <ExcelExportColumn field="n_abonne" 
+                title="N" 
+                width={80} 
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "n_abonne",
+                          aggregate: "sum",
+                        },
+                      ])
+                    return `${tol.n_abonne?.sum===undefined?0:tol.n_abonne?.sum}`
+                }}/>
+                <ExcelExportColumn field="r_abonne" 
+                title="R" 
+                width={80} 
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "r_abonne",
+                          aggregate: "sum",
+                        },
+                      ])
+                    return `${tol.r_abonne?.sum===undefined?0:tol.r_abonne?.sum}`
+                }}/>
+                <ExcelExportColumn field="rr_abonne" 
+                title="R+" 
+                width={80} 
+                headerCellOptions={{
+                  textAlign:"center",
+                  verticalAlign:"center"
+                }}
+                footer={() => {
+                    const tol = aggregateBy(excelData, [
+                        {
+                          field: "rr_abonne",
+                          aggregate: "sum",
+                        },
+                      ])
+                    return `${tol.rr_abonne?.sum===undefined?0:tol.rr_abonne?.sum}`
                 }}/>
                 <ExcelExportColumn field="abonne" 
                 title="CA Abonnements" 
