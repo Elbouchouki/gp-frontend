@@ -305,7 +305,7 @@ const Traffic = (props) => {
                                         </div>
                                         {brutTraffic.length!==0?
                                             <div className="col-4">
-                                                {/* <IconButton onClick={exportation} loading={exportLoading} size="md" appearance='primary' color="green" icon={<Detail />} /> */}
+                                                <IconButton onClick={exportation} loading={exportLoading} size="md" appearance='primary' color="green" icon={<Detail />} />
                                             </div>
                                         :null} 
                                     </div>
@@ -313,8 +313,7 @@ const Traffic = (props) => {
                             </div>
                         </div>
                         <div className="card__body">
-                            <InDev/>
-                            {/* {
+                            {
                                 brutTraffic === undefined || brutTraffic === null ?
                                     <div style={{display:'flex',justifyContent:'center'}}>Problèmes de connections</div>
                                 :
@@ -368,7 +367,7 @@ const Traffic = (props) => {
                                             {brutTraffic.map((item,index)=>(<ListItem index={index} item={item} />))}
                                         </List>
                                     </div> 
-                            } */}
+                            }
                         </div>
                     </div>
                 </div>
