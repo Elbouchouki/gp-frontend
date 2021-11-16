@@ -31,11 +31,11 @@ const Layout = () => {
         dispatch(ThemeAction.setColor(colorClass))
         setLoading(false)
     }, [dispatch])
-    if (isMobile) {
-        return (
-            <Maintenance/>
-        )
-    }
+    // if (isMobile) {
+    //     return (
+    //         <Maintenance/>
+    //     )
+    // }
     return(
         
         loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
