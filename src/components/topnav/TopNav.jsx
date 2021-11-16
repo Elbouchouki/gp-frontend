@@ -499,8 +499,8 @@ const Topnav = props => {
     return (
       <div className="navLayout">
         <div className="navButton">
-              <button ref={nav_toggle_ref} onClick={()=>{}
-                // () => setActiveNav()
+              <button ref={nav_toggle_ref} onClick={
+                () => setActiveNav()
                 }>
                   <Menu style={{fontSize:"1.5em"}}/>
               </button>
