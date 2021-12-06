@@ -21,8 +21,8 @@ const Routes = () => {
     return (
         <Switch>
             <Route path='/' exact component={()=><Dashboard/>}/>
-            <ProtectedRoute perm="show_recu_normal" path='/tickets' exact component={()=><Recu type="normal" articleId={[1,2,3]} pageTitle="Tickets"/>}/>
-            <ProtectedRoute perm="show_recu_normal" path='/traffic' exact component={()=><Traffic articleId={[1,2,3]} pageTitle="Traffic"/>}/>
+            <ProtectedRoute perm="show_recu_normal" path='/tickets' exact component={()=><Recu type="normal" articleId={[1,2,3,9]} pageTitle="Tickets"/>}/>
+            <ProtectedRoute perm="show_recu_normal" path='/traffic' exact component={()=><Traffic articleId={[1,2,3,9]} pageTitle="Traffic"/>}/>
             {/* <ProtectedRoute perm="show_recu_illisible" path='/tickets-illisible' exact component={()=><Recu articleId="2" pageTitle="Tickets illisibles"/>}/> */}
             {/* <ProtectedRoute perm="show_recu_perdu" path='/tickets-perdus' exact component={()=><Recu articleId="3" pageTitle="Tickets perdus"/>}/> */}
             {/* <ProtectedRoute perm="show_recu_entree_abonne" path='/sortie-abonnés' exact component={()=><Recu articleId="4" pageTitle="Sorties Abonnés"/>}/> */}

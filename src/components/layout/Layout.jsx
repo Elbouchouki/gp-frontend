@@ -38,7 +38,9 @@ const Layout = () => {
     // }
     return(
         
-        loading ? <Loader backdrop content="Chargement en cours..." vertical /> :
+        loading 
+        ?
+        <Loader backdrop content="Chargement en cours..." vertical /> :
         authReducer?.user?
         <BrowserRouter>
             <Route render={(props) => (
@@ -52,7 +54,9 @@ const Layout = () => {
                     </div>
                 </div>
             )}/>
-        </BrowserRouter>:<Login/>
+        </BrowserRouter>
+        :
+        <Login/>
     )
 }
 
