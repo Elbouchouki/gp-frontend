@@ -104,7 +104,7 @@ const Dashboard = () => {
     const [stLoading,setStLoading] = useState(true)
     const [sevenChartLoading,setSevenChartLoading] = useState(true)
     const [active, setActive] = useState("day")
-    // statistic for ville part
+    const [villes, setVilles] = useState([])
     const [stActive,setStActive] = useState("yesterday")
     const [stToDate, setStToDate] = useState(moment().subtract(1, 'days').toDate())
     const [stFromDate, setStFromDate] = useState(moment().subtract(1, 'days').toDate())
@@ -145,7 +145,7 @@ const Dashboard = () => {
             curve: 'smooth'
         },
         xaxis: {
-            type: 'category',
+            type: 'Villes',
             categories: ["Ticket Normal","Ticket Illisible","Ticket Perdu","Nouveaux Abonnés","Recharges Abonnés","Recharges Abonnés ONCF"],
         },
         legend: {
@@ -233,7 +233,23 @@ const Dashboard = () => {
             setStData([])
         }
     }, [stActive,token,stFromDate,stToDate])
-    
+    useEffect(() => {
+        async function fetchData(){
+            setSevenChartLoading(true)
+            var villesList = []
+            const seven = await ApiCall.getVilles(token);
+            seven?.villes?.forEach(element => {
+                villesList.push(element.label)
+            });
+            console.log(villesList)
+            setVilles(villesList);
+            setSevenChartLoading(false)
+        }
+        fetchData()
+        return () => {
+            setSevenChartLoading(true)
+        }
+    }, [token])
     useEffect(() => {
         async function fetchData(){
             setSevenChartLoading(true)

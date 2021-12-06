@@ -316,6 +316,17 @@ const Recu = (props) => {
                             total:0.0
                         }
                     },
+                    '9':{
+                        'name':"Remise",
+                        'confirmé':{
+                            cpt:0,
+                            total:0.0
+                        },
+                        'annulé':{
+                            cpt:0,
+                            total:0.0
+                        }
+                    },
                     'total':{
                         'name':"Total",
                         'confirmé':{
@@ -490,9 +501,7 @@ const Recu = (props) => {
                                     bodyData={filtredRecus}
                                     renderBody={(item, index) => renderBody(item, index)}
                                     />
-
                                 </div>
-                                
                             }
                         </div>
                     </div>

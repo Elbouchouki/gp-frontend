@@ -55,7 +55,7 @@ const CustomList = ({dataList,dates},...props) => {
     setExportData(
       [
        {
-        title:"Tickets Horaire" ,nbr:item.nbr_ticket_normal ,somme:item.ticket_normal  ,nbrAn:item.nbr_ticket_normal_an ,sommeAn:item.ticket_normal_an 
+        title:"Tickets Horaire" ,nbr:(item.nbr_ticket_normal+item.nbr_remise) ,somme:(item.ticket_normal+item.remise)  ,nbrAn:(item.nbr_ticket_normal_an+item.nbr_remise_an) ,sommeAn:(item.ticket_normal_an +item.remise_an)
         
        },
        {

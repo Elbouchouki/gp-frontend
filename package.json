@@ -12,7 +12,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "apexcharts": "^3.27.1",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "date-fns": "^2.23.0",
     "dotenv": "^10.0.0",
     "group-array": "^1.0.0",
