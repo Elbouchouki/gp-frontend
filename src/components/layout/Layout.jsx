@@ -37,26 +37,26 @@ const Layout = () => {
     //     )
     // }
     return(
-        
-        loading 
-        ?
-        <Loader backdrop content="Chargement en cours..." vertical /> :
-        authReducer?.user?
-        <BrowserRouter>
-            <Route render={(props) => (
-                <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
-                    <Sidebar {...props}/>
-                    <div className="layout__content">
-                        <TopNav {...props}/>
-                        <div className="layout__content-main">
-                            <Routes/>
-                        </div>
-                    </div>
-                </div>
-            )}/>
-        </BrowserRouter>
-        :
-        <Login/>
+        <div style={{backgroundColor:'whitesmoke',height:'100vh',width:'100vw'}}></div>
+        // loading 
+        // ?
+        // <Loader backdrop content="Chargement en cours..." vertical /> :
+        // authReducer?.user?
+        // <BrowserRouter>
+        //     <Route render={(props) => (
+        //         <div className={`layout ${themeReducer.mode} ${themeReducer.color}`}>
+        //             <Sidebar {...props}/>
+        //             <div className="layout__content">
+        //                 <TopNav {...props}/>
+        //                 <div className="layout__content-main">
+        //                     <Routes/>
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     )}/>
+        // </BrowserRouter>
+        // :
+        // <Login/>
     )
 }
 
